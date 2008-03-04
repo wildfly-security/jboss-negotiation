@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  The parent maven for the project that expects a structure like: 
+    build/pom.xml
+    jboss-xacml/pom.xml
+    jboss-xacml-docs/pom.xml
+
+  This pom aggregates the subproject pom, and it also functions as a default 
+  configuration.  The subproject poms each inherit configuration from this one.
+  
+  To build this project maven 2 should be installed and in the system path. 
+  From the command line run "mvn" from the build directory and "install" will 
+  be used as the default goal.  In order to use the "deploy" goal, 
+  the mvn.cvs.root should be specified in settings.xml.
+  
+  To add a module edit the modules section and add the module also to 
+  assembly/bin.xml and assembly.sources.xml.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>jboss</groupId>
+    <artifactId>jboss-parent</artifactId>
+    <version>2</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>jboss-spnego-project</artifactId>
+  <version>0.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>JBoss SPNEGO Build</name>
+  <url>http://www.jboss.com</url>
+  <description>
+    The JBoss SPNEGO Project
+  </description>
+  <build>
+    <sourceDirectory>src/main</sourceDirectory>
+    <testSourceDirectory>src/tests</testSourceDirectory>
+    <finalName>${artifactId}</finalName>
+    <resources>
+      <resource>
+        <directory>src/etc</directory>
+        <includes>
+          <include>**/*</include>
+        </includes>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+    <testResources>
+      <testResource>
+        <directory>src/resources</directory>
+        <includes>
+          <include>**/*</include>
+        </includes>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+    <plugins>
+
+    <!-- define that we wish to create src jars -->
+   <plugin>
+       <artifactId>maven-source-plugin</artifactId>
+       <version>2.0</version>
+       <inherited>true</inherited>
+       <executions>
+           <execution>
+               <goals>
+                   <goal>jar</goal>
+                </goals>
+           </execution>
+       </executions>
+    </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>assembly</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <descriptors>
+            <descriptor>assembly/bin.xml</descriptor>
+            <descriptor>assembly/sources.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <inherited>false</inherited>
+      </plugin>
+      <plugin>
+        <groupId>org.jboss.maven.plugins</groupId>
+        <artifactId>maven-jboss-deploy-plugin</artifactId>
+        <version>1.4</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>jboss-deploy</goal>
+            </goals>
+          </execution>
+       </executions>
+       <configuration>
+         <groupId>jboss</groupId>
+         <license>lgpl</license>
+         <jbossDeployRoot>${jboss.repository.root}</jbossDeployRoot>
+       </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <repositories>
+    <repository>
+      <id>jboss</id>
+      <name>JBoss Repository</name>
+      <layout>default</layout>
+      <url>http://anonsvn.jboss.org/repos/repository.jboss.org/maven2</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+  <modules>
+    <module>../jboss-negotiation</module>
+  </modules>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>dependencies</report>
+              <report>issue-tracking</report>
+              <report>license</report>
+              <report>scm</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </reporting>
+</project>

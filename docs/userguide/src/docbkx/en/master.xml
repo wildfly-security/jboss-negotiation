@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+      "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<book lang="en">
+   <bookinfo>
+      <title>User Guide for JBoss SPNEGO-Negotiation</title>
+      <subtitle>A Guide for Administrators</subtitle>
+      <releaseinfo>0.0.0</releaseinfo>
+      <authorgroup>
+        <author>
+          <firstname>Darran</firstname>
+          <othername>A.</othername>
+          <surname>Lofthouse</surname>
+        </author>
+      </authorgroup>
+   </bookinfo>
+
+   <toc></toc>
+
+   <preface id="target" revision="1">
+      <title>Target Audience</title>
+
+      <para>This guide is aimed at administrators who want to use the JBoss SPNEGO authenticator to implement silent authentication.
+      </para>
+   </preface>
+
+   <preface id="preface" revision="1">
+      <title>Preface</title>
+
+      <para>Commercial development support, production support and training for
+         the SPNEGO authentication is available through
+         <ulink url="http://www.jboss.com">JBoss Inc.</ulink>
+         The JBoss XACML is a project of JBoss Security in the JEMS product suite.
+      </para>
+
+      <para>Authors:
+         <itemizedlist spacing="compact">
+            <listitem>
+               <para>Darran Lofthouse - SPNEGO authenticator developer.</para>
+            </listitem>
+         </itemizedlist>
+      </para>
+   </preface>
+
+
+</book>

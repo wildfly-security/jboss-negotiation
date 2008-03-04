@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>jboss</groupId>
+  <artifactId>jbossnegotiation</artifactId>
+  <version>0.0.0</version>
+  <packaging>pom</packaging>
+  <name>JBoss SPNEGO Authentication User Guide</name>
+  <description>The JBoss SPNEGO Authentication User Guide</description>
+
+  <repositories>
+    <repository>
+      <id>agilejava</id>
+      <name>AgileJava</name>
+      <url>http://agilejava.com/maven/</url>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>agilejava</id>
+      <name>AgileJava</name>
+      <url>http://agilejava.com/maven/</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <build>
+    <plugins>
+      <plugin>
+      <!--
+      See the following for config options:
+      http://www.agilejava.com/docbkx/docbkx-maven-plugin/generate-html-mojo.html
+      -->
+        <groupId>com.agilejava.docbkx</groupId>
+        <artifactId>docbkx-maven-plugin</artifactId>
+        <version>2.0.3</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate-pdf</goal>
+              <goal>generate-html</goal>
+            </goals>
+            <phase>generate-sources</phase>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.docbook</groupId>
+            <artifactId>docbook-xml</artifactId>
+            <version>4.4</version>
+            <scope>runtime</scope>
+          </dependency>
+        </dependencies>
+
+        <configuration>
+          <!--<foCustomization>${basedir}/src/styles/docbook-fo.xsl</foCustomization>-->
+          <includes>master.xml</includes>
+
+          <!-- use separate pages per chapter for HTML -->
+          <chunkedOutput>true</chunkedOutput>
+
+          <entities>
+            <entity>
+              <name>version</name>
+              <value>${version}</value>
+            </entity>
+          </entities>
+
+          <xincludeSupported>true</xincludeSupported>
+          <sourceDirectory>${basedir}/src/docbkx/en</sourceDirectory>
+          <headerRule>0</headerRule>
+          <footerRule>0</footerRule>
+          <draftMode>0</draftMode>
+          <bodyFontFamily>Helvetica</bodyFontFamily>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
+

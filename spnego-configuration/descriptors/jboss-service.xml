@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<!DOCTYPE server
+    PUBLIC "-//JBoss//DTD MBean Service 4.0//EN"
+    "http://www.jboss.org/j2ee/dtd/jboss-service_4_0.dtd">
+    
+<server>
+
+   <mbean code="org.jboss.varia.property.SystemPropertiesService"
+           name="jboss.support:service=SystemProperties">            
+            
+        <attribute name="Properties">
+            java.security.krb5.kdc=dev44.qa.atl.jboss.com
+            java.security.krb5.realm=DEV44.QA.ATL.JBOSS.COM
+        </attribute>
+            
+    </mbean>
+
+   <mbean code="org.jboss.security.auth.login.DynamicLoginConfig"
+      name="jboss.support:service=DynamicLoginConfig">
+      
+      <attribute name="AuthConfig">META-INF/login-config.xml</attribute>
+      
+      <depends optional-attribute-name="LoginConfigService">
+         jboss.security:service=XMLLoginConfig
+      </depends>      
+      <depends optional-attribute-name="SecurityManagerService">
+         jboss.security:service=JaasSecurityManager
+      </depends>
+   </mbean>
+   
+</server>    

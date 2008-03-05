@@ -1,6 +1,13 @@
 <project name="Calculator" default="deploy" basedir=".">
 
-  <property file="${basedir}/../local.properties" />
+  <available property="ant.properties.available" file="${basedir}/../ant.properties" />
+  <fail message="Cannot find ant.properties. Did you copy/edit ant.properties.example?" unless="ant.properties.available" />
+  <property file="${basedir}/../ant.properties" />
+
+  <fail message="jboss.home not set, check ant.properties" unless="jboss.home" />
+  
+  <property name="jboss.configuration" value="default" />
+  <property name="jboss.server.dir" location="${jboss.home}/server/${jboss.configuration}" />
 
   <property name="src.dir" location="${basedir}/src" />
   <property name="descriptors.dir" location="${basedir}/descriptors" />
@@ -11,9 +18,6 @@
   <property name="build.classes.dir" location="${build.dir}/classes" />
   <property name="build.deliverables.dir" location="${build.dir}/deliverables" />
   <property name="build.descriptors.dir" location="${build.dir}/descriptors" />
-
-  <property name="jboss.home" location="/home/darranl/src/links/JBoss_Current" />
-  <property name="jboss.server.dir" location="${jboss.home}/server/default" />
 
   <path id="project.classpath">
     <fileset dir="${jboss.home}">

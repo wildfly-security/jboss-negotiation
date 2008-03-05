@@ -1,0 +1,6 @@
+
+# Copy this file to ant.properties and set the values below as
+# is required on your workstation.
+
+jboss.home=/home/user/jboss-4.2.2.GA
+#jboss.configuration=default

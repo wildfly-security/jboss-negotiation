@@ -1,0 +1,40 @@
+<web-app xmlns="http://java.sun.com/xml/ns/j2ee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd"
+	version="2.4">
+
+	<servlet>
+		<servlet-name>Calculator</servlet-name>
+		<servlet-class>
+			org.jboss.support.simpleapp.CalculatorServlet
+		</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>Calculator</servlet-name>
+		<url-pattern>/Calculator</url-pattern>
+	</servlet-mapping>
+
+    <security-constraint>
+      <web-resource-collection>
+        <web-resource-name>Restricted</web-resource-name>
+        <url-pattern>/Calculator/*</url-pattern>
+      </web-resource-collection>
+      <auth-constraint>
+        <role-name>Mathematician</role-name>
+      </auth-constraint>
+      <user-data-constraint>
+        <transport-guarantee>NONE</transport-guarantee>
+      </user-data-constraint>
+    </security-constraint>
+    
+   <login-config>
+    <auth-method>SPNEGO</auth-method>
+    <realm-name>SPNEGO</realm-name>    
+   </login-config>
+          
+    <security-role>
+      <role-name>Mathematician</role-name>
+    </security-role>
+
+</web-app>

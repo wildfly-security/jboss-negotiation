@@ -1,0 +1,9 @@
+
+<Context>
+
+   <Valve className="com.darranl.tomcat.gss.SimpleValve"/>
+   
+   <!-- Valve	className="com.darranl.tomcat.gss.SPNEGOValve">
+   </Valve-->
+
+</Context>

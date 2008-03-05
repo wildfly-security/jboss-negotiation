@@ -9,5 +9,7 @@
 	<classpathentry kind="var" path="M2_REPO/javax/servlet/servlet-api/2.5/servlet-api-2.5.jar"/>
 	<classpathentry kind="var" path="M2_REPO/apache-tomcat/catalina/5.5.12/catalina-5.5.12.jar"/>
 	<classpathentry kind="var" path="M2_REPO/junit/junit/3.8.1/junit-3.8.1.jar"/>
+	<classpathentry kind="var" path="M2_REPO/jboss/jboss-common/1.2.0.GA/jboss-common-1.2.0.GA.jar"/>
+	<classpathentry kind="var" path="M2_REPO/jboss/jbosssx/4.2.1.GA/jbosssx-4.2.1.GA.jar"/>
 	<classpathentry kind="output" path="target/eclipse-classes"/>
 </classpath>

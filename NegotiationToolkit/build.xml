@@ -62,4 +62,16 @@
   <target name="deploy" depends="package">
     <copy file="${build.deliverables.dir}/${ant.project.name}.war" todir="${jboss.server.dir}/deploy" />
   </target>
+
+  <target name="RunUsernamePasswordLogon" depends="compile">
+    <java fork="true" classname="org.jboss.security.negotiation.toolkit.UsernamePasswordLogon">
+      <classpath>
+        <pathelement location="${build.classes.dir}" />
+      </classpath>
+
+      <jvmarg value="-Djava.security.auth.login.config=${descriptors.dir}/jaas_authentication.conf" />
+      <jvmarg value="-Djava.security.krb5.kdc=${java.security.krb5.kdc}" />
+      <jvmarg value="-Djava.security.krb5.realm=${java.security.krb5.realm}" />
+    </java>
+  </target>
 </project>

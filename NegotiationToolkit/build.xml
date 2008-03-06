@@ -26,6 +26,10 @@
       <include name="client/jbossall-client.jar" />
       <include name="client/servlet-api.jar" />
       <include name="client/log4j.jar" />
+      <include name="client/commons-codec.jar" />
+    </fileset>
+    <fileset dir="${basedir}/../build/target">
+      <include name="*.jar" />
     </fileset>
   </path>
 

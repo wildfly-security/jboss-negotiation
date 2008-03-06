@@ -4,6 +4,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/home/darranl/src/links/JBoss_Current/client/servlet-api.jar"/>
 	<classpathentry kind="lib" path="/home/darranl/src/links/JBoss_Current/client/log4j.jar"/>
+	<classpathentry kind="lib" path="/home/darranl/src/links/JBoss_Current/client/jbosssx-client.jar"/>
 	<classpathentry kind="var" path="M2_REPO/commons-codec/commons-codec/1.3/commons-codec-1.3.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jboss-negotiation"/>
 	<classpathentry kind="output" path="bin"/>

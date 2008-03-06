@@ -17,6 +17,13 @@
 		</servlet-class>
 	</servlet>
 
+	<servlet>
+		<servlet-name>Secured</servlet-name>
+		<servlet-class>
+			org.jboss.security.negotiation.toolkit.SecuredServlet
+		</servlet-class>
+	</servlet>
+
 	<servlet-mapping>
 		<servlet-name>BasicNegotiation</servlet-name>
 		<url-pattern>/BasicNegotiation</url-pattern>
@@ -25,5 +32,31 @@
 		<servlet-name>SecurityDomainTest</servlet-name>
 		<url-pattern>/SecurityDomainTest</url-pattern>
 	</servlet-mapping>
-	
+	<servlet-mapping>
+		<servlet-name>Secured</servlet-name>
+		<url-pattern>/Secured</url-pattern>
+	</servlet-mapping>
+		
+    <security-constraint>
+      <web-resource-collection>
+        <web-resource-name>Restricted</web-resource-name>
+        <url-pattern>/Secured/*</url-pattern>
+      </web-resource-collection>
+      <auth-constraint>
+        <role-name>Users</role-name>
+      </auth-constraint>
+      <user-data-constraint>
+        <transport-guarantee>NONE</transport-guarantee>
+      </user-data-constraint>
+    </security-constraint>
+    
+   <login-config>
+    <auth-method>SPNEGO</auth-method>
+    <realm-name>SPNEGO</realm-name>    
+   </login-config>
+          
+    <security-role>
+      <role-name>Users</role-name>
+    </security-role>		
+		
 </web-app>

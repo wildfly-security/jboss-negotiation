@@ -34,7 +34,7 @@ $Revision$
             flag="required">
             <module-option name="storeKey">true</module-option>
             <module-option name="useKeyTab">true</module-option>                                                     
-            <module-option name="principal">HTTP/testserver.gsslab.rdu.redhat.com@GSSLAB.RDU.REDHAT.COM</module-option>             
+            <module-option name="principal">host/testserver.gsslab.rdu.redhat.com@GSSLAB.RDU.REDHAT.COM</module-option>             
             <module-option name="keyTab">/home/darranl/src/security-negotiation/spnego-configuration/descriptors/testserver.keytab</module-option>
             <module-option name="doNotPrompt">true</module-option>
             <module-option name="debug">true</module-option>

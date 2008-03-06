@@ -10,9 +10,20 @@
 		</servlet-class>
 	</servlet>
 
+	<servlet>
+		<servlet-name>SecurityDomainTest</servlet-name>
+		<servlet-class>
+			org.jboss.security.negotiation.toolkit.SecurityDomainTestServlet
+		</servlet-class>
+	</servlet>
+
 	<servlet-mapping>
 		<servlet-name>BasicNegotiation</servlet-name>
 		<url-pattern>/BasicNegotiation</url-pattern>
 	</servlet-mapping>    
-
+	<servlet-mapping>
+		<servlet-name>SecurityDomainTest</servlet-name>
+		<url-pattern>/SecurityDomainTest</url-pattern>
+	</servlet-mapping>
+	
 </web-app>

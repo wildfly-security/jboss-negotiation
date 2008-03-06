@@ -63,6 +63,7 @@ public class SPNEGOAuthenticator extends AuthenticatorBase
          return true;
       }
 
+      log.info("Header - " + request.getHeader("Authorization"));
       String authHeader = request.getHeader("Authorization");
       if (authHeader == null)
       {

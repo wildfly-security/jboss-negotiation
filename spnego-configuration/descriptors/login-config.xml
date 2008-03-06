@@ -33,10 +33,11 @@ $Revision$
          <login-module code="com.sun.security.auth.module.Krb5LoginModule"
             flag="required">
             <module-option name="storeKey">true</module-option>
-            <module-option name="useKeyTab">true</module-option>
-            <module-option name="keyTab">/home/darranl/src/kerberos/LoginConfiguration_Dev44/descriptors/darranlaptop.host.keytab</module-option>
-            <module-option name="principal">darranlaptop@DEV44.QA.ATL.JBOSS.COM</module-option>
+            <module-option name="useKeyTab">true</module-option>                                                     
+            <module-option name="principal">HTTP/testserver.gsslab.rdu.redhat.com@GSSLAB.RDU.REDHAT.COM</module-option>             
+            <module-option name="keyTab">/home/darranl/src/security-negotiation/spnego-configuration/descriptors/testserver.keytab</module-option>
             <module-option name="doNotPrompt">true</module-option>
+            <module-option name="debug">true</module-option>
          </login-module>
       </authentication>
    </application-policy>

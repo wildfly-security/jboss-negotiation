@@ -1,21 +1,21 @@
+<project name="NegotiationToolkit" default="package" basedir=".">
 
-<!-- Keeping the generic project name is important so we can deploy either project to 
-     replace the config. -->
-
-<project name="LoginConfiguration" default="deploy" basedir=".">
+  <!-- The NegotiationToolkit is a set of utilities to test the negotiation
+       configuration in stages. -->
 
   <available property="ant.properties.available" file="${basedir}/../ant.properties" />
   <fail message="Cannot find ant.properties. Did you copy/edit ant.properties.example?" unless="ant.properties.available" />
   <property file="${basedir}/../ant.properties" />
 
   <fail message="jboss.home not set, check ant.properties" unless="jboss.home" />
-  
+
   <property name="jboss.configuration" value="default" />
-  <property name="jboss.server.dir" location="${jboss.home}/server/${jboss.configuration}" />  
-  
+  <property name="jboss.server.dir" location="${jboss.home}/server/${jboss.configuration}" />
+
   <property name="src.dir" location="${basedir}/src" />
   <property name="descriptors.dir" location="${basedir}/descriptors" />
   <property name="lib.dir" location="${basedir}/lib" />
+  <property name="pages.dir" location="${basedir}/pages" />
 
   <property name="build.dir" location="${basedir}/build" />
   <property name="build.classes.dir" location="${build.dir}/classes" />
@@ -24,36 +24,38 @@
   <path id="project.classpath">
     <fileset dir="${jboss.home}">
       <include name="client/jbossall-client.jar" />
+      <include name="client/servlet-api.jar" />
+      <include name="client/log4j.jar" />
     </fileset>
   </path>
 
   <target name="prepare">
-    <mkdir dir="${build.dir}"/>
-    <mkdir dir="${build.classes.dir}"/>
-    <mkdir dir="${build.deliverables.dir}"/>
+    <mkdir dir="${build.dir}" />
+    <mkdir dir="${build.classes.dir}" />
+    <mkdir dir="${build.deliverables.dir}" />
   </target>
 
   <target name="compile" depends="prepare">
-    <!--javac srcdir="${src.dir}" destdir="${build.classes.dir}" debug="on" deprecation="on" optimize="off">
+    <javac srcdir="${src.dir}" destdir="${build.classes.dir}" debug="on" deprecation="on" optimize="off">
       <classpath refid="project.classpath" />
-    </javac-->
+    </javac>
   </target>
 
   <target name="package" depends="compile">
-    <jar destfile="${build.deliverables.dir}/${ant.project.name}.sar">
-    <metainf dir="${descriptors.dir}">
-      <include name="jboss-service.xml"/>
-      <include name="login-config.xml"/>
-      <include name="*.keytab"/>
-      <include name="*.properties" />
-    </metainf>
-      <fileset dir="${build.classes.dir}">
+    <war destfile="${build.deliverables.dir}/${ant.project.name}.war" webxml="${descriptors.dir}/web.xml">
+      <webinf dir="${descriptors.dir}">
+        <include name="jboss-web.xml" />
+      </webinf>
+      <classes dir="${build.classes.dir}">
         <include name="**/*.class" />
+      </classes>
+      <fileset dir="${pages.dir}">
+        <include name="**" />
       </fileset>
-    </jar>
+    </war>
   </target>
 
   <target name="deploy" depends="package">
-    <copy file="${build.deliverables.dir}/${ant.project.name}.sar" todir="${jboss.server.dir}/deploy" />
+    <copy file="${build.deliverables.dir}/${ant.project.name}.war" todir="${jboss.server.dir}/deploy" />
   </target>
 </project>

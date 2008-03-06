@@ -89,6 +89,7 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
       super.initialize(subject, callbackHandler, sharedState, options);
       // Which security domain to authenticate the server.
       serverSecurityDomain = (String) options.get("serverSecurityDomain");
+      log.debug("serverSecurityDomain=" + serverSecurityDomain);
    }
 
    @Override
@@ -98,6 +99,7 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
       {
          // TODO - Does this login module need to do anything with the identity?
          //        Especially as this module does not do any role mapping.
+         log.debug("super.login()==true");
          return true;
       }
 

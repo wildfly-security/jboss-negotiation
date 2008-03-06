@@ -10,8 +10,8 @@
            name="jboss.support:service=SystemProperties">            
             
         <attribute name="Properties">
-            java.security.krb5.kdc=dev44.qa.atl.jboss.com
-            java.security.krb5.realm=DEV44.QA.ATL.JBOSS.COM
+            java.security.krb5.kdc=vm11.gsslab.rdu.redhat.com
+            java.security.krb5.realm=GSSLAB.RDU.REDHAT.COM
         </attribute>
             
     </mbean>

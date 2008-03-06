@@ -63,7 +63,6 @@ public class BasicNegotiationServlet extends HttpServlet
          IOException
    {
       String authHeader = req.getHeader("Authorization");
-      log.info("Authorization '" + authHeader + "'");
       if (authHeader == null)
       {
          log.info("No Authorization Header, sending 401");
@@ -72,6 +71,8 @@ public class BasicNegotiationServlet extends HttpServlet
 
          return;
       }
+
+      log.info("Authorization header received - formatting web page response.");
 
       /* At this stage no further negotiation will take place so the information */
       /* can be output in the servlet response.                                  */

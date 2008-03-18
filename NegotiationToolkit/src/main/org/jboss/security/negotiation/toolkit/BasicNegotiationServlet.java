@@ -36,10 +36,9 @@ import org.apache.log4j.Logger;
 import org.ietf.jgss.GSSException;
 import org.ietf.jgss.Oid;
 import org.jboss.security.negotiation.OidNameUtil;
-
-import com.darranl.spnego.DebugHelper;
-import com.darranl.spnego.NegTokenInit;
-import com.darranl.spnego.NegTokenInitDecoder;
+import org.jboss.security.negotiation.spnego.encoding.DebugHelper;
+import org.jboss.security.negotiation.spnego.encoding.NegTokenInit;
+import org.jboss.security.negotiation.spnego.encoding.NegTokenInitDecoder;
 
 /**
  * A basic servlet to test that if prompted the client browser will return a SPNEGO
@@ -142,12 +141,12 @@ public class BasicNegotiationServlet extends HttpServlet
          writer.print(OidNameUtil.getName(negTokenInit.getMessageOid()));
          writer.println("<br>");
 
-         List mechTypes = negTokenInit.getMechTypes();
+         List<Oid> mechTypes = negTokenInit.getMechTypes();
          writer.print("<b>Mech Types -</b>");
-         for (Object current : mechTypes)
+         for (Oid current : mechTypes)
          {
             writer.print(" {");
-            writer.print(OidNameUtil.getName((Oid) current));
+            writer.print(OidNameUtil.getName(current));
             writer.print("}");
          }
          writer.println("<br>");

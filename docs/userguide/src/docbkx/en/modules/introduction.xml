@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<chapter id="introduction">
+  <title>Introduction to JBoss Negotiation</title>
+
+  <para>The JBoss Negotiation project provides a set of components to bring
+  '<emphasis role="bold">S</emphasis>imple and <emphasis
+  role="bold">P</emphasis>rotected GSSAPI <emphasis
+  role="bold">Nego</emphasis>tiation Mechanism' or SPNEGO to JBoss.</para>
+
+  <para>SPNEGO authentication allows a user already authenticated to a
+  <emphasis role="bold">K</emphasis>erberos <emphasis
+  role="bold">D</emphasis>omain <emphasis role="bold">C</emphasis>ontroller /
+  KDC to silently authenticate to remote services without being prompted for
+  further usernames and passwords. In addition to this the users credentials
+  can be delegate to the remote system allowing the remote system to contact
+  further systems as the user.</para>
+
+  <para>Many web browsers provide support for SPNEGO authentication, this
+  document focuses on <trademark>Microsoft Internet Explorer</trademark> and
+  Mozilla Firefox. There are also a number of kerberos domain controllers
+  available, this documentation focusses on <trademark>Microsoft Active
+  Directory</trademark> and the MIT KDC implementation. Contributions for
+  documentation on other web browsers and KDCs would be welcome.</para>
+
+  <para></para>
+
+  <sect1>
+    <title>Components</title>
+
+    <para>The JBoss Negotiation project provides the following components:
+    -</para>
+
+    <para></para>
+
+    <itemizedlist>
+      <listitem>
+        <para>SPNEGO Authenticator and Login Module</para>
+
+        <para>The authentication process is handled by a Tomcat Authenticator
+        that and a JAAS login module, this combination achieves the
+        integration with JBoss security.</para>
+      </listitem>
+
+      <listitem>
+        <para>Negotiation Toolkit</para>
+
+        <para>This is a couple of utilities and a web application that can be
+        used to test various aspects of your negotiation configuration to
+        enable you to verify that the required steps are working correctly and
+        to debug where failures may be occuring.</para>
+      </listitem>
+
+      <listitem>
+        <para>Configuration Project</para>
+
+        <para>This project allow you to specify a couple of properties within
+        a property file and the build script contained within the project will
+        configure and deploy your security configuration automatically - after
+        this is deployed all you will need to do it deploy your web
+        application configured to use the SPNEGO authenticator and set the
+        correct security domain.</para>
+      </listitem>
+    </itemizedlist>
+  </sect1>
+
+  <sect1>
+    <para />
+  </sect1>
+</chapter>

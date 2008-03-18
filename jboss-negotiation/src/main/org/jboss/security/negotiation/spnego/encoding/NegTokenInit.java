@@ -14,59 +14,70 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-package com.darranl.spnego;
+package org.jboss.security.negotiation.spnego.encoding;
+
+import java.util.LinkedList;
+import java.util.List;
 
 import org.ietf.jgss.Oid;
 
 /**
- * Representation of NegTokenTarg.
+ * Representation of NegTokenInit.
  * 
  * @author <a href="darranlofthouse@hotmail.com">Darran Lofthouse</a>
  */
-public class NegTokenTarg
+public class NegTokenInit
 {
-   public static final Integer ACCEPT_COMPLETED = new Integer(1);
 
-   public static final Integer ACCEPT_INCOMPLETE = new Integer(2);
+   private Oid messageOid;
 
-   public static final Integer REJECTED = new Integer(3);
+   private final List mechTypes = new LinkedList();
 
-   private Integer negResult = null;
+   private byte[] reqFlags;
 
-   private Oid supportedMech = null;
+   private byte[] mechToken;
 
-   private byte[] responseToken = null;
+   private byte[] mechListMIC;
 
-   private byte[] mechListMIC = null;
-
-   public Integer getNegResult()
+   public Oid getMessageOid()
    {
-      return negResult;
+      return messageOid;
    }
 
-   public void setNegResult(Integer negResult)
+   public void setMessageOid(final Oid messageOid)
    {
-      this.negResult = negResult;
+      this.messageOid = messageOid;
    }
 
-   public Oid getSupportedMech()
+   public List getMechTypes()
    {
-      return supportedMech;
+      return mechTypes;
    }
 
-   public void setSupportedMech(Oid supportedMech)
+   public void addMechType(final Oid mechType)
    {
-      this.supportedMech = supportedMech;
+      mechTypes.add(mechType);
    }
 
-   public byte[] getResponseToken()
+   public byte[] getMechToken()
    {
-      return responseToken;
+      return mechToken;
    }
 
-   public void setResponseToken(byte[] responseToken)
+   
+   public byte[] getReqFlags()
    {
-      this.responseToken = responseToken;
+      return reqFlags;
+   }
+
+   public void setReqFlags(byte[] reqFlags)
+   {
+      this.reqFlags = reqFlags;
+   }
+
+   public void setMechToken(byte[] mechToken)
+   {
+      this.mechToken = mechToken;
    }
 
    public byte[] getMechListMIC()

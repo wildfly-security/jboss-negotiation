@@ -38,13 +38,12 @@ import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSException;
 import org.ietf.jgss.GSSManager;
 import org.ietf.jgss.Oid;
-
-import com.darranl.spnego.DebugHelper;
-import com.darranl.spnego.NegTokenInit;
-import com.darranl.spnego.NegTokenInitDecoder;
-import com.darranl.spnego.NegTokenTarg;
-import com.darranl.spnego.NegTokenTargDecoder;
-import com.darranl.spnego.NegTokenTargEncoder;
+import org.jboss.security.negotiation.spnego.encoding.DebugHelper;
+import org.jboss.security.negotiation.spnego.encoding.NegTokenInit;
+import org.jboss.security.negotiation.spnego.encoding.NegTokenInitDecoder;
+import org.jboss.security.negotiation.spnego.encoding.NegTokenTarg;
+import org.jboss.security.negotiation.spnego.encoding.NegTokenTargDecoder;
+import org.jboss.security.negotiation.spnego.encoding.NegTokenTargEncoder;
 
 /**
  * A SPNEGOValve for Kerberos authentication for web
@@ -337,6 +336,5 @@ public class SPNEGOValve implements Valve
          log.info("Supported Mech - " + current);
       }
    }
-
 
 }

@@ -44,12 +44,11 @@ import org.ietf.jgss.Oid;
 import org.jboss.security.SimpleGroup;
 import org.jboss.security.auth.spi.AbstractServerLoginModule;
 import org.jboss.security.negotiation.MessageTrace;
-
-import com.darranl.spnego.NegTokenInit;
-import com.darranl.spnego.NegTokenInitDecoder;
-import com.darranl.spnego.NegTokenTarg;
-import com.darranl.spnego.NegTokenTargDecoder;
-import com.darranl.spnego.NegTokenTargEncoder;
+import org.jboss.security.negotiation.spnego.encoding.NegTokenInit;
+import org.jboss.security.negotiation.spnego.encoding.NegTokenInitDecoder;
+import org.jboss.security.negotiation.spnego.encoding.NegTokenTarg;
+import org.jboss.security.negotiation.spnego.encoding.NegTokenTargDecoder;
+import org.jboss.security.negotiation.spnego.encoding.NegTokenTargEncoder;
 
 /**
  * Login module to work in conjunction with SPNEGOAuthenticator to handle the 

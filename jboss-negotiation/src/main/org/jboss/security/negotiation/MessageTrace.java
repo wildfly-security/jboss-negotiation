@@ -23,8 +23,7 @@
 package org.jboss.security.negotiation;
 
 import org.jboss.logging.Logger;
-
-import com.darranl.spnego.DebugHelper;
+import org.jboss.security.negotiation.spnego.encoding.DebugHelper;
 
 /**
  * Handle message tracing hierarchy.

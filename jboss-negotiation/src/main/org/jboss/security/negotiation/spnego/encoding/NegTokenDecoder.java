@@ -14,33 +14,54 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-package com.darranl.spnego;
+package org.jboss.security.negotiation.spnego.encoding;
 
-import org.apache.commons.codec.binary.Hex;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
- * Utility class to assist debugging.
+ * NegToken Decoder.
  * 
  * @author <a href="darranlofthouse@hotmail.com">Darran Lofthouse</a>
  */
-public class DebugHelper
+public class NegTokenDecoder
 {
 
-   public static String convertToHex(final byte[] message)
+   public static int readLength(final InputStream is) throws IOException
    {
-      StringBuffer sb = new StringBuffer(message.length * 5);
-      char[] hex = Hex.encodeHex(message);
-
-      for (int i = 0; i < hex.length; i++)
+      byte first = (byte) is.read();
+      byte masked = (byte) (first & (byte) 128);
+   
+      if (masked == 0)
       {
-         if (i % 2 == 0)
-         {
-            sb.append(" 0x");
-         }
-
-         sb.append(hex[i]);
+         return first;
       }
-
-      return sb.toString();
+   
+      int lengthLength = first & (byte) 127;
+   
+      byte[] lengthBytes = new byte[lengthLength];
+      is.read(lengthBytes);
+   
+      int length = 0;
+      for (int i = 0; i < lengthLength; i++)
+      {
+         int currentPos = lengthLength - i - 1;
+         int currentLength = lengthBytes[currentPos];
+   
+         if (currentLength < 0)
+         {
+            currentLength += 256;
+         }
+   
+         if (i > 0)
+         {
+            currentLength = currentLength * (int) (Math.pow(2, 8 * i));
+         }
+   
+         length += currentLength;
+      }
+   
+      return length;
    }
+
 }

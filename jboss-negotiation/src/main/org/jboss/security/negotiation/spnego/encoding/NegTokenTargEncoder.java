@@ -14,7 +14,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-package com.darranl.spnego;
+package org.jboss.security.negotiation.spnego.encoding;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

@@ -14,54 +14,39 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-package com.darranl.spnego;
+package org.jboss.security.negotiation.spnego.encoding;
 
 import java.io.IOException;
-import java.io.InputStream;
+
+import org.ietf.jgss.GSSException;
+import org.ietf.jgss.Oid;
+
+import junit.framework.TestCase;
 
 /**
- * NegToken Decoder.
+ * Test case for the NegTokenTargEncoder.
  * 
  * @author <a href="darranlofthouse@hotmail.com">Darran Lofthouse</a>
  */
-public class NegTokenDecoder
+public class NegTokenTargEncoderTest extends TestCase
 {
 
-   public static int readLength(final InputStream is) throws IOException
+   /**
+    * Test a NegTokenTarg response can be constructed to request 
+    * an alternate supported mechanism.
+    * @throws GSSException 
+    * @throws IOException 
+    *
+    */
+   public void testSupportedMech() throws GSSException, IOException
    {
-      byte first = (byte) is.read();
-      byte masked = (byte) (first & (byte) 128);
-   
-      if (masked == 0)
-      {
-         return first;
-      }
-   
-      int lengthLength = first & (byte) 127;
-   
-      byte[] lengthBytes = new byte[lengthLength];
-      is.read(lengthBytes);
-   
-      int length = 0;
-      for (int i = 0; i < lengthLength; i++)
-      {
-         int currentPos = lengthLength - i - 1;
-         int currentLength = lengthBytes[currentPos];
-   
-         if (currentLength < 0)
-         {
-            currentLength += 256;
-         }
-   
-         if (i > 0)
-         {
-            currentLength = currentLength * (int) (Math.pow(2, 8 * i));
-         }
-   
-         length += currentLength;
-      }
-   
-      return length;
-   }
+      NegTokenTarg targ = new NegTokenTarg();
+      targ.setNegResult(NegTokenTarg.ACCEPT_INCOMPLETE);
+      targ.setSupportedMech(new Oid("1.2.840.113554.1.2.2"));
 
+      byte[] response = NegTokenTargEncoder.encode(targ);
+
+      String responseHex = DebugHelper.convertToHex(response);
+      System.out.println(responseHex);
+   }
 }

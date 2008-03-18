@@ -14,39 +14,33 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-package com.darranl.spnego;
+package org.jboss.security.negotiation.spnego.encoding;
 
-import java.io.IOException;
-
-import org.ietf.jgss.GSSException;
-import org.ietf.jgss.Oid;
-
-import junit.framework.TestCase;
+import org.apache.commons.codec.binary.Hex;
 
 /**
- * Test case for the NegTokenTargEncoder.
+ * Utility class to assist debugging.
  * 
  * @author <a href="darranlofthouse@hotmail.com">Darran Lofthouse</a>
  */
-public class NegTokenTargEncoderTest extends TestCase
+public class DebugHelper
 {
 
-   /**
-    * Test a NegTokenTarg response can be constructed to request 
-    * an alternate supported mechanism.
-    * @throws GSSException 
-    * @throws IOException 
-    *
-    */
-   public void testSupportedMech() throws GSSException, IOException
+   public static String convertToHex(final byte[] message)
    {
-      NegTokenTarg targ = new NegTokenTarg();
-      targ.setNegResult(NegTokenTarg.ACCEPT_INCOMPLETE);
-      targ.setSupportedMech(new Oid("1.2.840.113554.1.2.2"));
+      StringBuffer sb = new StringBuffer(message.length * 5);
+      char[] hex = Hex.encodeHex(message);
 
-      byte[] response = NegTokenTargEncoder.encode(targ);
+      for (int i = 0; i < hex.length; i++)
+      {
+         if (i % 2 == 0)
+         {
+            sb.append(" 0x");
+         }
 
-      String responseHex = DebugHelper.convertToHex(response);
-      System.out.println(responseHex);
+         sb.append(hex[i]);
+      }
+
+      return sb.toString();
    }
 }

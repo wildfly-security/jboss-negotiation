@@ -31,7 +31,7 @@ public class NegTokenInit
 
    private Oid messageOid;
 
-   private final List mechTypes = new LinkedList();
+   private final List<Oid> mechTypes = new LinkedList<Oid>();
 
    private byte[] reqFlags;
 
@@ -49,7 +49,7 @@ public class NegTokenInit
       this.messageOid = messageOid;
    }
 
-   public List getMechTypes()
+   public List<Oid> getMechTypes()
    {
       return mechTypes;
    }

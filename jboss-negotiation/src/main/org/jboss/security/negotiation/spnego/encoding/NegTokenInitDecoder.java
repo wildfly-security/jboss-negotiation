@@ -43,7 +43,9 @@ public class NegTokenInitDecoder extends NegTokenDecoder
    protected static void decodeMechTypes(final InputStream is, final NegTokenInit negTokenInit) throws IOException,
          GSSException
    {
+      // TODO - Either drop or verify length.
       int length = NegTokenDecoder.readLength(is);
+      // TODO - Verify correct sequence type.
       byte sequenceType = (byte) is.read();
       int sequenceLength = NegTokenDecoder.readLength(is);
 
@@ -57,9 +59,11 @@ public class NegTokenInitDecoder extends NegTokenDecoder
 
    protected static void decodeMechToken(final InputStream is, final NegTokenInit negTokenInit) throws IOException
    {
+      // TODO - Either drop or verify length.
       int length = NegTokenDecoder.readLength(is);
-
+      // TODO - Verify type.
       byte type = (byte) is.read();
+      
       int tokenLength = readLength(is);
 
       byte[] mechToken = new byte[tokenLength];
@@ -80,6 +84,7 @@ public class NegTokenInitDecoder extends NegTokenDecoder
    protected static void decodeNegTokenInitSequence(final InputStream is, final NegTokenInit negTokenInit)
          throws IOException, GSSException
    {
+      // TODO - Verify type.
       byte type = (byte) is.read();
       int sequenceLength = NegTokenDecoder.readLength(is);
 
@@ -124,13 +129,16 @@ public class NegTokenInitDecoder extends NegTokenDecoder
    {
       NegTokenInit negTokenInit = new NegTokenInit();
       ByteArrayInputStream bais = new ByteArrayInputStream(token);
+      // TODO - Drop or verify.
       byte firstByte = (byte) bais.read();
-
+      // TODO - Drop or verify.
       int totalLength = NegTokenDecoder.readLength(bais);
 
       negTokenInit.setMessageOid(new Oid(bais));
 
+      // TODO - Verify
       int tokenType = bais.read();
+      // TODO - Drop or verify.
       int remainingLength = NegTokenDecoder.readLength(bais);
 
       decodeNegTokenInitSequence(bais, negTokenInit);

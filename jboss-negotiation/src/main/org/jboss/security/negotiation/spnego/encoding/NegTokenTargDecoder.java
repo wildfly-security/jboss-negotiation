@@ -33,7 +33,9 @@ public class NegTokenTargDecoder extends NegTokenDecoder
 
    private static void decodeNegResult(final InputStream is, final NegTokenTarg negTokenTarg) throws IOException
    {
+      // TODO - Drop or verify.
       int length = readLength(is);
+      // TODO - Verify
       byte type = (byte) is.read();
 
       byte negResult = (byte) is.read();
@@ -57,6 +59,7 @@ public class NegTokenTargDecoder extends NegTokenDecoder
    private static void decodeSupportedMech(final InputStream is, final NegTokenTarg negTokenTarg) throws IOException,
          GSSException
    {
+      // TODO - Drop or verify.
       int length = readLength(is);
 
       negTokenTarg.setSupportedMech(new Oid(is));
@@ -64,8 +67,10 @@ public class NegTokenTargDecoder extends NegTokenDecoder
 
    private static void decodeResponseToken(final InputStream is, final NegTokenTarg negTokenTarg) throws IOException
    {
+      // TODO - Drop or verify.
       int length = readLength(is);
 
+      // TODO - Verify.
       byte type = (byte) is.read();
       int tokenLength = readLength(is);
 
@@ -88,6 +93,7 @@ public class NegTokenTargDecoder extends NegTokenDecoder
    private static void decodeNegTokenTargSequence(final InputStream is, final NegTokenTarg negTokenTarg)
          throws IOException, GSSException
    {
+      // TODO - Veirfy
       byte type = (byte) is.read();
       int sequenceLength = readLength(is);
 
@@ -123,7 +129,9 @@ public class NegTokenTargDecoder extends NegTokenDecoder
       NegTokenTarg negTokenTarg = new NegTokenTarg();
       ByteArrayInputStream bais = new ByteArrayInputStream(token);
 
+      // TODO - Drop or verify.
       byte firstByte = (byte) bais.read();
+      // TODO - Drop or verify.
       int totalLength = readLength(bais);
 
       decodeNegTokenTargSequence(bais, negTokenTarg);

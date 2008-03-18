@@ -33,10 +33,10 @@ import org.ietf.jgss.Oid;
 public class NegTokenTargEncoder extends NegTokenEncoder
 {
 
-   protected static int getTotalLength(final List tokens)
+   protected static int getTotalLength(final List<byte[]> tokens)
    {
       int length = 0;
-      Iterator it = tokens.iterator();
+      Iterator<byte[]> it = tokens.iterator();
       while (it.hasNext())
       {
          byte[] current = (byte[]) it.next();
@@ -46,21 +46,21 @@ public class NegTokenTargEncoder extends NegTokenEncoder
       return length;
    }
 
-   protected static void encodeNegTokenTarg(final List tokens)
+   protected static void encodeNegTokenTarg(final List<byte[]> tokens)
    {
       byte[] constructedSequence = createTypeLength((byte) 0xa1, getTotalLength(tokens));
 
       tokens.add(0, constructedSequence);
    }
 
-   protected static void encodeConstructedSequence(final List tokens)
+   protected static void encodeConstructedSequence(final List<byte[]> tokens)
    {
       byte[] constructedSequence = createTypeLength((byte) 0x30, getTotalLength(tokens));
 
       tokens.add(0, constructedSequence);
    }
 
-   protected static void encodeNegResult(final List tokens, final Integer negResult)
+   protected static void encodeNegResult(final List<byte[]> tokens, final Integer negResult)
    {
       if (negResult == null)
          return;
@@ -86,7 +86,7 @@ public class NegTokenTargEncoder extends NegTokenEncoder
       tokens.add(0, negResultToken);
    }
 
-   protected static void encodeSupportedMech(final List tokens, final Oid supportedMech) throws GSSException
+   protected static void encodeSupportedMech(final List<byte[]> tokens, final Oid supportedMech) throws GSSException
    {
       if (supportedMech == null)
          return;
@@ -98,7 +98,7 @@ public class NegTokenTargEncoder extends NegTokenEncoder
       tokens.add(0, sequenceLength);
    }
 
-   protected static void encodeResponseToken(final List tokens, final byte[] responseToken)
+   protected static void encodeResponseToken(final List<byte[]> tokens, final byte[] responseToken)
    {
       if (responseToken == null || responseToken.length == 0)
          return;
@@ -111,7 +111,7 @@ public class NegTokenTargEncoder extends NegTokenEncoder
       tokens.add(0, sequenceLength);
    }
 
-   protected static void encodeMechListMIC(final List tokens, final byte[] mechListMIC)
+   protected static void encodeMechListMIC(final List<byte[]> tokens, final byte[] mechListMIC)
    {
       if (mechListMIC == null || mechListMIC.length == 0)
          return;
@@ -124,13 +124,13 @@ public class NegTokenTargEncoder extends NegTokenEncoder
       tokens.add(0, sequenceLength);
    }
 
-   protected static byte[] contructMessage(final List tokens) throws IOException
+   protected static byte[] contructMessage(final List<byte[]> tokens) throws IOException
    {
       int length = getTotalLength(tokens);
 
       ByteArrayOutputStream baous = new ByteArrayOutputStream(length);
 
-      Iterator it = tokens.iterator();
+      Iterator<byte[]> it = tokens.iterator();
       while (it.hasNext())
       {
          baous.write((byte[]) it.next());
@@ -141,7 +141,7 @@ public class NegTokenTargEncoder extends NegTokenEncoder
 
    public static byte[] encode(final NegTokenTarg negTokenTarg) throws GSSException, IOException
    {
-      List tokens = new LinkedList();
+      List<byte[]> tokens = new LinkedList<byte[]>();
 
       encodeMechListMIC(tokens, negTokenTarg.getMechListMIC());
       encodeResponseToken(tokens, negTokenTarg.getResponseToken());

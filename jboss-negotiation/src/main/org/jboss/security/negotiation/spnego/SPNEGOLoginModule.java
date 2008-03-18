@@ -216,7 +216,7 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
             if (reqToken[0] == 0x60)
             {
                NegTokenInit negTokenInit = NegTokenInitDecoder.decode(reqToken);
-               List mechList = negTokenInit.getMechTypes();
+               List<Oid> mechList = negTokenInit.getMechTypes();
 
                if (mechList.get(0).equals(kerberos))
                {
@@ -226,7 +226,7 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
                {
                   boolean kerberosSupported = false;
 
-                  Iterator it = mechList.iterator();
+                  Iterator<Oid> it = mechList.iterator();
                   while (it.hasNext() && kerberosSupported == false)
                   {
                      kerberosSupported = it.next().equals(kerberos);

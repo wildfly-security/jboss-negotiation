@@ -48,6 +48,30 @@
   <xi:include href="modules/introduction.xml"
               xmlns:xi="http://www.w3.org/2001/XInclude" xml:base="./" />
 
+  <xi:include href="modules/general_installation.xml"
+              xmlns:xi="http://www.w3.org/2001/XInclude"
+              xpointer="element(/1)" />
+
+  <xi:include href="modules/microsoft_ad.xml"
+              xmlns:xi="http://www.w3.org/2001/XInclude"
+              xpointer="element(/1)" />
+
+  <xi:include href="modules/mit_kdc.xml"
+              xmlns:xi="http://www.w3.org/2001/XInclude"
+              xpointer="element(/1)" />
+
+  <xi:include href="modules/free_ipa.xml"
+              xmlns:xi="http://www.w3.org/2001/XInclude"
+              xpointer="element(/1)" />
+
+  <xi:include href="modules/internet_explorer.xml"
+              xmlns:xi="http://www.w3.org/2001/XInclude"
+              xpointer="element(/1)" />
+
+  <xi:include href="modules/firefox.xml"
+              xmlns:xi="http://www.w3.org/2001/XInclude"
+              xpointer="element(/1)" />
+
   <xi:include href="modules/references.xml"
               xmlns:xi="http://www.w3.org/2001/XInclude"
               xpointer="element(/1)" />

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<chapter id="mit_kdc">
+  <title>MIT KDC</title>
+
+  <section>
+    <title></title>
+
+    <para>How to add a server user to an MIT KDC and export their
+    keytab.</para>
+  </section>
+</chapter>

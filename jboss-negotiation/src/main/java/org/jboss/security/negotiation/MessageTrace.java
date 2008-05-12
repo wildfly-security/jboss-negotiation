@@ -22,7 +22,7 @@
  */
 package org.jboss.security.negotiation;
 
-import org.jboss.logging.Logger;
+import org.apache.log4j.Logger;
 import org.jboss.security.negotiation.spnego.encoding.DebugHelper;
 
 /**

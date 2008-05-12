@@ -28,56 +28,37 @@
     </plugins>
   </build>
 
-<!--  <dependencies>
+  <!-- Do not add version information here, use ../parent/pom.xml instead -->
+  <dependencies>
+    <!-- Global dependencies -->
     <dependency>
-      <groupId>org.jboss.security</groupId>
-      <artifactId>jboss-sunxacml</artifactId>
-      <version>${xacml.version}</version>
+      <groupId>apache-codec</groupId>
+      <artifactId>commons-codec</artifactId>
     </dependency>
     <dependency>
-      <groupId>apache-xerces</groupId>
-      <artifactId>xml-apis</artifactId>
-      <version>2.7.1</version>
+      <groupId>apache-log4j</groupId>
+      <artifactId>log4j</artifactId>
     </dependency>
     <dependency>
-      <groupId>sun-jaxb</groupId>
-      <artifactId>jaxb-api</artifactId>
-      <version>2.1.4</version>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-common</artifactId>
     </dependency>
     <dependency>
-      <groupId>sun-jaxb</groupId>
-      <artifactId>jaxb-impl</artifactId>
-      <version>2.1.4</version>
+      <groupId>jboss</groupId>
+      <artifactId>jbosssx</artifactId>
     </dependency>
     <dependency>
-      <groupId>sun-jaxb</groupId>
-      <artifactId>jaxb-xjc</artifactId>
-      <version>2.1.4</version>
+      <groupId>jboss.web</groupId>
+      <artifactId>jbossweb</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jboss.web</groupId>
+      <artifactId>servlet-api</artifactId>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
     </dependency>
-    <dependency>
-      <groupId>sun-jaf</groupId>
-      <artifactId>activation</artifactId>
-      <version>1.1</version>
-    </dependency>
-    <dependency>
-      <groupId>codehaus-stax</groupId>
-      <artifactId>stax</artifactId>
-      <version>1.1.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.javaee</groupId>
-      <artifactId>jboss-jaxs-api</artifactId>
-      <version>1.2.0.20070913080910</version>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.javaee</groupId>
-      <artifactId>jboss-servlet-api</artifactId>
-      <version>2.5.0.20070913080910</version>
-    </dependency>
-  </dependencies> -->
+  </dependencies>
+
 </project>

@@ -18,6 +18,14 @@
       <connection>scm:svn:http://anonsvn.jboss.org/repos/jbossas/projects/security/security-negotiation/trunk</connection>
       <developerConnection>scm:svn:https://svn.jboss.org/repos/jbossas/projects/security/security-negotiation/trunk</developerConnection>
    </scm>
+  <properties>
+    <version.apache-log4j.log4j>1.2.14</version.apache-log4j.log4j>
+    <version.apache-codec.commons-codec>1.2</version.apache-codec.commons-codec>
+    <version.jboss.jboss-common>4.2.2.GA</version.jboss.jboss-common>
+    <version.jboss.jbosssx>4.2.2.GA</version.jboss.jbosssx>
+    <version.jboss-web>2.1.0.GA</version.jboss-web>
+    <version.junit>3.8.1</version.junit>
+  </properties>
   <build>
     <sourceDirectory>src/main/java</sourceDirectory>
     <testSourceDirectory>src/tests</testSourceDirectory>
@@ -81,4 +89,46 @@
       </snapshots>
     </repository>
   </repositories>
+
+  <dependencyManagement>
+    <!-- The parent pom manages the inter-dependencies of the modules. -->
+    <dependencies>
+      <dependency>
+        <groupId>apache-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <version>${version.apache-codec.commons-codec}</version>
+      </dependency>
+      <dependency>
+        <groupId>apache-log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>${version.apache-log4j.log4j}</version>
+      </dependency>
+      <dependency>
+        <groupId>jboss</groupId>
+        <artifactId>jboss-common</artifactId>
+        <version>${version.jboss.jboss-common}</version>
+      </dependency>
+      <dependency>
+        <groupId>jboss</groupId>
+        <artifactId>jbosssx</artifactId>
+        <version>${version.jboss.jbosssx}</version>
+      </dependency>
+      <dependency>
+        <groupId>jboss.web</groupId>
+        <artifactId>jbossweb</artifactId>
+        <version>${version.jboss-web}</version>
+      </dependency>
+      <dependency>
+        <groupId>jboss.web</groupId>
+        <artifactId>servlet-api</artifactId>
+        <version>${version.jboss-web}</version>
+      </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${version.junit}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
 </project>

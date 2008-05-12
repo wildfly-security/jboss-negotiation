@@ -35,7 +35,7 @@ import javax.security.auth.kerberos.KerberosPrincipal;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
-import org.apache.commons.codec.binary.Base64;
+import org.jboss.util.Base64;
 import org.ietf.jgss.GSSContext;
 import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSException;
@@ -206,7 +206,7 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
          try
          {
             String requestHeader = spnegoContext.getRequestHeader();
-            byte[] reqToken = Base64.decodeBase64(requestHeader.getBytes());
+            byte[] reqToken = Base64.decode(requestHeader);
 
             MessageTrace.logRequestBase64(spnegoContext.getRequestHeader());
             MessageTrace.logRequestHex(reqToken);
@@ -245,7 +245,7 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
                   }
 
                   byte[] respSpnego = NegTokenTargEncoder.encode(negTokenTarg);
-                  String respEncoded = new String(Base64.encodeBase64(respSpnego));
+                  String respEncoded = Base64.encodeBytes(respSpnego);
 
                   MessageTrace.logResponseBase64(respEncoded);
                   MessageTrace.logResponseHex(respSpnego);
@@ -300,7 +300,7 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
                negTokenTarg.setResponseToken(respToken);
 
                byte[] respSpnego = NegTokenTargEncoder.encode(negTokenTarg);
-               String respEncoded = new String(Base64.encodeBase64(respSpnego));
+               String respEncoded = Base64.encodeBytes(respSpnego);
 
                MessageTrace.logResponseBase64(respEncoded);
                MessageTrace.logResponseHex(respSpnego);

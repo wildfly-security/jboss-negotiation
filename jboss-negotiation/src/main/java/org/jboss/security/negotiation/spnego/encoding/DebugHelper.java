@@ -29,6 +29,7 @@ public class DebugHelper
    public static String convertToHex(final byte[] message)
    {
       StringBuffer sb = new StringBuffer(message.length * 5);
+      
       char[] hex = Hex.encodeHex(message);
 
       for (int i = 0; i < hex.length; i++)

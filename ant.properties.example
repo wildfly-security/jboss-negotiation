@@ -1,9 +1,0 @@
-
-# Copy this file to ant.properties and set the values below as
-# required on your workstation.
-
-jboss.home=/home/user/jboss-4.2.2.GA
-#jboss.configuration=default
-
-java.security.krb5.kdc=kdc.jboss.org
-java.security.krb5.realm=JBOSS.ORG

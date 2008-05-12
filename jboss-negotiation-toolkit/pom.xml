@@ -6,11 +6,11 @@
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>jboss-negotiation</artifactId>
+  <artifactId>jboss-negotiation-toolkit</artifactId>
   <packaging>jar</packaging>
-  <name>JBoss Negotiation</name>
+  <name>JBoss Negotiation Toolkit</name>
   <url>http://www.jboss.org</url>
-  <description>JBoss Negotiation Library</description> 
+  <description>JBoss Negotiation Toolkit</description> 
   <build>
     <plugins>
       <plugin>

@@ -7,7 +7,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>jboss-negotiation-toolkit</artifactId>
-  <packaging>jar</packaging>
+  <packaging>war</packaging>
   <name>JBoss Negotiation Toolkit</name>
   <url>http://www.jboss.org</url>
   <description>JBoss Negotiation Toolkit</description> 

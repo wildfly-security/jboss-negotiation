@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.codec.binary.Base64;
+import org.jboss.util.Base64;
 import org.apache.log4j.Logger;
 import org.ietf.jgss.GSSException;
 import org.ietf.jgss.Oid;
@@ -130,7 +130,7 @@ public class BasicNegotiationServlet extends HttpServlet
 
       // Drop the 'Negotiate ' from the header.
       String requestHeader = authHeader.substring(10);
-      byte[] reqToken = Base64.decodeBase64(requestHeader.getBytes());
+      byte[] reqToken = Base64.decode(requestHeader);
 
       if (reqToken[0] == 0x60)
       {
@@ -163,7 +163,7 @@ public class BasicNegotiationServlet extends HttpServlet
          byte[] mechToken = negTokenInit.getMechToken();
          if (mechToken != null && mechToken.length > 0)
          {
-            writer.print(new String(Base64.encodeBase64(mechToken)));
+            writer.print(new String(Base64.encodeBytes(mechToken)));
          }
          writer.println("<br>");
 
@@ -171,7 +171,7 @@ public class BasicNegotiationServlet extends HttpServlet
          byte[] mechTokenMic = negTokenInit.getMechListMIC();
          if (mechTokenMic != null && mechTokenMic.length > 0)
          {
-            writer.print(new String(Base64.encodeBase64(mechTokenMic)));
+            writer.print(new String(Base64.encodeBytes(mechTokenMic)));
          }
          writer.println("<br>");
       }

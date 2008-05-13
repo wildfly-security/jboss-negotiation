@@ -92,7 +92,16 @@
 
   <dependencyManagement>
     <!-- The parent pom manages the inter-dependencies of the modules. -->
+    
     <dependencies>
+      <!-- Local Dependencies -->
+      <dependency>
+        <groupId>org.jboss.security</groupId>
+        <artifactId>jboss-negotiation</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    
+      <!-- External Dependencies -->
       <dependency>
         <groupId>apache-codec</groupId>
         <artifactId>commons-codec</artifactId>

@@ -51,21 +51,66 @@
         enable you to verify that the required steps are working correctly and
         to debug where failures may be occuring.</para>
       </listitem>
-
-      <listitem>
-        <para>Configuration Project</para>
-
-        <para>This project allow you to specify a couple of properties within
-        a property file and the build script contained within the project will
-        configure and deploy your security configuration automatically - after
-        this is deployed all you will need to do it deploy your web
-        application configured to use the SPNEGO authenticator and set the
-        correct security domain.</para>
-      </listitem>
     </itemizedlist>
   </sect1>
 
   <sect1>
-    <para />
+    <title>General Authentication Process</title>
+
+    <para>When working with the JBoss login modules and the existing
+    authentication mechanisms work by asking the user to authenticate
+    themseves by the client sending thier credentials to the server and then
+    the login module verifying the credentials against either a local store of
+    credentials or against a store on a remote repository such as a database
+    server or a LDAP server.</para>
+
+    <para>The SPNEGO authentication mechansim is slightly different.</para>
+
+    <para></para>
+
+    <itemizedlist>
+      <listitem>
+        <para><emphasis role="bold">Server Authentication</emphasis> - First
+        the application server itself authenticates against the KDC and
+        obtains it's own ticket.</para>
+      </listitem>
+
+      <listitem>
+        <para><emphasis role="bold">Client Authentication</emphasis> - After
+        the server prompt the client to authenticate the client responds with
+        a SPNEGO token, the server then makes use of it's own ticket to decode
+        the clients ticked and respond to the client.</para>
+
+        <para>This process can take a couple of round trips for the client to
+        authenticate against the server.</para>
+      </listitem>
+
+      <listitem>
+        <para><emphasis role="bold">Mututal Authentication</emphasis> - If
+        this is required it is even possible for the client to request that
+        the server authenticates itself against the client.</para>
+      </listitem>
+
+      <listitem>
+        <para><emphasis role="bold">Credential Delegation</emphasis> - A
+        client can also be configured so that the credentials used for
+        authentication can be delegated to the server, this means that the
+        application server can then go on and call other systems on behalf of
+        the calling client.</para>
+      </listitem>
+    </itemizedlist>
+
+    <para></para>
+  </sect1>
+
+  <sect1>
+    <title>Pre-requisits</title>
+
+    <para>The installation of this module requires the externalised
+    authenticator capability of JBoss which was added from JBoss 4.0.5.GA,
+    these instructions have been prepared against JBoss 4.2.2.GA.</para>
+
+    <para><link
+    linkend="???">http://wiki.jboss.org/wiki/ExternalizeTomcatAuthenticators</link></para>
   </sect1>
 </chapter>

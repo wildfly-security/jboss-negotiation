@@ -5,8 +5,147 @@
   <title>General Installation</title>
 
   <section>
-    <title></title>
+    <para>This section of the document describes the general installation
+    process of the negotiation module, the following chapters in this guide
+    describe the specific configuration requirements for the KDC and the web
+    browser.</para>
 
-    <para>Describe the general installation requirements.</para>
+    <para>This documentation covers two topics.</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>Installation and configuration of the library itself.</para>
+      </listitem>
+
+      <listitem>
+        <para>Installation of the negotiation toolkit to test the
+        installation.</para>
+      </listitem>
+    </itemizedlist>
+
+    <para>It is recommended that you use the negotiation toolkit to test that
+    the security settings are correctly working before attempting to secure
+    your own web application, this way you can eliminate if any problems are
+    specific to your web application and also use the toolkit to obtain
+    additional debug information.</para>
+  </section>
+
+  <section>
+    <title>Authenticator Installation</title>
+
+    <para>The authenticator is contained within a single jar
+    'jboss-negotiation.jar', this jar should be placed in the following
+    location: -</para>
+
+    <para> {jboss.home}/server/{configuration}/lib</para>
+
+    <para>After copying the jar to the above location you will need to add the
+    authenticator itself to the following descriptor: -</para>
+
+    <para>
+    {jboss.home}/server/{configuration}/deploy/jboss-web.deployer/META-INF/jboss-service.xml</para>
+
+    <para>Within this descriptor you should see a set of authenticators, to
+    add SPNEGO you should add the following entry: -</para>
+
+    <para><code> &lt;java:property&gt; </code></para>
+
+    <para><code> &lt;java:key&gt;SPNEGO&lt;/java:key&gt; </code></para>
+
+    <para><code> &lt;java:value&gt;</code></para>
+
+    <para><code>
+    org.jboss.security.negotiation.spnego.SPNEGOAuthenticator</code></para>
+
+    <para><code> &lt;/java:value&gt; </code></para>
+
+    <para><code> &lt;/java:property&gt;</code></para>
+
+    <para>The key can be any value you choose, however using SPNEGO is
+    recommended to be consistent with the rest of this document.</para>
+  </section>
+
+  <section>
+    <title>Realm Properties</title>
+
+    <para>If you are running your JBoss installation on a host which is
+    already configured to authenticate against a Kerberos KDC then you can
+    skip this step, however if the host is not already configured against a
+    KDC or if you need JBoss to authenticate against a different KDC a couple
+    of system properties need to be set so that JBoss can identify the correct
+    realm and kdc.</para>
+
+    <para>The two properties that need to be set are.</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>java.security.krb5.realm - This is the Kerberos realm to
+        authenticate against.</para>
+      </listitem>
+
+      <listitem>
+        <para>java.security.krb5.kdc - This is the hostname of the KDC
+        itself.</para>
+      </listitem>
+    </itemizedlist>
+
+    <section>
+      <title>Command Line</title>
+
+      <para>The easiest way to set the properties is to pass them to JBoss on
+      the command line when you start the server e.g.</para>
+
+      <para> ./run.sh -Djava.security.krb5.realm=KERBEROS.JBOSS.ORG
+      -Djava.security.krb5.kdc=kerberos.security.jboss.org</para>
+
+      <para></para>
+    </section>
+
+    <section>
+      <title>System Properties Service</title>
+
+      <para>JBoss also make a properties service available which will allow
+      you to define these properties in a descriptor and the properties
+      service will set them as JBoss starts, the only requirement is that
+      these properties are set before the first authentication attempt - JBoss
+      does not allow incomming HTTP connections until the server is completely
+      started so this is not a proble.</para>
+
+      <para>The properties service is documented in the Wiki at <link
+      linkend="???">http://wiki.jboss.org/wiki/PropertiesService</link></para>
+
+      <para>There is already a deployment of the properties service that you
+      can add your properties to, this is in the following descriptor:
+      -</para>
+
+      <para>
+      {jboss.home}//server/{configuration}/deploy/properties-service.xml</para>
+
+      <para>Add the following attribute to the
+      'jboss:type=Service,name=SystemProperties' MBean to set the properties:
+      -</para>
+
+      <para><code>&lt;attribute name="Properties"&gt;</code></para>
+
+      <para><code>
+      java.security.krb5.kdc=kerberos.security.jboss.org</code></para>
+
+      <para><code> java.security.krb5.realm=KERBEROS.JBOSS.ORG</code></para>
+
+      <para><code>&lt;/attribute&gt;</code></para>
+    </section>
+  </section>
+
+  <section>
+    <title>Host Security Domain</title>
+
+    <para>The application server requires a security domain that it can use to
+    first authenticate against the KDC, in order to configure this a keytab
+    will be required for the principal that represents the application server.
+    The following chapters will cover the details of setting up a service host
+    and obtaining the keytab from the KDC but the general requirements to
+    configure the security domain in JBoss are the same.</para>
+
+    <para></para>
   </section>
 </chapter>

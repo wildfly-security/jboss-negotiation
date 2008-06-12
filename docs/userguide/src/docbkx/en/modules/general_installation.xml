@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
-"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+      "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
 <chapter id="general_installation">
   <title>General Installation</title>
 
@@ -124,15 +124,16 @@
       <para>Add the following attribute to the
       'jboss:type=Service,name=SystemProperties' MBean to set the properties:
       -</para>
-
-      <para><code>&lt;attribute name="Properties"&gt;</code></para>
-
-      <para><code>
-      java.security.krb5.kdc=kerberos.security.jboss.org</code></para>
-
-      <para><code> java.security.krb5.realm=KERBEROS.JBOSS.ORG</code></para>
-
-      <para><code>&lt;/attribute&gt;</code></para>
+      
+      <programlisting>
+      <![CDATA[
+<attribute name="Properties">
+ java.security.krb5.kdc=kerberos.security.jboss.org
+ java.security.krb5.realm=KERBEROS.JBOSS.ORG
+</attribute>
+      ]]>
+      </programlisting>
+      
     </section>
   </section>
 

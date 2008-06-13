@@ -48,19 +48,17 @@
     <para>Within this descriptor you should see a set of authenticators, to
     add SPNEGO you should add the following entry: -</para>
 
-    <para><code> &lt;java:property&gt; </code></para>
-
-    <para><code> &lt;java:key&gt;SPNEGO&lt;/java:key&gt; </code></para>
-
-    <para><code> &lt;java:value&gt;</code></para>
-
-    <para><code>
-    org.jboss.security.negotiation.spnego.SPNEGOAuthenticator</code></para>
-
-    <para><code> &lt;/java:value&gt; </code></para>
-
-    <para><code> &lt;/java:property&gt;</code></para>
-
+      <programlisting>
+      <![CDATA[
+<java:property>
+  <java:key>SPNEGO</java:key>
+  <java:value>
+    org.jboss.security.negotiation.spnego.SPNEGOAuthenticator
+  </java:value>
+</java:property>
+      ]]>
+      </programlisting>      
+      
     <para>The key can be any value you choose, however using SPNEGO is
     recommended to be consistent with the rest of this document.</para>
   </section>
@@ -147,6 +145,82 @@
     and obtaining the keytab from the KDC but the general requirements to
     configure the security domain in JBoss are the same.</para>
 
-    <para></para>
+    <para>Below is an example host security domain: -</para>
+    
+    <programlisting>
+      <![CDATA[
+<application-policy name="host">
+   <authentication>
+      <login-module code="com.sun.security.auth.module.Krb5LoginModule"
+         flag="required">
+         <module-option name="storeKey">true</module-option>
+         <module-option name="useKeyTab">true</module-option>                                                     
+         <module-option name="principal">host/testserver.gsslab.rdu.redhat.com@GSSLAB.RDU.REDHAT.COM</module-option>             
+         <module-option name="keyTab">/home/darranl/src/security-negotiation/spnego-configuration/descriptors/testserver.keytab</module-option>
+         <module-option name="doNotPrompt">true</module-option>
+         <module-option name="debug">true</module-option>
+      </login-module>
+   </authentication>
+</application-policy>
+      ]]>
+    </programlisting>
+    
+    <para>The selected name of the security domain is not important, later it will be 
+    possible which security domain to use to authenticate the server.</para>
+    
+    <para>The following options are required.</para>
+    
+    <itemizedlist>
+      <listitem><para>storeKey - cache the key obtained locally</para></listitem>
+      <listitem><para>useKeyTab - Specify that the key will be loaded from a keyTab</para></listitem>
+      <listitem><para>principal - The full name of the principal to obtain from the keytab</para></listitem>
+      <listitem><para>keyTab - The full path to the keytab containing the servers key</para></listitem>
+      <listitem><para>doNotPrompt - As this is a server disable prompting for the servers password</para></listitem>
+      <listitem><para>debug - enable logging if additional debug information</para></listitem>
+    </itemizedlist>
+    
   </section>
+  
+  <section>
+    <title>Application Security Domain</title>
+    
+    <para>The application also requires it's own security domain to be defined with a login
+    module to work in connection with the SPNEGOAuthenticator and a second login module to load 
+    the roles of the authenticated user.    
+    </para>
+    
+    <para>An example security domain is shown below.</para>
+    
+    <programlisting>
+      <![CDATA[
+<application-policy name="SPNEGO">
+   <authentication>
+      <login-module
+         code="org.jboss.security.negotiation.spnego.SPNEGOLoginModule"
+         flag="requisite">
+         <module-option name="password-stacking">useFirstPass</module-option>
+         <module-option name="serverSecurityDomain">host</module-option>
+      </login-module>
+      <login-module
+         code="org.jboss.security.auth.spi.UsersRolesLoginModule"
+         flag="required">
+         <module-option name="password-stacking">useFirstPass</module-option>
+         <module-option name="usersProperties">META-INF/spnego-users.properties</module-option>
+         <module-option name="rolesProperties">META-INF/spnego-roles.properties</module-option>
+      </login-module>
+   </authentication>
+</application-policy>
+      ]]>
+    </programlisting>
+
+    <para>The SPNEGOLoginModule requires the following two options.</para>
+    
+    <itemizedlist>
+      <listitem><para>password-stacking - Setting this to useFirstPass allows a second module to load the roles.</para></listitem>
+      <listitem><para>serverSecurityDomain - The security domain of the application server as previously defined.</para></listitem>
+    </itemizedlist>
+  </section>
+  
+  
+  
 </chapter>

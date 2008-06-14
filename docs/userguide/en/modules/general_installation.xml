@@ -122,7 +122,8 @@
         </para>
 
         <programlisting>
-./run.sh -Djava.security.krb5.realm=KERBEROS.JBOSS.ORG -Djava.security.krb5.kdc=kerberos.security.jboss.org
+          ./run.sh -Djava.security.krb5.realm=KERBEROS.JBOSS.ORG
+          -Djava.security.krb5.kdc=kerberos.security.jboss.org
         </programlisting>
 
         <para></para>
@@ -380,18 +381,86 @@ darranl@KERBEROS.JBOSS.ORG=Users
       </para>
     </section>
 
+    <section>
+      <title>Web Application</title>
+
+      <para>
+        Once the server is configured your web application also needs to
+        be configured to make use of SPNEGO negotiation as the
+        authentication mechanism.
+      </para>
+
+      <para>
+        First the web application needs to be configured to use the
+        application security domain as defined previously: -
+      </para>
+
+      <programlisting>
+        <![CDATA[
+<jboss-web>
+  <security-domain>java:/jaas/SPNEGO</security-domain>
+</jboss-web>      
+      ]]>
+      </programlisting>
+
+      <para>
+        Next the login-config needs to be configured to use the SPNEGO
+        authenticator defined previously: -
+      </para>
+
+      <programlisting>
+        <![CDATA[
+<login-config>
+  <auth-method>SPNEGO</auth-method>
+  <realm-name>SPNEGO</realm-name>    
+</login-config>      
+      ]]>
+      </programlisting>
+
+      <para>
+        In the above example it is the auth-method that maps to the key
+        used for the authenticator previously.
+      </para>
+
+    </section>
+
   </section>
 
   <section>
     <title>Negotiation Toolkit</title>
-  
+
     <para>
-    The Negotiation Toolkit is a web application that you can deploy to your JBoss installation to
-    test various aspects of your SPNEGO configuration without adding the complications of getting 
-    your own applications to work at the same time.  Once the Negotiation Toolkit demonstrates 
-    that negotiation is occurring without any problems then you can move to secure your own web 
-    application. 
+      The Negotiation Toolkit is a web application that you can deploy
+      to your JBoss installation to test various aspects of your SPNEGO
+      configuration without adding the complications of getting your own
+      applications to work at the same time. Once the Negotiation
+      Toolkit demonstrates that negotiation is occurring without any
+      problems then you can move to secure your own web application.
     </para>
-    
-  </section>  
+
+    <para>
+      The Negotiation Toolkit is distributed within a war called
+      'jboss-negotiation-toolkit.war', this war should be placed in the
+      <code>{jboss.home}/server/{configuration}/deploy</code>
+      folder to deploy.
+    </para>
+
+    <para>
+      The Negotiation Toolkit was assumes that the authenticator was
+      defined with a key of 'SPNEGO' and with an application security
+      domain of 'SPNEGO', if either of these are different in your JBoss
+      installation you can deploy the war as an exploded deployment and
+      modify as necessary.
+    </para>
+
+    <para>
+      Once deployed it should be possible to access the Negotiation
+      Toolkit web application at the following URL assuming your DNS
+      entry is correct as described previously.
+      <ulink
+        url="http://testserver.kerberos.jboss.org:8080/jboss-negotiation-toolkit">
+        http://testserver.kerberos.jboss.org:8080/jboss-negotiation-toolkit
+      </ulink>
+    </para>
+  </section>
 </chapter>

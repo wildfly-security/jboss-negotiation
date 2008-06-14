@@ -25,54 +25,84 @@
   <preface id="target" revision="1">
     <title>Target Audience</title>
 
-    <para>This guide is aimed at administrators who want to use the JBoss
-    Negotiation authenticator to implement silent SPNEGO
-    authentication.</para>
+    <para>
+      This guide is aimed at administrators who want to use the JBoss
+      Negotiation authenticator to implement silent SPNEGO
+      authentication.
+    </para>
   </preface>
 
   <preface id="preface" revision="1">
     <title>Preface</title>
 
-    <para>Commercial development support, production support and training for
-    JBoss Negotiation is available through <ulink
-    url="http://www.jboss.com">JBoss Inc.</ulink> JBoss Negotiation is a
-    project of JBoss Security in the JEMS product suite.</para>
+    <para>
+      JBoss Negotiation is a project of JBoss Security in the JEMS
+      product suite.
+    </para>
 
-    <para>Authors: <itemizedlist spacing="compact">
+    <para>
+      JBoss Negotiation is currently under development and the most
+      recent release is a Beta release.
+    </para>
+
+    <para>
+      Use of the JBoss Negotiation library can be discussed in the
+      security users forum.
+      <!--  TODO - Correct link to forum needs escaping. -->
+      <ulink url="http://www.jboss.org">Security and JAAS/JBoss</ulink>
+    </para>
+
+    <para>
+      Bugs and feature requests can be reported in Jira under the
+      SECURITY project.
+      <ulink url="http://jira.jboss.com/jira/browse/SECURITY">
+        JIRA SECURITY
+      </ulink>
+      For any issues raised be sure to set the component to
+      'Negotiation'.
+    </para>
+
+    <para>
+      The source code for the library is held within SVN: -
+      <ulink
+        url="http://anonsvn.jboss.org/repos/jbossas/projects/security/security-negotiation">
+        security-negotiation
+      </ulink>
+    </para>
+
+    <para>
+      Authors:
+      <itemizedlist spacing="compact">
         <listitem>
-          <para>Darran Lofthouse - Negotiation authenticator developer.</para>
+          <para>
+            Darran Lofthouse - Negotiation authenticator developer.
+          </para>
         </listitem>
-      </itemizedlist></para>
+      </itemizedlist>
+    </para>
   </preface>
 
   <xi:include href="modules/introduction.xml"
-              xmlns:xi="http://www.w3.org/2001/XInclude" xml:base="./" />
+    xmlns:xi="http://www.w3.org/2001/XInclude" xml:base="./" />
 
   <xi:include href="modules/general_installation.xml"
-              xmlns:xi="http://www.w3.org/2001/XInclude"
-              xpointer="element(/1)" />
+    xmlns:xi="http://www.w3.org/2001/XInclude" xpointer="element(/1)" />
 
   <xi:include href="modules/microsoft_ad.xml"
-              xmlns:xi="http://www.w3.org/2001/XInclude"
-              xpointer="element(/1)" />
+    xmlns:xi="http://www.w3.org/2001/XInclude" xpointer="element(/1)" />
 
   <xi:include href="modules/mit_kdc.xml"
-              xmlns:xi="http://www.w3.org/2001/XInclude"
-              xpointer="element(/1)" />
+    xmlns:xi="http://www.w3.org/2001/XInclude" xpointer="element(/1)" />
 
   <xi:include href="modules/free_ipa.xml"
-              xmlns:xi="http://www.w3.org/2001/XInclude"
-              xpointer="element(/1)" />
+    xmlns:xi="http://www.w3.org/2001/XInclude" xpointer="element(/1)" />
 
   <xi:include href="modules/internet_explorer.xml"
-              xmlns:xi="http://www.w3.org/2001/XInclude"
-              xpointer="element(/1)" />
+    xmlns:xi="http://www.w3.org/2001/XInclude" xpointer="element(/1)" />
 
   <xi:include href="modules/firefox.xml"
-              xmlns:xi="http://www.w3.org/2001/XInclude"
-              xpointer="element(/1)" />
+    xmlns:xi="http://www.w3.org/2001/XInclude" xpointer="element(/1)" />
 
   <xi:include href="modules/references.xml"
-              xmlns:xi="http://www.w3.org/2001/XInclude"
-              xpointer="element(/1)" />
+    xmlns:xi="http://www.w3.org/2001/XInclude" xpointer="element(/1)" />
 </book>

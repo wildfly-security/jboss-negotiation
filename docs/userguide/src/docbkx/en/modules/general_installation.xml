@@ -382,5 +382,17 @@ darranl@KERBEROS.JBOSS.ORG=Users
     </section>
 
   </section>
+
+  <section>
+    <title>Negotiation Toolkit</title>
   
+    <para>
+    The Negotiation Toolkit is a web application that you can deploy to your JBoss installation to
+    test various aspects of your SPNEGO configuration without adding the complications of getting 
+    your own applications to work at the same time.  Once the Negotiation Toolkit demonstrates 
+    that negotiation is occurring without any problems then you can move to secure your own web 
+    application. 
+    </para>
+    
+  </section>  
 </chapter>

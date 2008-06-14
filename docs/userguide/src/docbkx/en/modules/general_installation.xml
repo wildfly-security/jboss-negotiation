@@ -121,10 +121,9 @@
           on the command line when you start the server e.g.
         </para>
 
-        <para>
-          ./run.sh -Djava.security.krb5.realm=KERBEROS.JBOSS.ORG
-          -Djava.security.krb5.kdc=kerberos.security.jboss.org
-        </para>
+        <programlisting>
+./run.sh -Djava.security.krb5.realm=KERBEROS.JBOSS.ORG -Djava.security.krb5.kdc=kerberos.security.jboss.org
+        </programlisting>
 
         <para></para>
       </section>

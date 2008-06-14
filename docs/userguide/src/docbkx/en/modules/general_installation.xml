@@ -5,51 +5,69 @@
   <title>General Installation</title>
 
   <section>
-    <para>This section of the document describes the general installation
-    process of the negotiation module, the following chapters in this guide
-    describe the specific configuration requirements for the KDC and the web
-    browser.</para>
+    <para>
+      This section of the document describes the general installation
+      process of the negotiation module, the following chapters in this
+      guide describe the specific configuration requirements for the KDC
+      and the web browser.
+    </para>
 
     <para>This documentation covers two topics.</para>
 
     <itemizedlist>
       <listitem>
-        <para>Installation and configuration of the library itself.</para>
+        <para>
+          Installation and configuration of the library itself.
+        </para>
       </listitem>
 
       <listitem>
-        <para>Installation of the negotiation toolkit to test the
-        installation.</para>
+        <para>
+          Installation of the negotiation toolkit to test the
+          installation.
+        </para>
       </listitem>
     </itemizedlist>
 
-    <para>It is recommended that you use the negotiation toolkit to test that
-    the security settings are correctly working before attempting to secure
-    your own web application, this way you can eliminate if any problems are
-    specific to your web application and also use the toolkit to obtain
-    additional debug information.</para>
+    <para>
+      It is recommended that you use the negotiation toolkit to test
+      that the security settings are correctly working before attempting
+      to secure your own web application, this way you can eliminate if
+      any problems are specific to your web application and also use the
+      toolkit to obtain additional debug information.
+    </para>
   </section>
 
   <section>
-    <title>Authenticator Installation</title>
+    <title>Installation</title>
 
-    <para>The authenticator is contained within a single jar
-    'jboss-negotiation.jar', this jar should be placed in the following
-    location: -</para>
+    <section>
+      <title>Authenticator Installation</title>
 
-    <para> {jboss.home}/server/{configuration}/lib</para>
+      <para>
+        The authenticator is contained within a single jar
+        'jboss-negotiation.jar', this jar should be placed in the
+        following location: -
+      </para>
 
-    <para>After copying the jar to the above location you will need to add the
-    authenticator itself to the following descriptor: -</para>
+      <para>{jboss.home}/server/{configuration}/lib</para>
 
-    <para>
-    {jboss.home}/server/{configuration}/deploy/jboss-web.deployer/META-INF/jboss-service.xml</para>
+      <para>
+        After copying the jar to the above location you will need to add
+        the authenticator itself to the following descriptor: -
+      </para>
 
-    <para>Within this descriptor you should see a set of authenticators, to
-    add SPNEGO you should add the following entry: -</para>
+      <para>
+        {jboss.home}/server/{configuration}/deploy/jboss-web.deployer/META-INF/jboss-service.xml
+      </para>
+
+      <para>
+        Within this descriptor you should see a set of authenticators,
+        to add SPNEGO you should add the following entry: -
+      </para>
 
       <programlisting>
-      <![CDATA[
+        <![CDATA[
 <java:property>
   <java:key>SPNEGO</java:key>
   <java:value>
@@ -57,142 +75,200 @@
   </java:value>
 </java:property>
       ]]>
-      </programlisting>      
-      
-    <para>The key can be any value you choose, however using SPNEGO is
-    recommended to be consistent with the rest of this document.</para>
-  </section>
+      </programlisting>
 
-  <section>
-    <title>Realm Properties</title>
-
-    <para>If you are running your JBoss installation on a host which is
-    already configured to authenticate against a Kerberos KDC then you can
-    skip this step, however if the host is not already configured against a
-    KDC or if you need JBoss to authenticate against a different KDC a couple
-    of system properties need to be set so that JBoss can identify the correct
-    realm and kdc.</para>
-
-    <para>The two properties that need to be set are.</para>
-
-    <itemizedlist>
-      <listitem>
-        <para>java.security.krb5.realm - This is the Kerberos realm to
-        authenticate against.</para>
-      </listitem>
-
-      <listitem>
-        <para>java.security.krb5.kdc - This is the hostname of the KDC
-        itself.</para>
-      </listitem>
-    </itemizedlist>
-
-    <section>
-      <title>Command Line</title>
-
-      <para>The easiest way to set the properties is to pass them to JBoss on
-      the command line when you start the server e.g.</para>
-
-      <para> ./run.sh -Djava.security.krb5.realm=KERBEROS.JBOSS.ORG
-      -Djava.security.krb5.kdc=kerberos.security.jboss.org</para>
-
-      <para></para>
+      <para>
+        The key can be any value you choose, however using SPNEGO is
+        recommended to be consistent with the rest of this document.
+      </para>
     </section>
 
     <section>
-      <title>System Properties Service</title>
-
-      <para>JBoss also make a properties service available which will allow
-      you to define these properties in a descriptor and the properties
-      service will set them as JBoss starts, the only requirement is that
-      these properties are set before the first authentication attempt - JBoss
-      does not allow incomming HTTP connections until the server is completely
-      started so this is not a proble.</para>
-
-      <para>The properties service is documented in the Wiki at <link
-      linkend="???">http://wiki.jboss.org/wiki/PropertiesService</link></para>
-
-      <para>There is already a deployment of the properties service that you
-      can add your properties to, this is in the following descriptor:
-      -</para>
+      <title>Realm Properties</title>
 
       <para>
-      {jboss.home}//server/{configuration}/deploy/properties-service.xml</para>
+        If you are running your JBoss installation on a host which is
+        already configured to authenticate against a Kerberos KDC then
+        you can skip this step, however if the host is not already
+        configured against a KDC or if you need JBoss to authenticate
+        against a different KDC a couple of system properties need to be
+        set so that JBoss can identify the correct realm and kdc.
+      </para>
 
-      <para>Add the following attribute to the
-      'jboss:type=Service,name=SystemProperties' MBean to set the properties:
-      -</para>
-      
-      <programlisting>
-      <![CDATA[
+      <para>The two properties that need to be set are.</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>
+            java.security.krb5.realm - This is the Kerberos realm to
+            authenticate against.
+          </para>
+        </listitem>
+
+        <listitem>
+          <para>
+            java.security.krb5.kdc - This is the hostname of the KDC
+            itself.
+          </para>
+        </listitem>
+      </itemizedlist>
+
+      <section>
+        <title>Command Line</title>
+
+        <para>
+          The easiest way to set the properties is to pass them to JBoss
+          on the command line when you start the server e.g.
+        </para>
+
+        <para>
+          ./run.sh -Djava.security.krb5.realm=KERBEROS.JBOSS.ORG
+          -Djava.security.krb5.kdc=kerberos.security.jboss.org
+        </para>
+
+        <para></para>
+      </section>
+
+      <section>
+        <title>System Properties Service</title>
+
+        <para>
+          JBoss also make a properties service available which will
+          allow you to define these properties in a descriptor and the
+          properties service will set them as JBoss starts, the only
+          requirement is that these properties are set before the first
+          authentication attempt - JBoss does not allow incomming HTTP
+          connections until the server is completely started so this is
+          not a proble.
+        </para>
+
+        <para>
+          The properties service is documented in the Wiki at
+          <link linkend="???">
+            http://wiki.jboss.org/wiki/PropertiesService
+          </link>
+        </para>
+
+        <para>
+          There is already a deployment of the properties service that
+          you can add your properties to, this is in the following
+          descriptor: -
+        </para>
+
+        <para>
+          {jboss.home}//server/{configuration}/deploy/properties-service.xml
+        </para>
+
+        <para>
+          Add the following attribute to the
+          'jboss:type=Service,name=SystemProperties' MBean to set the
+          properties: -
+        </para>
+
+        <programlisting>
+          <![CDATA[
 <attribute name="Properties">
  java.security.krb5.kdc=kerberos.security.jboss.org
  java.security.krb5.realm=KERBEROS.JBOSS.ORG
 </attribute>
       ]]>
-      </programlisting>
-      
+        </programlisting>
+
+      </section>
     </section>
-  </section>
 
-  <section>
-    <title>Host Security Domain</title>
+    <section>
+      <title>Host Security Domain</title>
 
-    <para>The application server requires a security domain that it can use to
-    first authenticate against the KDC, in order to configure this a keytab
-    will be required for the principal that represents the application server.
-    The following chapters will cover the details of setting up a service host
-    and obtaining the keytab from the KDC but the general requirements to
-    configure the security domain in JBoss are the same.</para>
+      <para>
+        The application server requires a security domain that it can
+        use to first authenticate against the KDC, in order to configure
+        this a keytab will be required for the principal that represents
+        the application server. The following chapters will cover the
+        details of setting up a service host and obtaining the keytab
+        from the KDC but the general requirements to configure the
+        security domain in JBoss are the same.
+      </para>
 
-    <para>Below is an example host security domain: -</para>
-    
-    <programlisting>
-      <![CDATA[
+      <para>Below is an example host security domain: -</para>
+
+      <programlisting>
+        <![CDATA[
 <application-policy name="host">
    <authentication>
       <login-module code="com.sun.security.auth.module.Krb5LoginModule"
          flag="required">
          <module-option name="storeKey">true</module-option>
          <module-option name="useKeyTab">true</module-option>                                                     
-         <module-option name="principal">host/testserver.gsslab.rdu.redhat.com@GSSLAB.RDU.REDHAT.COM</module-option>             
-         <module-option name="keyTab">/home/darranl/src/security-negotiation/spnego-configuration/descriptors/testserver.keytab</module-option>
+         <module-option name="principal">host/testserver.kerberos.jboss.org@KERBEROS.JBOSS.ORG</module-option>             
+         <module-option name="keyTab">/home/jboss_user/testserver.keytab</module-option>
          <module-option name="doNotPrompt">true</module-option>
          <module-option name="debug">true</module-option>
       </login-module>
    </authentication>
 </application-policy>
       ]]>
-    </programlisting>
-    
-    <para>The selected name of the security domain is not important, later it will be 
-    possible which security domain to use to authenticate the server.</para>
-    
-    <para>The following options are required.</para>
-    
-    <itemizedlist>
-      <listitem><para>storeKey - cache the key obtained locally</para></listitem>
-      <listitem><para>useKeyTab - Specify that the key will be loaded from a keyTab</para></listitem>
-      <listitem><para>principal - The full name of the principal to obtain from the keytab</para></listitem>
-      <listitem><para>keyTab - The full path to the keytab containing the servers key</para></listitem>
-      <listitem><para>doNotPrompt - As this is a server disable prompting for the servers password</para></listitem>
-      <listitem><para>debug - enable logging if additional debug information</para></listitem>
-    </itemizedlist>
-    
-  </section>
-  
-  <section>
-    <title>Application Security Domain</title>
-    
-    <para>The application also requires it's own security domain to be defined with a login
-    module to work in connection with the SPNEGOAuthenticator and a second login module to load 
-    the roles of the authenticated user.    
-    </para>
-    
-    <para>An example security domain is shown below.</para>
-    
-    <programlisting>
-      <![CDATA[
+      </programlisting>
+
+      <para>
+        The selected name of the security domain is not important, later
+        it will be possible which security domain to use to authenticate
+        the server.
+      </para>
+
+      <para>The following options are required.</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>storeKey - cache the key obtained locally</para>
+        </listitem>
+        <listitem>
+          <para>
+            useKeyTab - Specify that the key will be loaded from a
+            keyTab
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            principal - The full name of the principal to obtain from
+            the keytab
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            keyTab - The full path to the keytab containing the servers
+            key
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            doNotPrompt - As this is a server disable prompting for the
+            servers password
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            debug - enable logging if additional debug information
+          </para>
+        </listitem>
+      </itemizedlist>
+
+    </section>
+
+    <section>
+      <title>Application Security Domain</title>
+
+      <para>
+        The application also requires it's own security domain to be
+        defined with a login module to work in connection with the
+        SPNEGOAuthenticator and a second login module to load the roles
+        of the authenticated user.
+      </para>
+
+      <para>An example security domain is shown below.</para>
+
+      <programlisting>
+        <![CDATA[
 <application-policy name="SPNEGO">
    <authentication>
       <login-module
@@ -205,22 +281,106 @@
          code="org.jboss.security.auth.spi.UsersRolesLoginModule"
          flag="required">
          <module-option name="password-stacking">useFirstPass</module-option>
-         <module-option name="usersProperties">META-INF/spnego-users.properties</module-option>
-         <module-option name="rolesProperties">META-INF/spnego-roles.properties</module-option>
+         <module-option name="usersProperties">props/spnego-users.properties</module-option>
+         <module-option name="rolesProperties">props/spnego-roles.properties</module-option>
       </login-module>
    </authentication>
 </application-policy>
       ]]>
-    </programlisting>
+      </programlisting>
 
-    <para>The SPNEGOLoginModule requires the following two options.</para>
-    
-    <itemizedlist>
-      <listitem><para>password-stacking - Setting this to useFirstPass allows a second module to load the roles.</para></listitem>
-      <listitem><para>serverSecurityDomain - The security domain of the application server as previously defined.</para></listitem>
-    </itemizedlist>
+      <para>
+        The SPNEGOLoginModule requires the following two options.
+      </para>
+
+      <itemizedlist>
+        <listitem>
+          <para>
+            password-stacking - Setting this to useFirstPass allows a
+            second module to load the roles.
+          </para>
+        </listitem>
+        <listitem>
+          <para>
+            serverSecurityDomain - The security domain of the
+            application server as previously defined.
+          </para>
+        </listitem>
+      </itemizedlist>
+
+      <para>
+        The second security domain is used to load the users roles after
+        the authentication has already taken place by the previous login
+        module. The Beta2 release will cover how to make use of LDAP to
+        retrieve the users roles so for a Microsoft Active Directory
+        installation the roles can be retrieved using an LDAP query.
+      </para>
+
+      <para>
+        Please see the following documentation for further information
+        on the JBoss login modules and more specifically the
+        UsersRolesLoginModule: -
+      </para>
+      <para>
+        <ulink
+          url="http://www.jboss.org/file-access/default/members/jbossas/freezone/docs/Server_Configuration_Guide/beta422/html/Security_on_JBoss.html#Defining_Security_Domains-Using_JBoss_Login_Modules">
+          JBoss 4.2.2.GA Configuration Guide
+        </ulink>
+      </para>
+
+      <para>
+        If the application security domain is defined within the
+        <code>
+          {jboss.home}/server/{configuration}/conf/login-config.xml
+        </code>
+        descriptor the properties files should be located in
+        <code>{jboss.home}/server/{configuration}/conf/props</code>
+        .
+      </para>
+
+      <para>
+        The spnego-users.properties file should be empty as the previous
+        login module is handling the authentication, the
+        spnego-roles.properties should be as follows: -
+      </para>
+
+      <programlisting>
+        <![CDATA[
+# A roles.properties file for use with the UsersRolesLoginModule
+darranl@KERBEROS.JBOSS.ORG=Users
+    ]]>
+      </programlisting>
+
+      <para>
+        Before the '=' is the fully qualified name of the user, after
+        the '=' is a comma separated list of the users roles.
+      </para>
+
+    </section>
+
+    <section>
+      <title>DNS</title>
+
+      <para>
+        So that the web browsers communicating with the application
+        server can trust the application server when it prompts for the
+        negotiation to take place it is important that the IP address of
+        the server running JBoss is mapped correctly.
+      </para>
+
+      <para>
+        In these examples the example KDC realm is 'KERBEROS.JBOSS.ORG'
+        and the server hosting JBoss is 'testserver', the IP address of
+        the server should be resolvable as
+        'testserver.kerberos.jboss.org'.
+      </para>
+
+      <para>
+        This configuration change can either be made on your actual DNS
+        server or can be made locally on the client machine.
+      </para>
+    </section>
+
   </section>
-  
-  
   
 </chapter>

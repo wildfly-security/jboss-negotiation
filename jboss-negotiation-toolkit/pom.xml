@@ -34,24 +34,29 @@
     <dependency>
       <groupId>org.jboss.security</groupId>
       <artifactId>jboss-negotiation</artifactId>
+      <scope>provided</scope>
     </dependency>
     
     <!-- Global dependencies -->
     <dependency>
       <groupId>apache-log4j</groupId>
       <artifactId>log4j</artifactId>
+      <scope>provided</scope>
     </dependency>    
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jboss-common</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jbosssx</artifactId>
+      <scope>provided</scope>
     </dependency>    
     <dependency>
       <groupId>jboss.web</groupId>
       <artifactId>servlet-api</artifactId>
+      <scope>provided</scope>
     </dependency>    
   </dependencies>    
 </project>

@@ -5,8 +5,82 @@
   <title>Microsoft Internet Explorer</title>
 
   <section>
-    <title></title>
+    <title>Introduction</title>
 
-    <para></para>
+    <para>
+      This chapter describes the configuration required to enable SPNEGO
+      negotiation in Internet Explorer. These instructions are prepared
+      against Internet Explorer 6 on Microsoft Windows 2003
+    </para>
+  </section>
+
+  <section>
+    <title>Local Intranet</title>
+
+    <para>
+      By default Internet Explorer only performs SPNEGO authentication
+      against sites in the 'Local intranet' zone.
+    </para>
+
+    <para>Open the 'Internet Options' from the 'Tools' menu: -</para>
+
+    <figure id="ie-tools-internet-options">
+      <title>Tools -&gt; Internet Options</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center"
+            fileref="images/ie-tools-internet-options.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para>And select the 'Security' tab: -</para>
+
+    <figure id="ie-internet-options">
+      <title>Internet Options</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center"
+            fileref="images/ie-internet-options.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para>
+      Ensure that 'Local intranet' is highlighted and click the 'Sites'
+      command button.
+    </para>
+
+    <figure id="ie-local-intranet">
+      <title>Local Intranet</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center"
+            fileref="images/ie-local-intranet.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para>
+      Enter the URL of the server hosting the JBoss installation and
+      click on 'Add'.
+    </para>
+
+    <figure id="ie-local-intranet-added">
+      <title>Local Intranet - Site Added</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center"
+            fileref="images/ie-local-intranet-added.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para>
+      This should now be sufficient for Internet Explorer to trust the
+      JBoss installation and to perform the SPNEGO negotiation. This can
+      be tested by using the 'Basic Negotiation' section of the
+      Negotiation Toolkit web application.
+    </para>
   </section>
 </chapter>

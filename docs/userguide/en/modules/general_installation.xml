@@ -5,6 +5,8 @@
   <title>General Installation</title>
 
   <section>
+    <title>Introduction</title>
+
     <para>
       This section of the document describes the general installation
       process of the negotiation module, the following chapters in this
@@ -47,18 +49,16 @@
       <para>
         The authenticator is contained within a single jar
         'jboss-negotiation.jar', this jar should be placed in the
-        following location: -
+        following location -
+        <code>{jboss.home}/server/{configuration}/lib/</code>
       </para>
-
-      <para>{jboss.home}/server/{configuration}/lib</para>
 
       <para>
         After copying the jar to the above location you will need to add
-        the authenticator itself to the following descriptor: -
-      </para>
-
-      <para>
-        {jboss.home}/server/{configuration}/deploy/jboss-web.deployer/META-INF/jboss-service.xml
+        the authenticator itself to the following descriptor -
+        <code>
+          {jboss.home}/server/{configuration}/deploy/jboss-web.deployer/META-INF/jboss-service.xml
+        </code>
       </para>
 
       <para>
@@ -70,12 +70,17 @@
         <![CDATA[
 <java:property>
   <java:key>SPNEGO</java:key>
-  <java:value>
-    org.jboss.security.negotiation.spnego.SPNEGOAuthenticator
-  </java:value>
+  <java:value>org.jboss.security.negotiation.spnego.SPNEGOAuthenticator</java:value>
 </java:property>
       ]]>
       </programlisting>
+
+
+      <tip>
+        Ensure that there is no white space around the classname as this
+        can cause the deployment to fail.
+      </tip>
+
 
       <para>
         The key can be any value you choose, however using SPNEGO is
@@ -462,5 +467,28 @@ darranl@KERBEROS.JBOSS.ORG=Users
         http://testserver.kerberos.jboss.org:8080/jboss-negotiation-toolkit
       </ulink>
     </para>
+
+    <section>
+      <title>Front Page</title>
+
+      <para>
+        The main page for the negotion toolkit contains links to the
+        various utilities within the toolkit that can be used to test
+        your installation. It is recommended that you follow the links
+        from top to bottom to get the stages working.
+      </para>
+
+      <figure id="negotiation-toolkit-front">
+        <title>Negotiation Toolkit Front Page</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center"
+              fileref="images/negotiation-toolkit.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+
+    </section>
+
   </section>
 </chapter>

@@ -5,8 +5,14 @@
   <title>Microsoft Active Directory</title>
 
   <section>
-    <title></title>
+    <title>Introduction</title>
 
-    <para>How to add a user to AD and export the keytab.</para>
+    <para>
+      This chapter describes the steps required to configure the
+      authenticator which are specific to Windows, these instructions
+      are prepared against Windows 2003.
+    </para>
+    
+    
   </section>
 </chapter>

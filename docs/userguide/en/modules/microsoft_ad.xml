@@ -12,7 +12,153 @@
       authenticator which are specific to Windows, these instructions
       are prepared against Windows 2003.
     </para>
+
+    <para>
+      The Windows 2003 machine hosting the user accounts is required to
+      be an Active Directory domain controller - having a Windows
+      machine with accounts managed locally is not sufficient.
+    </para>
+
+    <section>
+      <title>Windows 2003 Support Tools</title>
+
+      <para>
+        A couple of additional command line utilities are going to be
+        required when configuring the service accounts on the domain
+        controller, these can be downloaded directly from Microsoft
+        <ulink url="http://go.microsoft.com/fwlink/?LinkId=100114">
+          http://go.microsoft.com/fwlink/?LinkId=100114
+        </ulink>
+      </para>
+
+    </section>
+
+
+  </section>
+
+  <section>
+    <title>Server User Creation</title>
+
+    <para>
+      First the server requires a user account to be created for it
+      within the domain, this needs to be a normal user account and not
+      a computer account - we will perform some additional steps later
+      to map the user account to a service account.
+    </para>
+
+    <para>
+      As we are going to be referring to the server using the name
+      'testserver.kerberos.jboss.org' we will create a user called
+      'testserver'.
+    </para>
+
+    <warning>
+      It is important to set a valid password on the account as soon as
+      you create as changing the password later can invalidate the
+      keytab that you export which would break your JBoss installations.
+    </warning>
+
+    <para>The first step is to create the actual user.</para>
+
+    <figure id="ad-new-user">
+      <title>New User</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="images/ad-new-user.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <figure id="ad-new-user-password">
+      <title>New User Password</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center"
+            fileref="images/ad-new-user-password.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para>
+      Set the password for the new user and ensure both 'User cannot
+      change password' and 'Password never expires' are set.
+    </para>
+
+    <figure id="ad-new-user-finish">
+      <title>New User Finish</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center"
+            fileref="images/ad-new-user-finish.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para>
+      Next you will need to open the properties dialog for the user to
+      make one more change to make the account suitable as a service
+      account.
+    </para>
+
+    <figure id="ad-user-properties">
+      <title>User Properties</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center"
+            fileref="images/ad-user-properties.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para>
+      It is important to ensure that 'Do not require Kerberos
+      preauthentication' is checked, occasionally it is also required to
+      check 'Use DES encryption types for this account' but recent
+      testing has not required this.
+    </para>
+
+    <note>
+      Some of the domain details are slightly different in these images
+      as the test domain I am using is slightly different to the domain
+      I am using in the examples in this document.
+    </note>
+
+  </section>
+
+  <section>
+    <title>Service Account Mapping</title>
+
+    <para>
+      After the user account has been created it needs to be mapped to a
+      host account using the ktpass.exe command line utility included in
+      the Windows 2003 Support Tools.
+    </para>
+
+    <para>
+      The ktpass.exe command line utility takes the user created earlier
+      and maps it as a trusted host, in this case you would need to
+      execute the following command: -
+    </para>
+
+    <programlisting>
+    <![CDATA[ktpass -princ host/testserver@kerberos.jboss.org -pass * -mapuser KERBEROS\testserver 
+-out C:\testserver.host.keytab]]>
+    </programlisting>
+
+    <figure id="ad-command-ktpass">
+      <title>KTPass</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center"
+            fileref="images/ad-command-ktpass.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
     
+    <para>
     
+    </para>
+    
+
   </section>
 </chapter>

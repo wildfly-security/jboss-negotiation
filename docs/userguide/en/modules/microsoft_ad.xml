@@ -130,9 +130,65 @@
 
     <para>
       After the user account has been created it needs to be mapped to a
-      host account using the ktpass.exe command line utility included in
-      the Windows 2003 Support Tools.
+      host account using the setspn.exe and ktpass.exe command line
+      utilities included in the Windows 2003 Support Tools.
     </para>
+
+    <para>
+      The first utility to use is the setspn.exe utility installed with
+      the Windows 2003 support tools. Documentation for this tool is
+      available from Microsoft
+      <ulink
+        url="http://technet2.microsoft.com/windowsserver/en/library/b3a029a1-7ff0-4f6f-87d2-f2e70294a5761033.mspx?mfr=true">
+        http://technet2.microsoft.com/windowsserver/en/library/b3a029a1-7ff0-4f6f-87d2-f2e70294a5761033.mspx?mfr=true
+      </ulink>
+    </para>
+
+    <para>
+      You should execute the following two command to map the testserver
+      user to the correct service principals.
+    </para>
+
+    <programlisting><![CDATA[setspn.exe -a host/testserver.kerberos.jboss.org testserver
+setspn.exe -a HTTP/testserver.kerberos.jboss.org testserver]]></programlisting>
+
+    <figure id="ad-setspn">
+      <title>Set Service Principals</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="images/ad-setspn.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para>
+      The following command then can be used to list the mappings.
+    </para>
+
+    <programlisting>
+      <![CDATA[setspn.exe -l testserver]]></programlisting>
+
+    <figure id="ad-setspn-list">
+      <title>List Service Principals</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="images/ad-setspn-list.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para>
+      The next step is to use the ktpass.exe utility from the Windows
+      2003 support tools and also the ktab.exe tool from the Java
+      installation to export the keytab.
+    </para>
+
+    <note>
+      <para>
+        This section needs some further consideration, it may be
+        possible to just use one of the commands.
+      </para>
+    </note>
 
     <para>
       The ktpass.exe command line utility takes the user created earlier
@@ -141,9 +197,8 @@
     </para>
 
     <programlisting>
-    <![CDATA[ktpass -princ host/testserver@kerberos.jboss.org -pass * -mapuser KERBEROS\testserver 
--out C:\testserver.host.keytab]]>
-    </programlisting>
+      <![CDATA[ktpass -princ host/testserver@kerberos.jboss.org -pass * -mapuser KERBEROS\testserver 
+-out C:\testserver.host.keytab]]></programlisting>
 
     <figure id="ad-command-ktpass">
       <title>KTPass</title>
@@ -154,11 +209,27 @@
         </imageobject>
       </mediaobject>
     </figure>
-    
-    <para>
-    
-    </para>
-    
 
+    <para>
+      The ktab.exe utility is then used to export the keytab that will
+      be used by the application server using the following command.
+    </para>
+
+    <programlisting>
+      <![CDATA[ktab -k c:\testserver.host.keytab -a testserver@KERBEROS.JBOSS.ORG]]></programlisting>
+
+    <figure id="ad-ktab">
+      <title>Export Keytab</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="images/ad-ktab.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para>
+      The resulting keytab should then be used in setting up the host
+      security domain as described previously.
+    </para>
   </section>
 </chapter>

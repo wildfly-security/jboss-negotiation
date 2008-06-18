@@ -205,7 +205,7 @@
          flag="required">
          <module-option name="storeKey">true</module-option>
          <module-option name="useKeyTab">true</module-option>                                                     
-         <module-option name="principal">host/testserver.kerberos.jboss.org@KERBEROS.JBOSS.ORG</module-option>             
+         <module-option name="principal">host/testserver@KERBEROS.JBOSS.ORG</module-option>             
          <module-option name="keyTab">/home/jboss_user/testserver.keytab</module-option>
          <module-option name="doNotPrompt">true</module-option>
          <module-option name="debug">true</module-option>
@@ -257,6 +257,13 @@
           </para>
         </listitem>
       </itemizedlist>
+
+      <note>
+        <para>
+          Once everything is working you may want to set debug to false
+          as it logs to STDOUT.
+        </para>
+      </note>
 
     </section>
 
@@ -488,7 +495,129 @@ darranl@KERBEROS.JBOSS.ORG=Users
         </mediaobject>
       </figure>
 
+      <note>
+        <para>
+          Before using the Negotiation Toolkit you should have completed
+          the installation process, a number of the actions in the
+          toolkit involve either the application server or the web
+          browser communicating with the KDC which needs to be correctly
+          configured.
+        </para>
+      </note>
+
     </section>
 
+    <section>
+      <title>Basic Negotiation</title>
+
+      <para>
+        The 'Basic Negotiation' servlet can be used to test that the web
+        browser does trust the application server to attempt negotation.
+        The servlet simply prompts the web browser to negotiation and
+        outputs if a SPNEGO token was received or not.
+      </para>
+
+      <para>
+        An unsucsessful negotation would result in output similar to the
+        following.
+      </para>
+
+      <figure id="nt-basic-failed">
+        <title>Basic Negotiation Failure</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center"
+              fileref="images/nt-basic-failed.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+
+      <para>
+        If the web browser successfully sends a SPNEGO token you should
+        see output similar to the following.
+      </para>
+
+
+      <figure id="nt-basic-success">
+        <title>Basic Negotiation Success</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center"
+              fileref="images/nt-basic-success.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+
+      <para>
+        The resulting web page shows a breakdown of some of the
+        information contained within the negotiation token.
+      </para>
+
+    </section>
+
+    <section>
+      <title>Security Domain Test</title>
+
+      <para>
+        It is important that the application server can authenticate
+        against the KDC using it's own security domain, the 'Security
+        Domain Test' servlet is a servlet that can be used to test that
+        the security domain can authenticate.
+      </para>
+
+      <para>
+        On the first page you will need to enter the name of the
+        security domain being used, in these examples the security
+        domain is called 'host'.
+      </para>
+
+      <figure id="nt-domain-entry">
+        <title>Security Domain Test</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center"
+              fileref="images/nt-domain-entry.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+
+      <para>
+        If the authentication is successful you should see output
+        similar to the following.
+      </para>
+
+      <figure id="nt-domain-authenticated">
+        <title>Security Domain Test - Authenticated</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center"
+              fileref="images/nt-domain-authenticated.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+
+    </section>
+
+    <section>
+      <title>Secured</title>
+
+      <para>
+        The final servlet in the toolkit is the 'Secured' servlet, this
+        servlet is configured to require full SPNEGO authentication, if
+        you get output similar to the following output this means you
+        have everything configured correctly.
+      </para>
+
+      <figure id="nt-secured">
+        <title>Secured</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center" fileref="images/nt-secured.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+      
+      
+    </section>
   </section>
 </chapter>

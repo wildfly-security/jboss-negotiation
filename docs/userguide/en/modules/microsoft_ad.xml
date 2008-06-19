@@ -53,9 +53,12 @@
     </para>
 
     <warning>
-      It is important to set a valid password on the account as soon as
-      you create as changing the password later can invalidate the
-      keytab that you export which would break your JBoss installations.
+      <para>
+        It is important to set a valid password on the account as soon
+        as you create as changing the password later can invalidate the
+        keytab that you export which would break your JBoss
+        installations.
+      </para>
     </warning>
 
     <para>The first step is to create the actual user.</para>

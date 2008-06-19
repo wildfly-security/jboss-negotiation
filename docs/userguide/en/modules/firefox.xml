@@ -5,8 +5,80 @@
   <title>Mozilla Firefox</title>
 
   <section>
-    <title></title>
+    <title>Introduction</title>
 
-    <para></para>
+    <para>
+      This chapter describes the configuration required to enable SPNEGO
+      negotiation in Mozilla Firefox. These instructions are prepared
+      against Mozilla Firefox 2.0.0.11 on Microsoft Windows 2003
+    </para>
+  </section>
+
+  <section>
+    <title>Configuration</title>
+
+    <para>
+      To configure Mozilla Firefox you should navigate to the
+      about:config URL which will display all of the configuration
+      options for Firefox.
+    </para>
+
+    <para>
+      Set the filter to 'network.negotiate' to reduce the list to the
+      options that relate to negotiation.
+    </para>
+
+    <figure id="ff-about">
+      <title>Firefox Configuration</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="images/ff-about.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para>
+      The two values which are important are
+      'network.negotiate-auth.trusted-uris' and
+      'network.negotiate-auth.delegation-uris', the first of these
+      specifies which uris will be trusted for SPNEGO negotiation and
+      the second specifies which the users credentials will actually be
+      delegated to.
+    </para>
+
+    <para>
+      For the current implementation only trust is required, the use of
+      delegation is something that will be added in future releases.
+    </para>
+
+    <para>
+      The URIS that are entered for the above values can be anything
+      from a partial URI e.g. 'http://', 'testserver' to the full URI
+      e.g. 'http://testserver.jboss.org'.
+    </para>
+
+    <figure id="ff-trusted">
+      <title>Firefox Configuration</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="images/ff-trusted.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+
+    <para>
+      As with Internet Explorer negotiation is automatic and this can be
+      demonstrated using the negotiation toolkit.
+    </para>
+
+    <figure id="ff-secured">
+      <title>Firefox Negotiation Toolkit</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata align="center" fileref="images/ff-secured.png" />
+        </imageobject>
+      </mediaobject>
+    </figure>
+
   </section>
 </chapter>

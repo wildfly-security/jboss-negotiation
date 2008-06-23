@@ -23,6 +23,8 @@
     <version.apache-codec.commons-codec>1.2</version.apache-codec.commons-codec>
     <version.jboss.jboss-common>4.2.2.GA</version.jboss.jboss-common>
     <version.jboss.jbosssx>4.2.2.GA</version.jboss.jbosssx>
+    <version.jboss.jmx>4.2.2.GA</version.jboss.jmx>
+    <version.jboss.system>4.2.2.GA</version.jboss.system>
     <version.jboss-web>2.1.0.GA</version.jboss-web>
     <version.junit>3.8.1</version.junit>
   </properties>
@@ -119,9 +121,19 @@
       </dependency>
       <dependency>
         <groupId>jboss</groupId>
+        <artifactId>jboss-jmx</artifactId>
+        <version>${version.jboss.jmx}</version>
+      </dependency>      
+      <dependency>
+        <groupId>jboss</groupId>
         <artifactId>jbosssx</artifactId>
         <version>${version.jboss.jbosssx}</version>
       </dependency>
+      <dependency>
+        <groupId>jboss</groupId>
+        <artifactId>jboss-system</artifactId>
+        <version>${version.jboss.system}</version>
+      </dependency>      
       <dependency>
         <groupId>jboss.web</groupId>
         <artifactId>jbossweb</artifactId>

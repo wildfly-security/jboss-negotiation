@@ -45,8 +45,16 @@
     </dependency>
     <dependency>
       <groupId>jboss</groupId>
+      <artifactId>jboss-jmx</artifactId>
+    </dependency>    
+    <dependency>
+      <groupId>jboss</groupId>
       <artifactId>jbosssx</artifactId>
     </dependency>
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-system</artifactId>
+    </dependency>    
     <dependency>
       <groupId>jboss.web</groupId>
       <artifactId>jbossweb</artifactId>

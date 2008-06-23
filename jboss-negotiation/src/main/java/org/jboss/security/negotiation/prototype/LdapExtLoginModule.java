@@ -19,7 +19,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.security.auth.spi;
+package org.jboss.security.negotiation.prototype;
 
 import java.security.Principal;
 import java.security.acl.Group;
@@ -39,6 +39,7 @@ import javax.naming.ldap.InitialLdapContext;
 import javax.security.auth.login.LoginException;
 
 import org.jboss.security.SimpleGroup;
+import org.jboss.security.auth.spi.UsernamePasswordLoginModule;
 
 /**
  The org.jboss.security.auth.spi.LdapExtLoginModule, added in jboss-4.0.3, is an

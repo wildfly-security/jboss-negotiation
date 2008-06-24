@@ -139,61 +139,34 @@ import org.jboss.security.auth.spi.UsernamePasswordLoginModule;
 public class LdapExtLoginModule extends UsernamePasswordLoginModule
 {
    private static final String ROLES_CTX_DN_OPT = "rolesCtxDN";
-
    private static final String ROLE_ATTRIBUTE_ID_OPT = "roleAttributeID";
-
    private static final String ROLE_ATTRIBUTE_IS_DN_OPT = "roleAttributeIsDN";
-
    private static final String ROLE_NAME_ATTRIBUTE_ID_OPT = "roleNameAttributeID";
 
    private static final String BIND_DN = "bindDN";
-
    private static final String BIND_CREDENTIAL = "bindCredential";
-
    private static final String BASE_CTX_DN = "baseCtxDN";
-
    private static final String BASE_FILTER_OPT = "baseFilter";
-
    private static final String ROLE_FILTER_OPT = "roleFilter";
-
    private static final String ROLE_RECURSION = "roleRecursion";
-
    private static final String DEFAULT_ROLE = "defaultRole";
-
    private static final String SEARCH_TIME_LIMIT_OPT = "searchTimeLimit";
-
    private static final String SEARCH_SCOPE_OPT = "searchScope";
-
    private static final String SECURITY_DOMAIN_OPT = "jaasSecurityDomain";
 
    protected String bindDN;
-
    protected String bindCredential;
-
    protected String baseDN;
-
    protected String baseFilter;
-
    protected String rolesCtxDN;
-
    protected String roleFilter;
-
    protected String roleAttributeID;
-
    protected String roleNameAttributeID;
-
    protected boolean roleAttributeIsDN;
-
    protected int recursion = 0;
-
    protected int searchTimeLimit = 10000;
-
    protected int searchScope = SearchControls.SUBTREE_SCOPE;
-
    protected boolean trace;
-
-   // simple flag to indicate is the validatePassword method was called
-   protected boolean isPasswordValidated = false;
 
    public LdapExtLoginModule()
    {
@@ -202,7 +175,7 @@ public class LdapExtLoginModule extends UsernamePasswordLoginModule
    private transient SimpleGroup userRoles = new SimpleGroup("Roles");
 
    /**
-    Overridden to return an empty password string as typically one cannot obtain a
+    Overriden to return an empty password string as typically one cannot obtain a
     user's password. We also override the validatePassword so this is ok.
     @return and empty password String
     */
@@ -212,7 +185,7 @@ public class LdapExtLoginModule extends UsernamePasswordLoginModule
    }
 
    /**
-    Overridden by subclasses to return the Groups that correspond to the to the
+    Overriden by subclasses to return the Groups that correspond to the to the
     role sets assigned to the user. Subclasses should create at least a Group
     named "Roles" that contains the roles assigned to the user. A second common
     group is "CallerPrincipal" that provides the application identity of the user
@@ -221,38 +194,18 @@ public class LdapExtLoginModule extends UsernamePasswordLoginModule
     */
    protected Group[] getRoleSets() throws LoginException
    {
-      // SECURITY-225: check if authentication was already done in a previous login module
-      // and perform role mapping
-      if (!isPasswordValidated)
-      {
-         try
-         {
-            String username = getUsername();
-            createLdapInitContext(username, null);
-            defaultRole();
-         }
-         catch (Exception e)
-         {
-            LoginException le = new LoginException();
-            le.initCause(e);
-            throw le;
-         }
-      }
-
-      Group[] roleSets =
-      {userRoles};
+      Group[] roleSets = {userRoles};
       return roleSets;
    }
 
    /**
-    Validate the inputPassword by creating a LDAP InitialContext with the
+    Validate the inputPassword by creating a ldap InitialContext with the
     SECURITY_CREDENTIALS set to the password.
     @param inputPassword the password to validate.
     @param expectedPassword ignored
     */
    protected boolean validatePassword(String inputPassword, String expectedPassword)
    {
-      isPasswordValidated = true;
       boolean isValid = false;
       if (inputPassword != null)
       {
@@ -310,14 +263,15 @@ public class LdapExtLoginModule extends UsernamePasswordLoginModule
    }
 
    /**
-    Bind to the LDAP server for authentication. 
+    Bind to the ldap server for authentication. 
     
     @param username
     @param credential
     @return true if the bind for authentication succeeded
     @throws NamingException
     */
-   private boolean createLdapInitContext(String username, Object credential) throws Exception
+   private boolean createLdapInitContext(String username, Object credential)
+      throws Exception
    {
       bindDN = (String) options.get(BIND_DN);
       bindCredential = (String) options.get(BIND_CREDENTIAL);
@@ -392,7 +346,7 @@ public class LdapExtLoginModule extends UsernamePasswordLoginModule
       }
       finally
       {
-         if (ctx != null)
+         if( ctx != null )
             ctx.close();
       }
       return true;
@@ -407,9 +361,9 @@ public class LdapExtLoginModule extends UsernamePasswordLoginModule
     @return the userDN string for the successful authentication 
     @throws NamingException
     */
-   @SuppressWarnings("unchecked")
-   protected String bindDNAuthentication(InitialLdapContext ctx, String user, Object credential, String baseDN,
-         String filter) throws NamingException
+   protected String bindDNAuthentication(InitialLdapContext ctx,
+      String user, Object credential, String baseDN, String filter)
+      throws NamingException
    {
       SearchControls constraints = new SearchControls();
       constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -418,12 +372,12 @@ public class LdapExtLoginModule extends UsernamePasswordLoginModule
 
       NamingEnumeration results = null;
 
-      Object[] filterArgs =
-      {user};
+
+      Object[] filterArgs = {user};
       results = ctx.search(baseDN, filter, filterArgs, constraints);
       if (results.hasMore() == false)
       {
-         results.close();
+       results.close();
          throw new NamingException("Search of baseDN(" + baseDN + ") found no matches");
       }
 
@@ -437,13 +391,9 @@ public class LdapExtLoginModule extends UsernamePasswordLoginModule
 
       results.close();
       results = null;
-      // SECURITY-225: don't need to authenticate again
-      if (isPasswordValidated)
-      {
-         // Bind as the user dn to authenticate the user
-         InitialLdapContext userCtx = constructInitialLdapContext(userDN, credential);
-         userCtx.close();
-      }
+      // Bind as the user dn to authenticate the user
+      InitialLdapContext userCtx = constructInitialLdapContext(userDN, credential);
+      userCtx.close();
 
       return userDN;
    }
@@ -457,12 +407,11 @@ public class LdapExtLoginModule extends UsernamePasswordLoginModule
     @param nesting
     @throws NamingException
     */
-   @SuppressWarnings("unchecked")
-   protected void rolesSearch(InitialLdapContext ctx, SearchControls constraints, String user, String userDN,
-         int recursionMax, int nesting) throws NamingException
+   protected void rolesSearch(InitialLdapContext ctx, SearchControls constraints,
+      String user, String userDN, int recursionMax, int nesting)
+      throws NamingException
    {
-      Object[] filterArgs =
-      {user, userDN};
+      Object[] filterArgs = {user, userDN};
       NamingEnumeration results = ctx.search(rolesCtxDN, roleFilter, filterArgs, constraints);
       try
       {
@@ -470,16 +419,15 @@ public class LdapExtLoginModule extends UsernamePasswordLoginModule
          {
             SearchResult sr = (SearchResult) results.next();
             String dn = canonicalize(sr.getName());
-            if (nesting == 0 && roleAttributeIsDN && roleNameAttributeID != null)
+            if( nesting == 0 && roleAttributeIsDN && roleNameAttributeID != null )
             {
                // Check the top context for role names
-               String[] attrNames =
-               {roleNameAttributeID};
+               String[] attrNames = {roleNameAttributeID};
                Attributes result2 = ctx.getAttributes(dn, attrNames);
                Attribute roles2 = result2.get(roleNameAttributeID);
-               if (roles2 != null)
+               if( roles2 != null )
                {
-                  for (int m = 0; m < roles2.size(); m++)
+                  for(int m = 0; m < roles2.size(); m ++)
                   {
                      String roleName = (String) roles2.get(m);
                      addRole(roleName);
@@ -488,29 +436,27 @@ public class LdapExtLoginModule extends UsernamePasswordLoginModule
             }
 
             // Query the context for the roleDN values
-            String[] attrNames =
-            {roleAttributeID};
+            String[] attrNames = {roleAttributeID};
             Attributes result = ctx.getAttributes(dn, attrNames);
-            if (result != null && result.size() > 0)
+            if( result != null && result.size() > 0 )
             {
                Attribute roles = result.get(roleAttributeID);
-               for (int n = 0; n < roles.size(); n++)
+               for (int n = 0; n < roles.size(); n ++)
                {
                   String roleName = (String) roles.get(n);
                   if (roleAttributeIsDN)
                   {
                      // Query the roleDN location for the value of roleNameAttributeID
                      String roleDN = roleName;
-                     String[] returnAttribute =
-                     {roleNameAttributeID};
+                     String[] returnAttribute = {roleNameAttributeID};
                      log.trace("Using roleDN: " + roleDN);
                      try
                      {
                         Attributes result2 = ctx.getAttributes(roleDN, returnAttribute);
                         Attribute roles2 = result2.get(roleNameAttributeID);
-                        if (roles2 != null)
+                        if( roles2 != null )
                         {
-                           for (int m = 0; m < roles2.size(); m++)
+                           for(int m = 0; m < roles2.size(); m ++)
                            {
                               roleName = (String) roles2.get(m);
                               addRole(roleName);
@@ -529,22 +475,22 @@ public class LdapExtLoginModule extends UsernamePasswordLoginModule
                   }
                }
             }
-
+   
             if (nesting < recursionMax)
             {
-               rolesSearch(ctx, constraints, user, dn, recursionMax, nesting + 1);
+               rolesSearch(ctx, constraints, user, dn,
+                  recursionMax, nesting + 1);
             }
          }
       }
       finally
       {
-         if (results != null)
-            results.close();
+        if( results != null )
+           results.close();
       }
 
    }
 
-   @SuppressWarnings("unchecked")
    private InitialLdapContext constructInitialLdapContext(String dn, Object credential) throws NamingException
    {
       Properties env = new Properties();
@@ -576,35 +522,36 @@ public class LdapExtLoginModule extends UsernamePasswordLoginModule
          env.setProperty(Context.SECURITY_PRINCIPAL, dn);
       if (credential != null)
          env.put(Context.SECURITY_CREDENTIALS, credential);
-      traceLdapEnv(env);
+      traceLdapEnv(env); 
       return new InitialLdapContext(env, null);
    }
-
+   
    private void traceLdapEnv(Properties env)
    {
-      if (trace)
+      if(trace)
       {
          Properties tmp = new Properties();
          tmp.putAll(env);
          tmp.setProperty(Context.SECURITY_CREDENTIALS, "***");
-         log.trace("Logging into LDAP server, env=" + tmp.toString());
+         log.trace("Logging into LDAP server, env=" + tmp.toString()); 
       }
-   }
-
+   } 
+   
    //JBAS-3438 : Handle "/" correctly
    private String canonicalize(String searchResult)
    {
       String result = searchResult;
       int len = searchResult.length();
-
+      
       if (searchResult.endsWith("\""))
       {
-         result = searchResult.substring(0, len - 1) + "," + rolesCtxDN + "\"";
+         result = searchResult.substring(0,len - 1) 
+                            + "," + rolesCtxDN + "\"";
       }
       else
       {
          result = searchResult + "," + rolesCtxDN;
-      }
+       }
       return result;
    }
 

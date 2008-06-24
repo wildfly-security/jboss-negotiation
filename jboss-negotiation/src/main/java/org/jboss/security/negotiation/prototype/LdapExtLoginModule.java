@@ -191,7 +191,7 @@ public class LdapExtLoginModule extends UsernamePasswordLoginModule
    protected int searchScope = SearchControls.SUBTREE_SCOPE;
 
    protected boolean trace;
-   
+
    // simple flag to indicate is the validatePassword method was called
    protected boolean isPasswordValidated = false;
 
@@ -239,7 +239,8 @@ public class LdapExtLoginModule extends UsernamePasswordLoginModule
          }
       }
 
-      Group[] roleSets = {userRoles};
+      Group[] roleSets =
+      {userRoles};
       return roleSets;
    }
 
@@ -417,7 +418,8 @@ public class LdapExtLoginModule extends UsernamePasswordLoginModule
 
       NamingEnumeration results = null;
 
-      Object[] filterArgs = {user};
+      Object[] filterArgs =
+      {user};
       results = ctx.search(baseDN, filter, filterArgs, constraints);
       if (results.hasMore() == false)
       {
@@ -459,7 +461,8 @@ public class LdapExtLoginModule extends UsernamePasswordLoginModule
    protected void rolesSearch(InitialLdapContext ctx, SearchControls constraints, String user, String userDN,
          int recursionMax, int nesting) throws NamingException
    {
-      Object[] filterArgs = {user, userDN};
+      Object[] filterArgs =
+      {user, userDN};
       NamingEnumeration results = ctx.search(rolesCtxDN, roleFilter, filterArgs, constraints);
       try
       {
@@ -470,7 +473,8 @@ public class LdapExtLoginModule extends UsernamePasswordLoginModule
             if (nesting == 0 && roleAttributeIsDN && roleNameAttributeID != null)
             {
                // Check the top context for role names
-               String[] attrNames = {roleNameAttributeID};
+               String[] attrNames =
+               {roleNameAttributeID};
                Attributes result2 = ctx.getAttributes(dn, attrNames);
                Attribute roles2 = result2.get(roleNameAttributeID);
                if (roles2 != null)
@@ -484,7 +488,8 @@ public class LdapExtLoginModule extends UsernamePasswordLoginModule
             }
 
             // Query the context for the roleDN values
-            String[] attrNames = {roleAttributeID};
+            String[] attrNames =
+            {roleAttributeID};
             Attributes result = ctx.getAttributes(dn, attrNames);
             if (result != null && result.size() > 0)
             {
@@ -496,7 +501,8 @@ public class LdapExtLoginModule extends UsernamePasswordLoginModule
                   {
                      // Query the roleDN location for the value of roleNameAttributeID
                      String roleDN = roleName;
-                     String[] returnAttribute = {roleNameAttributeID};
+                     String[] returnAttribute =
+                     {roleNameAttributeID};
                      log.trace("Using roleDN: " + roleDN);
                      try
                      {

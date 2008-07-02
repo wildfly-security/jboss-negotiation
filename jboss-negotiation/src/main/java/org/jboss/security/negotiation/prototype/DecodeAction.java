@@ -37,7 +37,7 @@ import org.jboss.mx.util.MBeanServerLocator;
  * @author Scott.Stark@jboss.org
  * @version $Revision$
  */
-class DecodeAction implements PrivilegedExceptionAction
+public class DecodeAction implements PrivilegedExceptionAction
 {
    String password;
    ObjectName serviceName;
@@ -66,7 +66,7 @@ class DecodeAction implements PrivilegedExceptionAction
       String secretPassword = new String(secret, "UTF-8");
       return secretPassword.toCharArray();
    }
-   static char[] decode(String password, ObjectName serviceName)
+   public static char[] decode(String password, ObjectName serviceName)
       throws Exception
    {
       DecodeAction action = new DecodeAction(password, serviceName);

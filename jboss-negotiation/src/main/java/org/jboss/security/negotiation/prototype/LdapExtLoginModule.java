@@ -180,7 +180,7 @@ public class LdapExtLoginModule extends UsernamePasswordLoginModule
     @return and empty password String
     */
    protected String getUsersPassword() throws LoginException
-   {
+   {      
       return "";
    }
 

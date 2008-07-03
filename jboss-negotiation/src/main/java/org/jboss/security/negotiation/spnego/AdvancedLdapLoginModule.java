@@ -33,6 +33,8 @@ import javax.management.ObjectName;
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
+import javax.naming.directory.Attribute;
+import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import javax.naming.ldap.InitialLdapContext;
@@ -88,7 +90,20 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
 
    private static final String BASE_FILTER = "baseFilter";
 
-   private static final String SEARCH_TIME_LIMIT = "searchTimeLimit";
+   private static final String SEARCH_TIME_LIMIT = "searchTimerolesCtxDNLimit";
+
+   // Role Search Settings
+   private static final String ROLES_CTS_DN = "rolesCtxDN";
+
+   private static final String ROLE_FILTER = "roleFilter";
+
+   private static final String RECURSE_ROLES = "recurseRoles";
+
+   private static final String ROLE_ATTRIBUTE_ID = "roleAttributeID";
+
+   private static final String ROLE_ATTRIBUTE_IS_DN = "roleAttributeIsDN";
+
+   private static final String ROLE_NAME_ATTRIBUTE_ID = "roleNameAttributeID";
 
    /*
     * Other Constants
@@ -125,6 +140,23 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
 
    protected int searchTimeLimit = 10000;
 
+   protected SearchControls userSearchControls;
+
+   // Role Search Settings
+   protected String rolesCtxDN;
+
+   protected String roleFilter;
+
+   protected boolean recurseRoles;
+
+   protected SearchControls roleSearchControls;
+
+   protected String roleAttributeID;
+
+   protected boolean roleAttributeIsDN;
+
+   protected String roleNameAttributeID;
+
    /*
     * Module State 
     */
@@ -135,7 +167,7 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
    private char[] credential;
 
    private transient SimpleGroup userRoles = new SimpleGroup("Roles");
-   
+
    @Override
    public void initialize(Subject subject, CallbackHandler handler, Map sharedState, Map options)
    {
@@ -163,6 +195,30 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
             log.warn("Failed to parse: " + temp + ", using searchTimeLimit=" + searchTimeLimit);
          }
       }
+
+      userSearchControls = new SearchControls();
+      userSearchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+      userSearchControls.setReturningAttributes(new String[0]);
+      userSearchControls.setTimeLimit(searchTimeLimit);
+
+      rolesCtxDN = (String) options.get(ROLES_CTS_DN);
+      roleFilter = (String) options.get(ROLE_FILTER);
+
+      temp = (String) options.get(RECURSE_ROLES);
+      recurseRoles = Boolean.parseBoolean(temp);
+
+      roleSearchControls = new SearchControls();
+      roleSearchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+      roleSearchControls.setReturningAttributes(new String[0]);
+      roleSearchControls.setTimeLimit(searchTimeLimit);
+
+      roleAttributeID = (String) options.get(ROLE_ATTRIBUTE_ID);
+
+      temp = (String) options.get(ROLE_ATTRIBUTE_IS_DN);
+      roleAttributeIsDN = Boolean.parseBoolean(temp);
+
+      roleNameAttributeID = (String) options.get(ROLE_NAME_ATTRIBUTE_ID);
+
    }
 
    @Override
@@ -212,12 +268,18 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
    @Override
    protected Group[] getRoleSets() throws LoginException
    {
-      Group[] roleSets = {userRoles};
+      Group[] roleSets =
+      {userRoles};
       return roleSets;
    }
 
    protected Boolean authorize() throws Exception
    {
+      /*
+       * TODO - General failures should throw LoginException, an
+       * actual failed authentication should throw FailedLoginException.
+       */
+
       // Obtain the username and password
       processIdentityAndCredential();
       log.trace("Identity - " + getIdentity().getName());
@@ -233,16 +295,28 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
          }
       }
 
-      LdapContext searchContext = constructLdapContext(bindDn, bindCredential, bindAuthentication);
-      log.debug("Obtained LdapContext");
+      LdapContext searchContext = null;
 
-      // Search for user in LDAP
-      String userDN = findUserDN(searchContext);
+      try
+      {
+         searchContext = constructLdapContext(bindDn, bindCredential, bindAuthentication);
+         log.debug("Obtained LdapContext");
 
-      // If authentication required authenticate as user
-      // Search for roles in LDAP
+         // Search for user in LDAP
+         String userDN = findUserDN(searchContext);
 
-      return Boolean.FALSE;
+         // If authentication required authenticate as user
+         // TODO
+
+         // Search for roles in LDAP
+         rolesSearch(searchContext, userDN);
+      }
+      finally
+      {
+         if (searchContext != null)
+            searchContext.close();
+      }
+      return Boolean.TRUE;
    }
 
    /**
@@ -280,7 +354,6 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
          String password = null;
 
          callbackHandler.handle(callbacks);
-
          String username = nc.getName();
          identity = createIdentity(username);
          credential = pc.getPassword();
@@ -347,16 +420,12 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
 
    protected String findUserDN(LdapContext ctx) throws Exception
    {
-      SearchControls constraints = new SearchControls();
-      constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
-      constraints.setReturningAttributes(new String[0]);
-      constraints.setTimeLimit(searchTimeLimit);
 
       NamingEnumeration results = null;
 
       Object[] filterArgs =
       {getIdentity().getName()};
-      results = ctx.search(baseCtxDN, baseFilter, filterArgs, constraints);
+      results = ctx.search(baseCtxDN, baseFilter, filterArgs, userSearchControls);
       if (results.hasMore() == false)
       {
          results.close();
@@ -378,6 +447,74 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
       return userDN;
    }
 
+   protected void rolesSearch(LdapContext searchContext, String dn) throws NamingException
+   {
+      Object[] filterArgs =
+      {getIdentity().getName(), dn};
+
+      NamingEnumeration results = searchContext.search(rolesCtxDN, roleFilter, filterArgs, roleSearchControls);
+      try
+      {
+         while (results.hasMore())
+         {
+            SearchResult sr = (SearchResult) results.next();
+            String resultDN = canonicalize(sr.getName());
+
+            log.debug("resultDN = " + resultDN);
+
+            String[] attrNames =
+            {roleAttributeID};
+
+            Attributes result = searchContext.getAttributes(resultDN, attrNames);
+            if (result != null && result.size() > 0)
+            {
+               Attribute roles = result.get(roleAttributeID);
+               for (int n = 0; n < roles.size(); n++)
+               {
+                  String roleName = (String) roles.get(n);
+                  if (roleAttributeIsDN)
+                  {
+                     // Query the roleDN location for the value of roleNameAttributeID
+                     String roleDN = roleName;
+                     String[] returnAttribute =
+                     {roleNameAttributeID};
+                     log.trace("Using roleDN: " + roleDN);
+                     try
+                     {
+                        Attributes result2 = searchContext.getAttributes(roleDN, returnAttribute);
+                        Attribute roles2 = result2.get(roleNameAttributeID);
+                        if (roles2 != null)
+                        {
+                           for (int m = 0; m < roles2.size(); m++)
+                           {
+                              roleName = (String) roles2.get(m);
+                              addRole(roleName);
+                           }
+                        }
+                     }
+                     catch (NamingException e)
+                     {
+                        log.trace("Failed to query roleNameAttrName", e);
+                     }
+                  }
+                  else
+                  {
+                     // The role attribute value is the role name
+                     addRole(roleName);
+                  }
+               }
+
+            }
+         }
+      }
+      finally
+      {
+         if (results != null)
+            results.close();
+      }
+
+   }
+
    protected void traceLdapEnv(Properties env)
    {
       if (log.isTraceEnabled())
@@ -388,6 +525,40 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
          if (credentials != null && credentials.length() > 0)
             tmp.setProperty(Context.SECURITY_CREDENTIALS, "***");
          log.trace("Logging into LDAP server, env=" + tmp.toString());
+      }
+   }
+
+   private String canonicalize(String searchResult)
+   {
+      String result = searchResult;
+      int len = searchResult.length();
+
+      if (searchResult.endsWith("\""))
+      {
+         result = searchResult.substring(0, len - 1) + "," + rolesCtxDN + "\"";
+      }
+      else
+      {
+         result = searchResult + "," + rolesCtxDN;
+      }
+      return result;
+   }
+
+   private void addRole(String roleName)
+   {
+      if (roleName != null)
+      {
+         try
+         {
+            Principal p = super.createIdentity(roleName);
+            if (log.isTraceEnabled())
+               log.trace("Assign user '" + getIdentity().getName() + "' to role " + roleName);
+            userRoles.addMember(p);
+         }
+         catch (Exception e)
+         {
+            log.debug("Failed to create principal: " + roleName, e);
+         }
       }
    }
 

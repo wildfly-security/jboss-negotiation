@@ -24,9 +24,11 @@ package org.jboss.security.negotiation.spnego;
 import java.security.Principal;
 import java.security.PrivilegedAction;
 import java.security.acl.Group;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import javax.management.ObjectName;
@@ -166,7 +168,9 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
    /** The proof of login identity */
    private char[] credential;
 
-   private transient SimpleGroup userRoles = new SimpleGroup("Roles");
+   private SimpleGroup userRoles = new SimpleGroup("Roles");
+
+   private Set<String> processedRoleDNs = new HashSet<String>();
 
    @Override
    public void initialize(Subject subject, CallbackHandler handler, Map sharedState, Map options)
@@ -495,6 +499,15 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
                      catch (NamingException e)
                      {
                         log.trace("Failed to query roleNameAttrName", e);
+                     }
+
+                     if (recurseRoles)
+                     {
+                        if (processedRoleDNs.contains(roleDN) == false)
+                        {
+                           processedRoleDNs.add(roleDN);
+                           rolesSearch(searchContext, roleDN);
+                        }
                      }
                   }
                   else

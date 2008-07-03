@@ -237,14 +237,7 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
    @Override
    public boolean login() throws LoginException
    {
-      /*
-       * The super.login() check is required to decide if
-       * the current user needs to be authenticated, however
-       * the actual user and roles search should proceed based
-       * on their own options.
-       */
-
-      Boolean result = null;
+      Object result = null;
 
       AuthorizeAction action = new AuthorizeAction();
       if (AUTH_TYPE_GSSAPI.equals(bindAuthentication))
@@ -260,7 +253,7 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
             log.debug("Logged in '" + lc + "' LoginContext");
          }
 
-         result = (Boolean) Subject.doAs(serverSubject, action);
+         result = Subject.doAs(serverSubject, action);
          lc.logout();
       }
       else
@@ -268,8 +261,12 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
          result = action.run();
       }
 
-      return result.booleanValue();
+      if (result instanceof LoginException)
+      {
+         throw (LoginException) result;
+      }
 
+      return ((Boolean) result).booleanValue();
    }
 
    @Override
@@ -286,13 +283,8 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
       return roleSets;
    }
 
-   protected Boolean innerLogin() throws Exception
+   protected Boolean innerLogin() throws LoginException
    {
-      /*
-       * TODO - General failures should throw LoginException, an
-       * actual failed authentication should throw FailedLoginException.
-       */
-
       // Obtain the username and password
       processIdentityAndCredential();
       log.trace("Identity - " + getIdentity().getName());
@@ -302,9 +294,18 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
       {
          if (jaasSecurityDomain != null)
          {
-            ObjectName serviceName = new ObjectName(jaasSecurityDomain);
-            char[] tmp = DecodeAction.decode(bindCredential, serviceName);
-            bindCredential = new String(tmp);
+            try
+            {
+               ObjectName serviceName = new ObjectName(jaasSecurityDomain);
+               char[] tmp = DecodeAction.decode(bindCredential, serviceName);
+               bindCredential = new String(tmp);
+            }
+            catch (Exception e)
+            {
+               LoginException le = new LoginException("Unabe to decode bindCredential");
+               le.initCause(e);
+               throw le;
+            }
          }
       }
 
@@ -333,7 +334,16 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
       finally
       {
          if (searchContext != null)
-            searchContext.close();
+         {
+            try
+            {
+               searchContext.close();
+            }
+            catch (NamingException e)
+            {
+               log.warn("Error closing context", e);
+            }
+         }
       }
 
       return Boolean.valueOf(super.loginOk);
@@ -343,7 +353,7 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
     * Either retrieve existing values based on useFirstPass or use 
     * CallBackHandler to obtain the values.
     */
-   protected void processIdentityAndCredential() throws Exception
+   protected void processIdentityAndCredential() throws LoginException
    {
       if (super.login() == true)
       {
@@ -367,22 +377,31 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
       }
       else
       {
-         NameCallback nc = new NameCallback("User name: ", "guest");
-         PasswordCallback pc = new PasswordCallback("Password: ", false);
-         Callback[] callbacks =
-         {nc, pc};
+         try
+         {
+            NameCallback nc = new NameCallback("User name: ", "guest");
+            PasswordCallback pc = new PasswordCallback("Password: ", false);
+            Callback[] callbacks =
+            {nc, pc};
 
-         callbackHandler.handle(callbacks);
-         String username = nc.getName();
-         identity = createIdentity(username);
-         credential = pc.getPassword();
-         pc.clearPassword();
+            callbackHandler.handle(callbacks);
+            String username = nc.getName();
+            identity = createIdentity(username);
+            credential = pc.getPassword();
+            pc.clearPassword();
+         }
+         catch (Exception e)
+         {
+            LoginException le = new LoginException("Unable to obtain username/credential");
+            le.initCause(e);
+            throw le;
+         }
 
       }
    }
 
    protected LdapContext constructLdapContext(String dn, Object credential, String authentication)
-         throws NamingException
+         throws LoginException
    {
       Properties env = new Properties();
       Iterator iter = options.entrySet().iterator();
@@ -434,39 +453,57 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
       if (credential != null)
          env.put(Context.SECURITY_CREDENTIALS, credential);
       traceLdapEnv(env);
-      return new InitialLdapContext(env, null);
+      try
+      {
+         return new InitialLdapContext(env, null);
+      }
+      catch (NamingException e)
+      {
+         LoginException le = new LoginException("Unable to create new InitialLdapContext");
+         le.initCause(e);
+         throw le;
+      }
    }
 
-   protected String findUserDN(LdapContext ctx) throws Exception
+   protected String findUserDN(LdapContext ctx) throws LoginException
    {
 
-      NamingEnumeration results = null;
-
-      Object[] filterArgs =
-      {getIdentity().getName()};
-      results = ctx.search(baseCtxDN, baseFilter, filterArgs, userSearchControls);
-      if (results.hasMore() == false)
+      try
       {
+         NamingEnumeration results = null;
+
+         Object[] filterArgs =
+         {getIdentity().getName()};
+         results = ctx.search(baseCtxDN, baseFilter, filterArgs, userSearchControls);
+         if (results.hasMore() == false)
+         {
+            results.close();
+            throw new LoginException("Search of baseDN(" + baseCtxDN + ") found no matches");
+         }
+
+         SearchResult sr = (SearchResult) results.next();
+         String name = sr.getName();
+         String userDN = null;
+         if (sr.isRelative() == true)
+            userDN = name + "," + baseCtxDN;
+         else
+            throw new LoginException("Can't follow referal for authentication: " + name);
+
          results.close();
-         throw new NamingException("Search of baseDN(" + baseCtxDN + ") found no matches");
+         results = null;
+
+         log.trace("findUserDN - " + userDN);
+         return userDN;
       }
-
-      SearchResult sr = (SearchResult) results.next();
-      String name = sr.getName();
-      String userDN = null;
-      if (sr.isRelative() == true)
-         userDN = name + "," + baseCtxDN;
-      else
-         throw new NamingException("Can't follow referal for authentication: " + name);
-
-      results.close();
-      results = null;
-
-      log.trace("findUserDN - " + userDN);
-      return userDN;
+      catch (NamingException e)
+      {
+         LoginException le = new LoginException("Unable to find user DN");
+         le.initCause(e);
+         throw le;
+      }
    }
 
-   protected void authenticate(String userDN)
+   protected void authenticate(String userDN) throws LoginException
    {
       if (credential.length == 0)
       {
@@ -485,7 +522,9 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
       catch (NamingException ne)
       {
          log.debug("Authentication failed - " + ne.getMessage());
-         return;
+         LoginException le = new LoginException("Authentication failed");
+         le.initCause(ne);
+         throw le;
       }
 
       super.loginOk = true;
@@ -497,14 +536,15 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
 
    }
 
-   protected void rolesSearch(LdapContext searchContext, String dn) throws NamingException
+   protected void rolesSearch(LdapContext searchContext, String dn) throws LoginException
    {
       Object[] filterArgs =
       {getIdentity().getName(), dn};
 
-      NamingEnumeration results = searchContext.search(rolesCtxDN, roleFilter, filterArgs, roleSearchControls);
+      NamingEnumeration results = null;
       try
       {
+         results = searchContext.search(rolesCtxDN, roleFilter, filterArgs, roleSearchControls);
          while (results.hasMore())
          {
             SearchResult sr = (SearchResult) results.next();
@@ -566,10 +606,25 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
             }
          }
       }
+      catch (NamingException e)
+      {
+         LoginException le = new LoginException("Error finding roles");
+         le.initCause(e);
+         throw le;
+      }
       finally
       {
          if (results != null)
-            results.close();
+         {
+            try
+            {
+               results.close();
+            }
+            catch (NamingException e)
+            {
+               log.warn("Problem closing results", e);
+            }
+         }
       }
 
    }
@@ -621,18 +676,18 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
       }
    }
 
-   private class AuthorizeAction implements PrivilegedAction<Boolean>
+   private class AuthorizeAction implements PrivilegedAction<Object>
    {
 
-      public Boolean run()
+      public Object run()
       {
          try
          {
             return innerLogin();
          }
-         catch (Exception e)
+         catch (LoginException e)
          {
-            throw new RuntimeException(e);
+            return e;
          }
       }
 

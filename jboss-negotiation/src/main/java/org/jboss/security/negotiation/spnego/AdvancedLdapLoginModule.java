@@ -68,8 +68,8 @@ import org.jboss.security.negotiation.prototype.DecodeAction;
  * use of this login module. 
  *
  * 
- * @author darran
- *
+ * @author darran.lofthouse@jboss.com
+ * @since 3rd July 2008
  */
 public class AdvancedLdapLoginModule extends AbstractServerLoginModule
 {
@@ -106,6 +106,9 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
    private static final String ROLE_ATTRIBUTE_IS_DN = "roleAttributeIsDN";
 
    private static final String ROLE_NAME_ATTRIBUTE_ID = "roleNameAttributeID";
+
+   // Authentication Settings
+   private static final String ALLOW_EMPTY_PASSWORD = "allowEmptyPassword";
 
    /*
     * Other Constants
@@ -158,6 +161,9 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
    protected boolean roleAttributeIsDN;
 
    protected String roleNameAttributeID;
+
+   // Authentication Settings
+   protected boolean allowEmptyPassword;
 
    /*
     * Module State 
@@ -223,6 +229,9 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
 
       roleNameAttributeID = (String) options.get(ROLE_NAME_ATTRIBUTE_ID);
 
+      temp = (String) options.get(ALLOW_EMPTY_PASSWORD);
+      allowEmptyPassword = Boolean.parseBoolean(temp);
+
    }
 
    @Override
@@ -277,7 +286,7 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
       return roleSets;
    }
 
-   protected Boolean authorize() throws Exception
+   protected Boolean innerLogin() throws Exception
    {
       /*
        * TODO - General failures should throw LoginException, an
@@ -310,17 +319,24 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
          String userDN = findUserDN(searchContext);
 
          // If authentication required authenticate as user
-         // TODO
+         if (super.loginOk == false)
+         {
+            authenticate(userDN);
+         }
 
-         // Search for roles in LDAP
-         rolesSearch(searchContext, userDN);
+         if (super.loginOk)
+         {
+            // Search for roles in LDAP
+            rolesSearch(searchContext, userDN);
+         }
       }
       finally
       {
          if (searchContext != null)
             searchContext.close();
       }
-      return Boolean.TRUE;
+
+      return Boolean.valueOf(super.loginOk);
    }
 
    /**
@@ -355,7 +371,6 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
          PasswordCallback pc = new PasswordCallback("Password: ", false);
          Callback[] callbacks =
          {nc, pc};
-         String password = null;
 
          callbackHandler.handle(callbacks);
          String username = nc.getName();
@@ -451,6 +466,37 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
       return userDN;
    }
 
+   protected void authenticate(String userDN)
+   {
+      if (credential.length == 0)
+      {
+         if (allowEmptyPassword == false)
+         {
+            log.trace("Rejecting empty password.");
+            return;
+         }
+      }
+
+      try
+      {
+         LdapContext authContext = constructLdapContext(userDN, credential, null);
+         authContext.close();
+      }
+      catch (NamingException ne)
+      {
+         log.debug("Authentication failed - " + ne.getMessage());
+         return;
+      }
+
+      super.loginOk = true;
+      if (getUseFirstPass() == true)
+      { // Add the username and password to the shared state map
+         sharedState.put("javax.security.auth.login.name", getIdentity().getName());
+         sharedState.put("javax.security.auth.login.password", credential);
+      }
+
+   }
+
    protected void rolesSearch(LdapContext searchContext, String dn) throws NamingException
    {
       Object[] filterArgs =
@@ -464,7 +510,7 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
             SearchResult sr = (SearchResult) results.next();
             String resultDN = canonicalize(sr.getName());
 
-            log.debug("resultDN = " + resultDN);
+            log.trace("rolesSearch resultDN = " + resultDN);
 
             String[] attrNames =
             {roleAttributeID};
@@ -582,7 +628,7 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
       {
          try
          {
-            return authorize();
+            return innerLogin();
          }
          catch (Exception e)
          {

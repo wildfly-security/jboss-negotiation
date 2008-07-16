@@ -7,7 +7,7 @@
 
     <subtitle>A Guide for Administrators</subtitle>
 
-    <releaseinfo>2.0.3.Beta1</releaseinfo>
+    <releaseinfo>2.0.3.Beta2</releaseinfo>
 
     <authorgroup>
       <author>
@@ -109,4 +109,7 @@
 
   <xi:include href="modules/references.xml"
     xmlns:xi="http://www.w3.org/2001/XInclude" xpointer="element(/1)" />
+    
+  <xi:include href="modules/ldap_login_module.xml"
+    xmlns:xi="http://www.w3.org/2001/XInclude" xpointer="element(/1)" />    
 </book>

@@ -92,7 +92,7 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
 
    private static final String BASE_FILTER = "baseFilter";
 
-   private static final String SEARCH_TIME_LIMIT = "searchTimerolesCtxDNLimit";
+   private static final String SEARCH_TIME_LIMIT = "searchTimeLimit";
 
    // Role Search Settings
    private static final String ROLES_CTS_DN = "rolesCtxDN";
@@ -467,6 +467,11 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
 
    protected String findUserDN(LdapContext ctx) throws LoginException
    {
+
+      if (baseCtxDN == null)
+      {
+         return getIdentity().getName();
+      }
 
       try
       {

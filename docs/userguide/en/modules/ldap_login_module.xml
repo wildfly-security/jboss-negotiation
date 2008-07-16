@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE appendix PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+
+<appendix id="ldap_login_module">
+  <title>Advanced LDAP Login Module</title>
+
+  <para>
+    The JBoss Negotiation project includes a new LDAP login module to
+    handle the LDAP role searching requirements.
+  </para>
+
+  <para>
+    The new login module has been based on the existing
+    LdapExtLoginModule. The new module now allows for GSSAPI to be used
+    for authentication when searching LDAP and the the configuration
+    allows for the users search, the authentication or the roles search
+    to be skipped as is required.
+  </para>
+
+  <section>
+    <title>Configuration</title>
+
+    <para>
+      The fully qualified classname of the new login module is
+      <code>
+        org.jboss.security.negotiation.spnego.AdvancedLdapLoginModule
+      </code>
+    </para>
+
+    <warning>
+      <para>
+        The classname of this login module is subject to change,
+        especially if it migrates to the core security project.
+      </para>
+    </warning>
+
+    <para>
+      The following sections will describe the various configuration
+      options for this login module.
+    </para>
+
+    <para>
+      This login module supports the 'password-stacking', if this module
+      is being used in conjunction with other login modules this should
+      be set to 'useFirstPass'.
+    </para>
+
+    <section>
+      <title>Search Connection</title>
+
+      <para>
+        The first settings are the setting used to obtain the
+        <ulink
+          url="http://java.sun.com/j2se/1.5.0/docs/api/javax/naming/ldap/InitialLdapContext.html">
+          InitialLdapContext
+        </ulink>
+        used to search for the user and to search for the users roles.
+      </para>
+
+      <para>
+        The login module supports obtaining this InitialLdapContext
+        using a username and credential or using GSSAPI for a previously
+        authenticated user.
+      </para>
+
+      <section>
+        <title>Username / Credential Authentication</title>
+
+        <para>
+          To authenticate using a username and password the following
+          settings are required.
+        </para>
+
+        <itemizedlist>
+          <listitem>
+            <para>
+              bindDN - The DN used to bind against the LDAP server for
+              the user and roles queries. This is some DN with
+              read/search permissions on the baseCtxDN and rolesCtxDN
+              values.
+            </para>
+          </listitem>
+
+          <listitem>
+            <para>
+              bindCredential - The password for the bindDN. This can be
+              encrypted if the jaasSecurityDomain is specified.
+            </para>
+          </listitem>
+
+          <listitem>
+            <para>
+              jaasSecurityDomain - The JMX ObjectName of the
+              JaasSecurityDomain to use to decrypt the
+              java.naming.security.principal. The encrypted form of the
+              password is that returned by the
+              JaasSecurityDomain#encrypt64(byte[]) method. The
+              org.jboss.security.plugins.PBEUtils can also be used to
+              generate the encrypted form.
+            </para>
+          </listitem>
+        </itemizedlist>
+      </section>
+
+      <section>
+        <title>GSSAPI Authentication</title>
+
+        <itemizedlist>
+          <listitem>
+            <para>
+              bindAuthentication - Set this to GSSAPI for GSSAPI based
+              authentication.
+            </para>
+          </listitem>
+
+          <listitem>
+            <para>
+              jaasSecurityDomain - The security domain to obtain the
+              Subject required for the connection.
+            </para>
+          </listitem>
+        </itemizedlist>
+
+        <note>
+          <para>
+            For information on defining the required jaasSecurityDomain
+            see '
+            <xref linkend="host_security_domain" />
+            '
+          </para>
+        </note>
+      </section>
+
+      <para>
+        As with the original LdapExtLoginModule all of of the properties
+        provided to this login mode are passed into the
+        InitialLdapContext constructor so you can make use of any of the
+        options supported by the LdapCtxFactory you are using.
+      </para>
+
+    </section>
+
+    <section>
+      <title>User DN Search</title>
+
+      <para>
+        The first step this login module performs is to take the
+        provided username and search for the DN of the user.
+      </para>
+
+      <itemizedlist>
+        <listitem>
+          <para>
+            baseCtxDN - The fixed DN of the context to search for user
+            roles. Consider that this is not the Distinguished Name of
+            where the actual roles are; rather, this is the DN of where
+            the objects containing the user roles are (e.g. for active
+            directory, this is the DN where the user account is)
+          </para>
+        </listitem>
+
+        <listitem>
+          <para>
+            baseFilter - A search filter used to locate the context of
+            the user to authenticate. The input username/userDN as
+            obtained from the login module callback will be substituted
+            into the filter anywhere a "{0}" expression is seen. This
+            substitution behavior comes from the standard
+            DirContext?.search(Name, String, Object[], SearchControls?
+            cons) method. An common example search filter is
+            "(uid={0})".
+          </para>
+        </listitem>
+
+        <listitem>
+          <para>
+            searchTimeLimit - The timeout in milliseconds for the
+            user/role searches. Defaults to 10000 (10 seconds).
+          </para>
+        </listitem>
+      </itemizedlist>
+
+      <note>
+        <para>
+          It is possible to disable the user DN search by omitting the
+          'baseCtxDN' property. In this case the provided username will
+          be used as the DN instead for the following steps in this
+          login module.
+        </para>
+      </note>
+    </section>
+
+    <section>
+      <title>User Authentication</title>
+
+      <para>
+        If this login module is not the first login module and a
+        previous login module has already authenticated the user this
+        step will be skipped.
+      </para>
+
+      <para>
+        If no previous login module has authenticated the user this step
+        takes the User DN from the User DN search and their provided
+        credential and attempts to create a new InitialLdapContext to
+        verify that the User DN and credential combination is valid.
+      </para>
+
+      <para>
+        There is only one additional setting to control the behaviour of
+        the user authentication.
+      </para>
+
+      <itemizedlist>
+        <listitem>
+          <para>
+            allowEmptyPasswords - A flag indicating if empty(length==0)
+            passwords should be passed to the ldap server. An empty
+            password is treated as an anonymous login by some ldap
+            servers and this may not be a desirable feature. Set this to
+            false to reject empty passwords, true to have the ldap
+            server validate the empty password. The default is false.
+          </para>
+        </listitem>
+      </itemizedlist>
+
+    </section>
+
+    <section>
+      <title>Roles Search</title>
+
+      <para>
+        This final step searches for the roles that the user is a member
+        of.
+      </para>
+
+      <caution>
+        <para>
+          The settings for this section are similar to the
+          LdapExtLoginModule but do be careful at the recursion now
+          works by finding the roles listed within a DN.
+        </para>
+      </caution>
+    </section>
+
+  </section>
+
+
+</appendix>
+

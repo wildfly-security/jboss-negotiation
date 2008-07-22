@@ -215,7 +215,7 @@
       <itemizedlist>
         <listitem>
           <para>
-            allowEmptyPasswords - A flag indicating if empty(length==0)
+            allowEmptyPasswords - A flag indicating if empty (length==0)
             passwords should be passed to the ldap server. An empty
             password is treated as an anonymous login by some ldap
             servers and this may not be a desirable feature. Set this to
@@ -242,8 +242,338 @@
           works by finding the roles listed within a DN.
         </para>
       </caution>
+
+      <itemizedlist>
+        <listitem>
+          <para>
+            rolesCtxDN - The fixed DN of the context to search for user
+            roles. Consider that this is not the Distinguished Name of
+            where the actual roles are; rather, this is the DN of where
+            the objects containing the user roles are (e.g. for active
+            directory, this is the DN where the user account is)
+          </para>
+        </listitem>
+
+        <listitem>
+          <para>
+            roleFilter - A search filter used to locate the roles
+            associated with the authenticated user. The input
+            username/userDN as obtained from the login module callback
+            will be substituted into the filter anywhere a "{0}"
+            expression is seen. The authenticated userDN will be
+            substituted into the filter anywhere a "{1}" is seen. An
+            example search filter that matches on the input username is:
+            "(member={0})". An alternative that matches on the
+            authenticated userDN is: "(member={1})".
+          </para>
+        </listitem>
+
+        <listitem>
+          <para>
+            roleAttributeIsDN - A flag indicating whether the user's
+            role attribute contains the fully distinguished name of a
+            role object, or the users's role attribute contains the role
+            name. If false, the role name is taken from the value of the
+            user's role attribute. If true, the role attribute
+            represents the distinguished name of a role object. The role
+            name is taken from the value of the roleNameAttributeId`
+            attribute of the corresponding object. In certain directory
+            schemas (e.g., Microsoft Active Directory), role
+            (group)attributes in the user object are stored as DNs to
+            role objects instead of as simple names, in which case, this
+            property should be set to true. The default value of this
+            property is false.
+          </para>
+        </listitem>
+
+        <listitem>
+          <para>
+            roleAttributeID - The name of the role attribute of the
+            context which corresponds to the name of the role. If the
+            roleAttributeIsDN property is set to true, this property is
+            the DN of the context to query for the roleNameAttributeID
+            attribute. If the roleAttributeIsDN property is set to
+            false, this property is the attribute name of the role name.
+          </para>
+        </listitem>
+
+        <listitem>
+          <para>
+            roleNameAttributeID - The name of the role attribute of the
+            context which corresponds to the name of the role. If the
+            roleAttributeIsDN property is set to true, this property is
+            used to find the role object's name attribute. If the
+            roleAttributeIsDN property is set to false, this property is
+            ignored.
+          </para>
+        </listitem>
+
+        <listitem>
+          <para>
+            recurseRules - Enable a recursive role search. The login
+            module tracks already added roles to cope with cyclic
+            references.
+          </para>
+        </listitem>
+
+        <listitem>
+          <para>
+            searchScope - Sets the search scope to one of the strings.
+            The default is SUBTREE_SCOPE.
+
+            <itemizedlist>
+              <listitem>
+                <para>
+                  OBJECT_SCOPE - only search the named roles context.
+                </para>
+              </listitem>
+
+              <listitem>
+                <para>
+                  ONELEVEL_SCOPE - search directly under the named roles
+                  context.
+                </para>
+              </listitem>
+
+              <listitem>
+                <para>
+                  SUBTREE_SCOPE - If the roles context is not a
+                  DirContext?, search only the object. If the roles
+                  context is a DirContext?, search the subtree rooted at
+                  the named object, including the named object itself
+                </para>
+              </listitem>
+            </itemizedlist>
+          </para>
+        </listitem>
+
+        <listitem>
+          <para>
+            searchTimeLimit - The timeout in milliseconds for the
+            user/role searches. Defaults to 10000 (10 seconds).
+          </para>
+        </listitem>
+      </itemizedlist>
+
+      <note>
+        <para>
+          The searchTimeLimit setting is shared between both of the
+          searches.
+        </para>
+      </note>
     </section>
 
+  </section>
+
+  <section>
+    <title>Examples</title>
+
+    <para>
+      Here are some example configurations making use of the new login
+      module.
+    </para>
+
+    <section>
+      <title>Active Directory</title>
+
+      <para>
+        Here are two example configurations making use of Active
+        Directory, the first example shows the login module being used
+        for both of the searches and the authentication. The second
+        example shows the login module being chained after the
+        SPNEGOLoginModule.
+      </para>
+
+      <para>
+        The following is an extract of the dumped ldiff from the Active
+        Directory domain these examples were tested against.
+      </para>
+
+      <programlisting>
+        <![CDATA[
+dn: CN=Darran Lofthouse,CN=Users,DC=vm104,DC=gsslab,DC=rdu,DC=redhat,DC=com
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: user
+cn: Darran Lofthouse
+distinguishedName: 
+ CN=Darran Lofthouse,CN=Users,DC=vm104,DC=gsslab,DC=rdu,DC=redhat,DC=com
+memberOf: CN=Banker,CN=Users,DC=vm104,DC=gsslab,DC=rdu,DC=redhat,DC=com
+name: Darran Lofthouse
+sAMAccountName: darranl
+userPrincipalName: darranl@vm104.gsslab.rdu.redhat.com
+
+dn: CN=Banker,CN=Users,DC=vm104,DC=gsslab,DC=rdu,DC=redhat,DC=com
+objectClass: top
+objectClass: group
+cn: Banker
+member: 
+ CN=Darran Lofthouse,CN=Users,DC=vm104,DC=gsslab,DC=rdu,DC=redhat,DC=com
+distinguishedName: 
+ CN=Banker,CN=Users,DC=vm104,DC=gsslab,DC=rdu,DC=redhat,DC=com
+memberOf: CN=Trader,CN=Users,DC=vm104,DC=gsslab,DC=rdu,DC=redhat,DC=com
+name: Banker
+sAMAccountName: Banker
+
+dn: CN=Trader,CN=Users,DC=vm104,DC=gsslab,DC=rdu,DC=redhat,DC=com
+objectClass: top
+objectClass: group
+cn: Trader
+member: CN=Banker,CN=Users,DC=vm104,DC=gsslab,DC=rdu,DC=redhat,DC=com
+distinguishedName: 
+ CN=Trader,CN=Users,DC=vm104,DC=gsslab,DC=rdu,DC=redhat,DC=com
+name: Trader
+sAMAccountName: Trader]]>
+      </programlisting>
+
+      <section id="full_configuration">
+        <title>Full Authentication</title>
+
+        <para>
+          The following configuration would require a username and
+          password to be provided for the authentication process.
+        </para>
+
+
+        <programlisting>
+          <![CDATA[
+<application-policy name="SPNEGO">
+  <authentication>
+    <login-module
+      code="org.jboss.security.negotiation.spnego.AdvancedLdapLoginModule"
+      flag="required">
+      
+      <module-option name="bindAuthentication">GSSAPI</module-option>
+      <module-option name="jaasSecurityDomain">host</module-option>
+      <module-option name="java.naming.provider.url">ldap://VM104:3268</module-option>
+        
+      <module-option name="baseCtxDN">CN=Users,DC=vm104,DC=gsslab,DC=rdu,DC=redhat,DC=com</module-option>
+      <module-option name="baseFilter">(sAMAccountName={0})</module-option>
+        
+      <module-option name="rolesCtxDN">CN=Users,DC=vm104,DC=gsslab,DC=rdu,DC=redhat,DC=com</module-option>
+      <module-option name="roleFilter">(distinguishedName={1})</module-option>
+       
+      <module-option name="roleAttributeID">memberOf</module-option>
+      <module-option name="roleAttributeIsDN">true</module-option>
+      <module-option name="roleNameAttributeID">cn</module-option>
+        
+      <module-option name="recurseRoles">true</module-option>
+    </login-module>        
+  </authentication>
+</application-policy>]]>
+        </programlisting>
+
+        <para>
+          The first three options 'bindAuthentication',
+          'jaasSecurityDomain', and 'java.naming.provider.url' configure
+          how the login module will connect to LDAP and how the
+          authentication will occur.
+        </para>
+
+        <para>
+          The 'baseCtxDN' option is the DN to start the search for the
+          user, the 'baseFilter' attribute in this example searches for
+          the user using the 'sAMAccountName' attribute.
+        </para>
+
+        <para>
+          The 'rolesCtxDN' is the DN to search for the roles, in this
+          example we are searching using the 'memberOf' attribute on the
+          user so this DN matches the DN used previously.
+        </para>
+
+        <para>
+          The roles filter re-locates the user using the distinguished
+          name of the user, it is important that this search is DN base
+          so that a recursive search can be enabled.
+        </para>
+
+        <para>
+          The 'roleAttributeID' option specified that the 'memberOf'
+          attributes should be read from the user object, the
+          'roleAttributeIsDN' option specified that this value is a DN
+          so the group object is retrieved and finally the
+          'roleNameAttributeID' option specifies that the attribute 'cn'
+          should be read from the group. This is the role that this
+          login module returns.
+        </para>
+
+        <para>
+          Finally the 'recurseRoles' attribute is set to true so the DN
+          from the located group is used to repeat the roles search so
+          if a group is configured with the 'memberOf' attribute then
+          this will be recursively searched to locate all of the roles.
+        </para>
+      </section>
+
+      <section>
+        <title>Chained Configuration</title>
+
+        <para>
+          The following configuration shows the AdvancedLdapLoginModule
+          chained after the SPNEGOLoginModule.
+        </para>
+
+        <programlisting>
+          <![CDATA[
+<application-policy name="SPNEGO">
+  <authentication>
+    <login-module
+     code="org.jboss.security.negotiation.spnego.SPNEGOLoginModule"
+     flag="requisite">
+      <module-option name="password-stacking">useFirstPass</module-option>
+      <module-option name="serverSecurityDomain">host</module-option>
+    </login-module>
+
+    <login-module
+      code="org.jboss.security.negotiation.spnego.AdvancedLdapLoginModule"
+      flag="required">
+      <module-option name="password-stacking">useFirstPass</module-option>
+      
+      <module-option name="bindAuthentication">GSSAPI</module-option>
+      <module-option name="jaasSecurityDomain">host</module-option>
+      <module-option name="java.naming.provider.url">ldap://VM104:3268</module-option>
+       
+      <module-option name="baseCtxDN">CN=Users,DC=vm104,DC=gsslab,DC=rdu,DC=redhat,DC=com</module-option>   
+      <module-option name="baseFilter">(userPrincipalName={0})</module-option>
+            
+      <module-option name="rolesCtxDN">CN=Users,DC=vm104,DC=gsslab,DC=rdu,DC=redhat,DC=com</module-option>
+      <module-option name="roleFilter">(distinguishedName={1})</module-option>
+       
+      <module-option name="roleAttributeID">memberOf</module-option>
+      <module-option name="roleAttributeIsDN">true</module-option>
+      <module-option name="roleNameAttributeID">cn</module-option>
+       
+      <module-option name="recurseRoles">true</module-option>
+    </login-module>
+  </authentication>
+</application-policy>]]>
+        </programlisting>
+
+        <para>
+          The majority of this configuration is identical to the
+          previous example, the first notable exception is that both
+          login modules should have 'password-stacking' to
+          'useFirstPass' this allows the first login module to pass the
+          username to the second login module.
+        </para>
+
+        <para>
+          The second change is that now the 'baseFilter' now searched on
+          the 'userPrincipalName', this is because this is the name
+          identified by the SPNEGOLoginModule.
+        </para>
+
+        <para>
+          Apart from these changes the rest of these changes are
+          identical to '
+          <xref linkend="full_configuration" />
+          '
+        </para>
+
+      </section>
+    </section>
   </section>
 
 

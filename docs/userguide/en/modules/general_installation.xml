@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
       "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
-      
+
 <chapter id="general_installation">
   <title>General Installation</title>
 
@@ -150,7 +150,8 @@
 
         <para>
           The properties service is documented in the Wiki at
-          <link linkend="http://wiki.jboss.org/wiki/PropertiesService">
+          <link
+            linkend="http://wiki.jboss.org/wiki/PropertiesService">
             http://wiki.jboss.org/wiki/PropertiesService
           </link>
         </para>
@@ -322,7 +323,7 @@
       </itemizedlist>
 
       <para>
-        The second security domain is used to load the users roles after
+        The second login module is used to load the users roles after
         the authentication has already taken place by the previous login
         module. The Beta2 release will cover how to make use of LDAP to
         retrieve the users roles so for a Microsoft Active Directory
@@ -340,7 +341,7 @@
           JBoss 4.2.2.GA Configuration Guide
         </ulink>
       </para>
-      
+
       <para>
         If the application security domain is defined within the
         <code>
@@ -367,6 +368,15 @@ darranl@KERBEROS.JBOSS.ORG=Users
       <para>
         Before the '=' is the fully qualified name of the user, after
         the '=' is a comma separated list of the users roles.
+      </para>
+
+      <para>
+        The JBoss Negotiation project also includes a new login module
+        that can be used to obtain the roles from LDAP after the SPNEGO
+        login module see '
+        <xref linkend="ldap_login_module" />
+        ' for the complete documentation on chaining this login module
+        after the SPNEGOLoginModule.
       </para>
 
     </section>
@@ -617,8 +627,8 @@ darranl@KERBEROS.JBOSS.ORG=Users
           </imageobject>
         </mediaobject>
       </figure>
-      
-      
+
+
     </section>
   </section>
 </chapter>

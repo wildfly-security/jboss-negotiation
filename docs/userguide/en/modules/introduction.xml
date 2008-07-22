@@ -4,33 +4,49 @@
 <chapter id="introduction">
   <title>Introduction to JBoss Negotiation</title>
 
-  <para>The JBoss Negotiation project provides a set of components to bring
-  '<emphasis role="bold">S</emphasis>imple and <emphasis
-  role="bold">P</emphasis>rotected GSSAPI <emphasis
-  role="bold">Nego</emphasis>tiation Mechanism' or SPNEGO to JBoss.</para>
+  <para>
+    The JBoss Negotiation project provides a set of components to bring
+    '
+    <emphasis role="bold">S</emphasis>
+    imple and
+    <emphasis role="bold">P</emphasis>
+    rotected GSSAPI
+    <emphasis role="bold">Nego</emphasis>
+    tiation Mechanism' or SPNEGO to JBoss.
+  </para>
 
-  <para>SPNEGO authentication allows a user already authenticated to a
-  <emphasis role="bold">K</emphasis>erberos <emphasis
-  role="bold">D</emphasis>omain <emphasis role="bold">C</emphasis>ontroller /
-  KDC to silently authenticate to remote services without being prompted for
-  further usernames and passwords. In addition to this the users credentials
-  can be delegate to the remote system allowing the remote system to contact
-  further systems as the user.</para>
+  <para>
+    SPNEGO authentication allows a user already authenticated to a
+    <emphasis role="bold">K</emphasis>
+    erberos
+    <emphasis role="bold">D</emphasis>
+    omain
+    <emphasis role="bold">C</emphasis>
+    ontroller / KDC to silently authenticate to remote services without
+    being prompted for further usernames and passwords. In addition to
+    this the users credentials can be delegate to the remote system
+    allowing the remote system to contact further systems as the user.
+  </para>
 
-  <para>Many web browsers provide support for SPNEGO authentication, this
-  document focuses on <trademark>Microsoft Internet Explorer</trademark> and
-  Mozilla Firefox. There are also a number of kerberos domain controllers
-  available, this documentation focusses on <trademark>Microsoft Active
-  Directory</trademark> and the MIT KDC implementation. Contributions for
-  documentation on other web browsers and KDCs would be welcome.</para>
+  <para>
+    Many web browsers provide support for SPNEGO authentication, this
+    document focuses on
+    <trademark>Microsoft Internet Explorer</trademark>
+    and Mozilla Firefox. There are also a number of kerberos domain
+    controllers available, this documentation focusses on
+    <trademark>Microsoft Active Directory</trademark>
+    and the MIT KDC implementation. Contributions for documentation on
+    other web browsers and KDCs would be welcome.
+  </para>
 
   <para></para>
 
   <sect1>
     <title>Components</title>
 
-    <para>The JBoss Negotiation project provides the following components:
-    -</para>
+    <para>
+      The JBoss Negotiation project provides the following components: -
+    </para>
 
     <para></para>
 
@@ -38,18 +54,23 @@
       <listitem>
         <para>SPNEGO Authenticator and Login Module</para>
 
-        <para>The authentication process is handled by a Tomcat Authenticator
-        that and a JAAS login module, this combination achieves the
-        integration with JBoss security.</para>
+        <para>
+          The authentication process is handled by a Tomcat
+          Authenticator that and a JAAS login module, this combination
+          achieves the integration with JBoss security.
+        </para>
       </listitem>
 
       <listitem>
         <para>Negotiation Toolkit</para>
 
-        <para>This is a couple of utilities and a web application that can be
-        used to test various aspects of your negotiation configuration to
-        enable you to verify that the required steps are working correctly and
-        to debug where failures may be occuring.</para>
+        <para>
+          This is a couple of utilities and a web application that can
+          be used to test various aspects of your negotiation
+          configuration to enable you to verify that the required steps
+          are working correctly and to debug where failures may be
+          occuring.
+        </para>
       </listitem>
     </itemizedlist>
   </sect1>
@@ -57,46 +78,62 @@
   <sect1>
     <title>General Authentication Process</title>
 
-    <para>When working with the JBoss login modules and the existing
-    authentication mechanisms work by asking the user to authenticate
-    themseves by the client sending thier credentials to the server and then
-    the login module verifying the credentials against either a local store of
-    credentials or against a store on a remote repository such as a database
-    server or a LDAP server.</para>
+    <para>
+      When working with the JBoss login modules and the existing
+      authentication mechanisms work by asking the user to authenticate
+      themseves by the client sending thier credentials to the server
+      and then the login module verifying the credentials against either
+      a local store of credentials or against a store on a remote
+      repository such as a database server or a LDAP server.
+    </para>
 
-    <para>The SPNEGO authentication mechansim is slightly different.</para>
+    <para>
+      The SPNEGO authentication mechansim is slightly different.
+    </para>
 
     <para></para>
 
     <itemizedlist>
       <listitem>
-        <para><emphasis role="bold">Server Authentication</emphasis> - First
-        the application server itself authenticates against the KDC and
-        obtains it's own ticket.</para>
+        <para>
+          <emphasis role="bold">Server Authentication</emphasis>
+          - First the application server itself authenticates against
+          the KDC and obtains it's own ticket.
+        </para>
       </listitem>
 
       <listitem>
-        <para><emphasis role="bold">Client Authentication</emphasis> - After
-        the server prompt the client to authenticate the client responds with
-        a SPNEGO token, the server then makes use of it's own ticket to decode
-        the clients ticked and respond to the client.</para>
+        <para>
+          <emphasis role="bold">Client Authentication</emphasis>
+          - After the server prompt the client to authenticate the
+          client responds with a SPNEGO token, the server then makes use
+          of it's own ticket to decode the clients ticked and respond to
+          the client.
+        </para>
 
-        <para>This process can take a couple of round trips for the client to
-        authenticate against the server.</para>
+        <para>
+          This process can take a couple of round trips for the client
+          to authenticate against the server.
+        </para>
       </listitem>
 
       <listitem>
-        <para><emphasis role="bold">Mututal Authentication</emphasis> - If
-        this is required it is even possible for the client to request that
-        the server authenticates itself against the client.</para>
+        <para>
+          <emphasis role="bold">Mututal Authentication</emphasis>
+          - If this is required it is even possible for the client to
+          request that the server authenticates itself against the
+          client.
+        </para>
       </listitem>
 
       <listitem>
-        <para><emphasis role="bold">Credential Delegation</emphasis> - A
-        client can also be configured so that the credentials used for
-        authentication can be delegated to the server, this means that the
-        application server can then go on and call other systems on behalf of
-        the calling client.</para>
+        <para>
+          <emphasis role="bold">Credential Delegation</emphasis>
+          - A client can also be configured so that the credentials used
+          for authentication can be delegated to the server, this means
+          that the application server can then go on and call other
+          systems on behalf of the calling client.
+        </para>
       </listitem>
     </itemizedlist>
 
@@ -106,11 +143,17 @@
   <sect1>
     <title>Pre-requisits</title>
 
-    <para>The installation of this module requires the externalised
-    authenticator capability of JBoss which was added from JBoss 4.0.5.GA,
-    these instructions have been prepared against JBoss 4.2.2.GA.</para>
+    <para>
+      The installation of this module requires the externalised
+      authenticator capability of JBoss which was added from JBoss
+      4.0.5.GA, these instructions have been prepared against JBoss
+      4.2.2.GA.
+    </para>
 
-    <para><link
-    linkend="???">http://wiki.jboss.org/wiki/ExternalizeTomcatAuthenticators</link></para>
+    <para>
+      <link linkend="???">
+        http://wiki.jboss.org/wiki/ExternalizeTomcatAuthenticators
+      </link>
+    </para>
   </sect1>
 </chapter>

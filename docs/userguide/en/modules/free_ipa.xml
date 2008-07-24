@@ -162,6 +162,16 @@
         <xref linkend="negotiation_toolkit" />
         .
       </para>
+      
+          <para>
+      For the role mapping again you could make use of the UsersRolesLoginModule as described in
+      <xref linkend="users_roles_login_module" />
+      or you can make use of a new LDAP login module to load the roles
+      directly from the Free IPA Open LDAP server, an example of think login module
+      is documented in
+      <xref linkend="ipa_chained_configuration" />
+    </para>
+      
     </section>
 
   </section>

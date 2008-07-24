@@ -10,7 +10,8 @@
     <para>
       This chapter describes the configuration required to enable SPNEGO
       negotiation in Mozilla Firefox. These instructions are prepared
-      against Mozilla Firefox 2.0.0.11 on Microsoft Windows 2003
+      against Mozilla Firefox 2.0.0.11 on Microsoft Windows 2003 but
+      have also been tested on Fedora 9 with Firefox 3.0.1.
     </para>
   </section>
 

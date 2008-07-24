@@ -324,7 +324,7 @@
         </listitem>
       </itemizedlist>
 
-      <para>
+      <para id="users_roles_login_module">
         The second login module is used to load the users roles after
         the authentication has already taken place by the previous login
         module. The Beta2 release will cover how to make use of LDAP to

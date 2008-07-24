@@ -435,7 +435,7 @@ name: Trader
 sAMAccountName: Trader]]>
       </programlisting>
 
-      <section id="full_configuration">
+      <section id="ad_full_configuration">
         <title>Full Authentication</title>
 
         <para>
@@ -506,7 +506,7 @@ sAMAccountName: Trader]]>
         </para>
       </section>
 
-      <section>
+      <section id="ad_chained_configuration">
         <title>Chained Configuration</title>
 
         <para>
@@ -564,11 +564,211 @@ sAMAccountName: Trader]]>
         <para>
           Apart from these changes the rest of these changes are
           identical to '
-          <xref linkend="full_configuration" />
+          <xref linkend="ad_full_configuration" />
           '
         </para>
 
       </section>
+    </section>
+
+    <section>
+      <title>Free IPA</title>
+
+      <para>
+        Here are two example configurations making use of the Open LDAP
+        part of Free IPA, the first example shows the login module being
+        used for both of the searches and the authentication. The second
+        example shows the login module being chained after the
+        SPNEGOLoginModule.
+      </para>
+
+      <para>
+        The following is an extract of the dumped ldiff from the Free
+        IPA domain these examples were tested against.
+      </para>
+
+      <programlisting>
+        <![CDATA[
+dn: uid=darranl,cn=users,cn=accounts,dc=jboss,dc=org
+displayName: Darran Lofthouse
+uid: darranl
+title: Mr
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: inetUser
+objectClass: posixAccount
+objectClass: krbPrincipalAux
+objectClass: radiusprofile
+sn: Lofthouse
+mail: darran.lofthouse@jboss.com
+krbPrincipalName: darranl@JBOSS.ORG
+givenName: Darran
+cn: Darran Lofthouse
+initials: DL
+memberOf: cn=banker,cn=groups,cn=accounts,dc=jboss,dc=org
+memberOf: cn=Trader,cn=groups,cn=accounts,dc=jboss,dc=org
+
+dn: cn=Banker,cn=groups,cn=accounts,dc=jboss,dc=org
+objectClass: top
+objectClass: groupofnames
+objectClass: posixGroup
+objectClass: inetUser
+cn: Banker
+memberOf: cn=trader,cn=groups,cn=accounts,dc=jboss,dc=org
+member: uid=darranl,cn=users,cn=accounts,dc=jboss,dc=org
+
+dn: cn=Trader,cn=groups,cn=accounts,dc=jboss,dc=org
+objectClass: top
+objectClass: groupofnames
+objectClass: posixGroup
+objectClass: inetUser
+cn: Trader
+member: cn=Banker,cn=groups,cn=accounts,dc=jboss,dc=org        
+]]>
+      </programlisting>
+
+      <para>
+        As you can see for the purpose of configuring the login modules
+        the structure is very similar to the structure used by Active
+        Directory so the resulting login module configuration is going
+        to be very similar.
+      </para>
+    </section>
+
+    <section id="ipa_full_authentication">
+      <title>Full Authentication</title>
+
+      <para>
+        The following configuration would require a username and
+        password to be provided for the authentication process.
+      </para>
+
+      <programlisting>
+        <![CDATA[
+<application-policy name="SPNEGO">
+  <authentication>
+    <login-module
+      code="org.jboss.security.negotiation.spnego.AdvancedLdapLoginModule"
+      flag="required">        
+      <module-option name="bindAuthentication">GSSAPI</module-option>
+      <module-option name="jaasSecurityDomain">host</module-option>       
+      <module-option name="java.naming.provider.url">ldap://kerberos.jboss.org:389</module-option>
+        
+      <module-option name="baseCtxDN">cn=users,cn=accounts,dc=jboss,dc=org</module-option>
+      <module-option name="baseFilter">(uid={0})</module-option>        
+        
+      <module-option name="roleAttributeID">memberOf</module-option>
+      <module-option name="roleAttributeIsDN">true</module-option>
+      <module-option name="roleNameAttributeID">cn</module-option>
+        
+      <module-option name="recurseRoles">true</module-option>
+    </login-module>        
+  </authentication>
+</application-policy>]]>
+      </programlisting>
+
+      <para>
+        The first three options 'bindAuthentication',
+        'jaasSecurityDomain', and 'java.naming.provider.url' configure
+        how the login module will connect to LDAP and how the
+        authentication will occur.
+      </para>
+
+      <para>
+        The 'baseCtxDN' option is the DN to start the search for the
+        user, the 'baseFilter' attribute in this example searches for
+        the user using the 'uid' attribute.
+      </para>
+
+      <para>
+        As the 'memberOf' attribute is going to be read directly from
+        the user there is no need to specify a 'rolesCtxDN' or
+        'roleFilter', instead the attribute named by the
+        'roleAttributeID' option which in this case is 'memberOf' will
+        be read directly from the user.
+      </para>
+
+      <para>
+        The 'roleAttributeIsDN' option then specifies that this value is
+        a DN so the group object is retrieved and finally the
+        'roleNameAttributeID' option specifies that the attribute 'cn'
+        should be read from the group. This is the role that this login
+        module returns.
+      </para>
+
+      <para>
+        Finally the 'recurseRoles' attribute is set to true so the DN
+        from the located group is used to repeat the process so if a
+        group is configured with the 'memberOf' attribute then this will
+        be recursively used to locate all of the roles.
+      </para>
+
+    </section>
+
+    <section id="ipa_chained_configuration">
+      <title>Chained Configuration</title>
+
+      <para>
+        The following configuration shows the AdvancedLdapLoginModule
+        chained after the SPNEGOLoginModule.
+      </para>
+
+      <programlisting>
+        <![CDATA[
+<application-policy name="SPNEGO">
+  <authentication>
+    <login-module
+       code="org.jboss.security.negotiation.spnego.SPNEGOLoginModule"
+       flag="requisite">
+       <module-option name="password-stacking">useFirstPass</module-option>
+       <module-option name="serverSecurityDomain">host</module-option>
+    </login-module>
+      
+    <login-module
+      code="org.jboss.security.negotiation.spnego.AdvancedLdapLoginModule"
+      flag="required">
+      <module-option name="password-stacking">useFirstPass</module-option>
+       
+      <module-option name="bindAuthentication">GSSAPI</module-option>
+      <module-option name="jaasSecurityDomain">host</module-option>        
+      <module-option name="java.naming.provider.url">ldap://kerberos.jboss.org:389</module-option>
+        
+      <module-option name="baseCtxDN">cn=users,cn=accounts,dc=jboss,dc=org</module-option>
+      <module-option name="baseFilter">(krbPrincipalName={0})</module-option>
+                
+      <module-option name="roleAttributeID">memberOf</module-option>
+      <module-option name="roleAttributeIsDN">true</module-option>
+      <module-option name="roleNameAttributeID">cn</module-option>
+        
+      <module-option name="recurseRoles">true</module-option>
+    </login-module>
+  </authentication>
+</application-policy>]]>
+      </programlisting>
+
+      <para>
+        As with the Active Directory examples the majority of this
+        configuration is identical to the previous example, the first
+        notable exception is that both login modules should have
+        'password-stacking' to 'useFirstPass' this allows the first
+        login module to pass the username to the second login module.
+      </para>
+
+      <para>
+        The second change is that now the 'baseFilter' now searched on
+        the 'krbPrincipalName', this is because this is the name
+        identified by the SPNEGOLoginModule.
+      </para>
+
+      <para>
+        Apart from these changes the rest of these changes are identical
+        to '
+        <xref linkend="ipa_full_authentication" />
+        '
+      </para>
+
     </section>
   </section>
 

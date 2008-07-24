@@ -235,4 +235,22 @@ setspn.exe -a HTTP/testserver.kerberos.jboss.org testserver]]></programlisting>
       security domain as described previously.
     </para>
   </section>
+
+  <section>
+    <title>Role Mapping</title>
+
+    <para>
+      Finally you will need to configure a second login module in the
+      application-policy to load the associate roles with the user.
+    </para>
+
+    <para>
+      You could make use of the UsersRolesLoginModule as described in
+      <xref linkend="users_roles_login_module" />
+      or you can make use of a new LDAP login module to load the roles
+      directly from Active Directory, an example of think login module
+      is documented in
+      <xref linkend="ad_chained_configuration" />
+    </para>
+  </section>
 </chapter>

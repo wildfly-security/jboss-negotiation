@@ -292,7 +292,7 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
       String bindCredential = this.bindCredential;
       if (AUTH_TYPE_GSSAPI.equals(bindAuthentication) == false)
       {
-         if (jaasSecurityDomain != null)
+         if (jaasSecurityDomain != null && jaasSecurityDomain.length() > 0)
          {
             try
             {
@@ -549,6 +549,8 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
       NamingEnumeration results = null;
       try
       {
+         log.trace("rolesCtxDN=" + rolesCtxDN + " roleFilter=" + roleFilter + " filterArgs[0]=" + filterArgs[0]
+               + " filterArgs[1]=" + filterArgs[1]);
          results = searchContext.search(rolesCtxDN, roleFilter, filterArgs, roleSearchControls);
          while (results.hasMore())
          {

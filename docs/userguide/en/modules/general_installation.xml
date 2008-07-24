@@ -502,7 +502,7 @@ darranl@KERBEROS.JBOSS.ORG=Users
         <title>Negotiation Toolkit Front Page</title>
         <mediaobject>
           <imageobject>
-            <imagedata align="center
+            <imagedata align="center"
               fileref="images/negotiation-toolkit.png" />
           </imageobject>
         </mediaobject>

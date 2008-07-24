@@ -266,6 +266,25 @@
             "(member={0})". An alternative that matches on the
             authenticated userDN is: "(member={1})".
           </para>
+
+          <note>
+            <para>
+              The roleFilter attribute can be ommitted and the role
+              search will then use the UserDN as the DN to obtain the
+              roleAttributeID value.
+            </para>
+          </note>
+        </listitem>
+
+        <listitem>
+          <para>
+            roleAttributeID - The name of the role attribute of the
+            context which corresponds to the name of the role. If the
+            roleAttributeIsDN property is set to true, this property is
+            the DN of the context to query for the roleNameAttributeID
+            attribute. If the roleAttributeIsDN property is set to
+            false, this property is the attribute name of the role name.
+          </para>
         </listitem>
 
         <listitem>
@@ -283,17 +302,6 @@
             role objects instead of as simple names, in which case, this
             property should be set to true. The default value of this
             property is false.
-          </para>
-        </listitem>
-
-        <listitem>
-          <para>
-            roleAttributeID - The name of the role attribute of the
-            context which corresponds to the name of the role. If the
-            roleAttributeIsDN property is set to true, this property is
-            the DN of the context to query for the roleNameAttributeID
-            attribute. If the roleAttributeIsDN property is set to
-            false, this property is the attribute name of the role name.
           </para>
         </listitem>
 
@@ -449,10 +457,7 @@ sAMAccountName: Trader]]>
       <module-option name="java.naming.provider.url">ldap://VM104:3268</module-option>
         
       <module-option name="baseCtxDN">CN=Users,DC=vm104,DC=gsslab,DC=rdu,DC=redhat,DC=com</module-option>
-      <module-option name="baseFilter">(sAMAccountName={0})</module-option>
-        
-      <module-option name="rolesCtxDN">CN=Users,DC=vm104,DC=gsslab,DC=rdu,DC=redhat,DC=com</module-option>
-      <module-option name="roleFilter">(distinguishedName={1})</module-option>
+      <module-option name="baseFilter">(sAMAccountName={0})</module-option>        
        
       <module-option name="roleAttributeID">memberOf</module-option>
       <module-option name="roleAttributeIsDN">true</module-option>
@@ -478,22 +483,16 @@ sAMAccountName: Trader]]>
         </para>
 
         <para>
-          The 'rolesCtxDN' is the DN to search for the roles, in this
-          example we are searching using the 'memberOf' attribute on the
-          user so this DN matches the DN used previously.
+          As the 'memberOf' attribute is going to be read directly from
+          the user there is no need to specify a 'rolesCtxDN' or
+          'roleFilter', instead the attribute named by the
+          'roleAttributeID' option which in this case is 'memberOf' will
+          be read directly from the user.
         </para>
 
         <para>
-          The roles filter re-locates the user using the distinguished
-          name of the user, it is important that this search is DN base
-          so that a recursive search can be enabled.
-        </para>
-
-        <para>
-          The 'roleAttributeID' option specified that the 'memberOf'
-          attributes should be read from the user object, the
-          'roleAttributeIsDN' option specified that this value is a DN
-          so the group object is retrieved and finally the
+          The 'roleAttributeIsDN' option then specifies that this value
+          is a DN so the group object is retrieved and finally the
           'roleNameAttributeID' option specifies that the attribute 'cn'
           should be read from the group. This is the role that this
           login module returns.
@@ -501,9 +500,9 @@ sAMAccountName: Trader]]>
 
         <para>
           Finally the 'recurseRoles' attribute is set to true so the DN
-          from the located group is used to repeat the roles search so
-          if a group is configured with the 'memberOf' attribute then
-          this will be recursively searched to locate all of the roles.
+          from the located group is used to repeat the process so if a
+          group is configured with the 'memberOf' attribute then this
+          will be recursively used to locate all of the roles.
         </para>
       </section>
 
@@ -536,10 +535,7 @@ sAMAccountName: Trader]]>
       <module-option name="java.naming.provider.url">ldap://VM104:3268</module-option>
        
       <module-option name="baseCtxDN">CN=Users,DC=vm104,DC=gsslab,DC=rdu,DC=redhat,DC=com</module-option>   
-      <module-option name="baseFilter">(userPrincipalName={0})</module-option>
-            
-      <module-option name="rolesCtxDN">CN=Users,DC=vm104,DC=gsslab,DC=rdu,DC=redhat,DC=com</module-option>
-      <module-option name="roleFilter">(distinguishedName={1})</module-option>
+      <module-option name="baseFilter">(userPrincipalName={0})</module-option>            
        
       <module-option name="roleAttributeID">memberOf</module-option>
       <module-option name="roleAttributeIsDN">true</module-option>

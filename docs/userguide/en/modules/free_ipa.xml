@@ -5,8 +5,164 @@
   <title>Free IPA</title>
 
   <section>
-    <title></title>
+    <title>Free IPA</title>
 
-    <para>Using JBoss Negotiation with Free IPA</para>
+    <section>
+      <title>Introduction</title>
+
+      <para>
+        This chapter describes the steps required to configure the
+        authenticator which are specific to Windows, these instructions
+        are prepared using Fedora 9 with Free IPA version 1.1.
+      </para>
+    </section>
+
+    <section>
+      <title>Pre-Requisits</title>
+
+      <para>
+        These instructions assume that you already have FreeIPA
+        installed and correctly configured along with client already
+        able to obtain Kerberos tickets.
+      </para>
+
+      <para>
+        For documentation on how to install and configure FreeIPA please
+        see
+        <ulink url="http://www.freeipa.org/">
+          http://www.freeipa.org/
+        </ulink>
+        .
+      </para>
+
+      <para>
+        Also due to the supported encryption types of FreeIPA the JBoss
+        application server is required to be running on a Java 6 JVM
+        with unlimited cryptography enabled.
+      </para>
+    </section>
+
+    <section>
+      <title>Service Principal Creation</title>
+
+      <para>
+        In this example the test server is going to be accessible using
+        the 'test_server.jboss.org' domain, the first step is to create
+        the service principal which will represent this host.
+      </para>
+
+      <para>
+        Full information on service principal creation is available
+        within the FreeIPA documentation
+        <ulink
+          url="http://freeipa.org/page/AdministratorsGuide#Managing_Service_Principals">
+          http://freeipa.org/page/AdministratorsGuide#Managing_Service_Principals
+        </ulink>
+      </para>
+
+      <para>
+        The easiest way to create a service principal is to make use of
+        the FreeIPA WebUI when connected as an administrator and use the
+        'Add Service Principal' link.
+      </para>
+
+      <figure id="ipa-add-service-principal">
+        <title>Add Service Principal</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center"
+              fileref="images/ipa-add-service-principal.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+
+      <para>
+        Set the hostname to the hostname of your server, in this case it
+        is 'test_server.jboss.org', set the service type to HTTP and
+        select 'Add Principal'.
+      </para>
+
+      <figure id="ipa-view-service-principal">
+        <title>View Service Principal</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center"
+              fileref="images/ipa-view-service-principal.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+
+      <note>
+        <para>
+          Creating the service principal requires the host name to be
+          mapped using DNS, if this check fails you can instead create
+          the principal using the following command from the command
+          line
+          <code>
+            ipa-addservice HTTP/test_server.jboss.org@JBOSS.ORG --force
+          </code>
+        </para>
+      </note>
+    </section>
+
+    <section>
+      <title>Export Keytab</title>
+
+      <caution>
+        <para>
+          The steps to obtain the keytab reset the secret associated
+          with the principal rendering all previosuly created keytabs
+          for the principal invalid.
+        </para>
+      </caution>
+
+      <para>
+        Before exporting the keytab you will need to have used the kinit
+        tool to obtain a Kerberos ticket-granting ticket for an
+        administrator e.g.
+        <code>kinit admin</code>
+      </para>
+
+      <para>
+        The command to obtain the keytab is
+        <code>ipa-getkeytab</code>
+        with the following options: -
+      </para>
+
+      <itemizedlist spacing="compact">
+        <listitem>
+          <para>-s The IPA server to obtain the keytab from.</para>
+        </listitem>
+
+        <listitem>
+          <para>-p The principal to export.</para>
+        </listitem>
+
+        <listitem>
+          <para>-k The name of the file to dump the keytab to.</para>
+        </listitem>
+      </itemizedlist>
+
+
+      <figure id="ipa-getkeytab">
+        <title>Get Keytab</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata align="center"
+              fileref="images/ipa-getkeytab.png" />
+          </imageobject>
+        </mediaobject>
+      </figure>
+
+      <para>
+        From this point on the server should be configured as described
+        in
+        <xref linkend="general_installation" />
+        and tested using the Negotiation Toolkit as described in
+        <xref linkend="negotiation_toolkit" />
+        .
+      </para>
+    </section>
+
   </section>
 </chapter>

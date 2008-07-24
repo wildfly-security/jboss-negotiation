@@ -78,8 +78,10 @@
 
 
       <tip>
-        Ensure that there is no white space around the classname as this
-        can cause the deployment to fail.
+        <para>
+          Ensure that there is no white space around the classname as
+          this can cause the deployment to fail.
+        </para>
       </tip>
 
 
@@ -449,7 +451,7 @@ darranl@KERBEROS.JBOSS.ORG=Users
 
   </section>
 
-  <section>
+  <section id="negotiation_toolkit">
     <title>Negotiation Toolkit</title>
 
     <para>
@@ -500,7 +502,7 @@ darranl@KERBEROS.JBOSS.ORG=Users
         <title>Negotiation Toolkit Front Page</title>
         <mediaobject>
           <imageobject>
-            <imagedata align="center"
+            <imagedata align="center
               fileref="images/negotiation-toolkit.png" />
           </imageobject>
         </mediaobject>

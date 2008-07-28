@@ -42,7 +42,7 @@ public class MessageTrace
 
    private static final Logger RESPONSE_BASE64 = Logger.getLogger(BASE_CLASS + ".Response.Base64");
 
-   private static final Logger RESPONSE_HEX = Logger.getLogger(BASE_CLASS + ".Response.HEX");
+   private static final Logger RESPONSE_HEX = Logger.getLogger(BASE_CLASS + ".Response.Hex");
 
    public static void logRequestBase64(final String request)
    {

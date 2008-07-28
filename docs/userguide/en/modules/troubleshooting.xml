@@ -34,8 +34,7 @@
     </para>
 
     <programlisting>
-      <![CDATA[
-<category name="org.jboss.security">
+      <![CDATA[<category name="org.jboss.security">
   <priority value="TRACE"/>
 </category>]]>
     </programlisting>
@@ -62,6 +61,86 @@
       will result in much more verbose output of the complete GSSAPI
       negotiation process.
     </para>
+
+    <section>
+      <title>Message Tracing</title>
+
+      <para>
+        The Log4j logging hierarchies also make it possible to
+        selectively log at TRACE level the actual messages exchanged,
+        both the Request and Response messages can be logged and this
+        can be as Hex or as Base64.
+      </para>
+
+      <para>
+        The base category for message tracing is
+        <code>org.jboss.security.negotiation.MessageTrace</code>
+        , enabling TRACE logging for this category will cause all
+        request and response messages to be logged at TRACE level both
+        in Hex and in Base64.
+      </para>
+
+      <programlisting>
+        <![CDATA[
+<category name="org.jboss.security.negotiation.MessageTrace">
+  <priority value="TRACE"/>
+</category>]]>
+      </programlisting>
+
+      <para>
+        To reduce the logging to either just the request or just the
+        response messages the category can have
+        <code>.Request</code>
+        or
+        <code>.Response</code>
+        appended.
+      </para>
+
+      <programlisting>
+        <![CDATA[
+<category name="org.jboss.security.negotiation.MessageTrace.Request">
+  <priority value="TRACE"/>
+</category>
+
+<category name="org.jboss.security.negotiation.MessageTrace.Response">
+  <priority value="TRACE"/>
+</category>]]>
+      </programlisting>
+
+      <para>
+        This will cause the request or the response message to be logged
+        as Hex and as Base64.
+      </para>
+
+      <para>
+        Finally it is possible to specify that just the Hex or just the
+        Base64 messages should be logged by appending
+        <code>.Hex</code>
+        or
+        <code>.Base64</code>
+        to the category.
+      </para>
+
+      <programlisting>
+        <![CDATA[
+<category name="org.jboss.security.negotiation.MessageTrace.Request.Hex">
+  <priority value="TRACE"/>
+</category>
+
+<category name="org.jboss.security.negotiation.MessageTrace.Request.Base64">
+  <priority value="TRACE"/>
+</category>
+
+<category name="org.jboss.security.negotiation.MessageTrace.Response.Hex">
+  <priority value="TRACE"/>
+</category>
+
+<category name="org.jboss.security.negotiation.MessageTrace.Response.Base64">
+  <priority value="TRACE"/>
+</category>]]>
+      </programlisting>
+
+    </section>
 
   </section>
 

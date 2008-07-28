@@ -232,7 +232,9 @@ setspn.exe -a HTTP/testserver.kerberos.jboss.org testserver]]></programlisting>
 
     <para>
       The resulting keytab should then be used in setting up the host
-      security domain as described previously.
+      security domain as described in
+      <xref linkend="host_security_domain" />
+      .
     </para>
   </section>
 

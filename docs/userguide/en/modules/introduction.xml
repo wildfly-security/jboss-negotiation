@@ -35,8 +35,9 @@
     and Mozilla Firefox. There are also a number of kerberos domain
     controllers available, this documentation focusses on
     <trademark>Microsoft Active Directory</trademark>
-    and the MIT KDC implementation. Contributions for documentation on
-    other web browsers and KDCs would be welcome.
+    and the MIT KDC implementation when included in FreeIPA.
+    Contributions for documentation on other web browsers and KDCs would
+    be welcome.
   </para>
 
   <para></para>
@@ -55,7 +56,7 @@
         <para>SPNEGO Authenticator and Login Module</para>
 
         <para>
-          The authentication process is handled by a Tomcat
+          The authentication process is handled by a JBoss Web
           Authenticator that and a JAAS login module, this combination
           achieves the integration with JBoss security.
         </para>

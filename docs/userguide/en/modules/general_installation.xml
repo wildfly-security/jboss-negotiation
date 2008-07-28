@@ -39,6 +39,13 @@
       any problems are specific to your web application and also use the
       toolkit to obtain additional debug information.
     </para>
+
+    <para>
+      Also see
+      <xref linkend="troubleshooting" />
+      for information on additional logging which is available to
+      diagnose installation issues.
+    </para>
   </section>
 
   <section>
@@ -48,9 +55,9 @@
       <title>Authenticator Installation</title>
 
       <para>
-        The authenticator is contained within a single jar
-        'jboss-negotiation.jar', this jar should be placed in the
-        following location -
+        The authenticator is contained within a single jar '
+        <code>jboss-negotiation.jar</code>
+        ', this jar should be placed in the following location -
         <code>{jboss.home}/server/{configuration}/lib/</code>
       </para>
 
@@ -87,7 +94,8 @@
 
       <para>
         The key can be any value you choose, however using SPNEGO is
-        recommended to be consistent with the rest of this document.
+        recommended to be consistent with the rest of this document,
+        this is also required by the Negotiation Toolkit.
       </para>
     </section>
 
@@ -147,7 +155,7 @@
           requirement is that these properties are set before the first
           authentication attempt - JBoss does not allow incomming HTTP
           connections until the server is completely started so this is
-          not a proble.
+          not a problem.
         </para>
 
         <para>
@@ -327,9 +335,7 @@
       <para id="users_roles_login_module">
         The second login module is used to load the users roles after
         the authentication has already taken place by the previous login
-        module. The Beta2 release will cover how to make use of LDAP to
-        retrieve the users roles so for a Microsoft Active Directory
-        installation the roles can be retrieved using an LDAP query.
+        module.
       </para>
 
       <para>

@@ -34,7 +34,8 @@
     </para>
 
     <programlisting>
-      <![CDATA[<category name="org.jboss.security">
+      <![CDATA[
+<category name="org.jboss.security">
   <priority value="TRACE"/>
 </category>]]>
     </programlisting>

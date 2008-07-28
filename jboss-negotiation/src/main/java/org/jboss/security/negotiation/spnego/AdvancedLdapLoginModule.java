@@ -59,7 +59,7 @@ import org.jboss.security.negotiation.prototype.DecodeAction;
  * for password-stacking set to useFirstPass.
  * 
  * This is essentially a complete refactoring of the LdapExtLoginModule
- * but with enough restructuring to seperate out the three login steps: -
+ * but with enough restructuring to separate out the three login steps: -
  *  -1 Find the user
  *  -2 Authenticate as the user
  *  -3 Find the users roles
@@ -107,6 +107,8 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
 
    private static final String ROLE_NAME_ATTRIBUTE_ID = "roleNameAttributeID";
 
+   private static final String ROLE_SEARCH_SCOPE = "searchScope";
+
    // Authentication Settings
    private static final String ALLOW_EMPTY_PASSWORD = "allowEmptyPassword";
 
@@ -125,6 +127,12 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
    private static final String DEFAULT_SSL_URL = "ldap://localhost:686";
 
    private static final String PROTOCOL_SSL = "SSL";
+
+   private static final String OBJECT_SCOPE = "OBJECT_SCOPE";
+
+   private static final String ONELEVEL_SCOPE = "ONELEVEL_SCOPE";
+
+   private static final String SUBTREE_SCOPE = "SUBTREE_SCOPE";
 
    /*
     * Configuration Options
@@ -217,8 +225,23 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
       temp = (String) options.get(RECURSE_ROLES);
       recurseRoles = Boolean.parseBoolean(temp);
 
+      int searchScope = SearchControls.SUBTREE_SCOPE;
+      temp = (String) options.get(ROLE_SEARCH_SCOPE);
+      if (OBJECT_SCOPE.equalsIgnoreCase(temp))
+      {
+         searchScope = SearchControls.OBJECT_SCOPE;
+      }
+      else if (ONELEVEL_SCOPE.equalsIgnoreCase(temp))
+      {
+         searchScope = SearchControls.ONELEVEL_SCOPE;
+      }
+      if (SUBTREE_SCOPE.equalsIgnoreCase(temp))
+      {
+         searchScope = SearchControls.SUBTREE_SCOPE;
+      }
+
       roleSearchControls = new SearchControls();
-      roleSearchControls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+      roleSearchControls.setSearchScope(searchScope);
       roleSearchControls.setReturningAttributes(new String[0]);
       roleSearchControls.setTimeLimit(searchTimeLimit);
 

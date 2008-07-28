@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+"http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<chapter id="troubleshooting">
+  <title>Troubleshooting</title>
+
+  <section>
+    <title>Introduction</title>
+
+    <para>
+      When working with the JBoss Negotiation authenticator there are a
+      number of different approaches to identify the cause of failures,
+      this chapter contains information on some of the approaches you
+      can take.
+    </para>
+
+    <para>
+      The first tool that you should make use of is the Negotiation
+      Toolikit which is documented in '
+      <xref linkend="negotiation_toolkit" />
+      ', the authenticator and this documentation were both developed
+      using the toolkit so using this to test your deployment will
+      eliminate any differences introduced by your own application.
+    </para>
+  </section>
+
+
+  <section id="logging">
+    <title>Logging</title>
+
+    <para>
+      Within JBoss AS the most important category to enable full TRACE
+      logging is 'org'jboss.security': -
+    </para>
+
+    <programlisting>
+      <![CDATA[
+<category name="org.jboss.security">
+  <priority value="TRACE"/>
+</category>]]>
+    </programlisting>
+
+    <para>
+      Enabling TRACE logging for the 'org'jboss.security' will log
+      additional information for the authentcator, the login module and
+      for the rest of JBoss Security.
+    </para>
+
+    <para>
+      The 'com.sun.security.auth.module.Krb5LoginModule' login module
+      also allows you to enable additional logging by setting the
+      'debug' option to 'true': -
+    </para>
+
+    <programlisting>
+      <![CDATA[<module-option name="debug">true</module-option>]]>
+    </programlisting>
+
+    <para>
+      Finally setting the system property
+      <code>-Dsun.security.krb5.debug=true</code>
+      will result in much more verbose output of the complete GSSAPI
+      negotiation process.
+    </para>
+
+  </section>
+
+
+</chapter>

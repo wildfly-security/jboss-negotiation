@@ -24,6 +24,7 @@ package org.jboss.security.negotiation.toolkit;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -65,7 +66,7 @@ public class BasicNegotiationServlet extends HttpServlet
       if (authHeader == null)
       {
          log.info("No Authorization Header, sending 401");
-         resp.setHeader("WWW-Authenticate", "Negotiate");
+         resp.setHeader("WWW-Authenticate", "NTLM");
          resp.sendError(401);
 
          return;
@@ -122,14 +123,23 @@ public class BasicNegotiationServlet extends HttpServlet
 
    private void writeHeaderDetail(final String authHeader, final PrintWriter writer) throws IOException, GSSException
    {
-      if (authHeader.startsWith("Negotiate ") == false)
+      String requestHeader;
+      if (authHeader.startsWith("Negotiate "))
       {
-         writer.println("<p><b>Header WWW-Authenticate does not beging with 'Negotiate'!</b></p>");
+         // Drop the 'Negotiate ' from the header.
+         requestHeader = authHeader.substring(10);
+      }
+      else if (authHeader.startsWith("NTLM "))
+      {
+         // Drop the 'NTLM ' from the header.
+         requestHeader = authHeader.substring(5);
+      }
+      else
+      {
+         writer.println("<p><b>Header WWW-Authenticate does not beging with 'Negotiate' or 'NTLM'!</b></p>");
          return;
       }
 
-      // Drop the 'Negotiate ' from the header.
-      String requestHeader = authHeader.substring(10);
       byte[] reqToken = Base64.decode(requestHeader);
 
       if (reqToken[0] == 0x60)
@@ -174,18 +184,32 @@ public class BasicNegotiationServlet extends HttpServlet
             writer.print(new String(Base64.encodeBytes(mechTokenMic)));
          }
          writer.println("<br>");
+
+         return;
       }
-      else if (reqToken[0] == (byte) 0xa1)
+
+      if (reqToken[0] == (byte) 0xa1)
       {
          writer.println("<p><b>Unexpected NegTokenTarg, first token should be NegTokenInit!</b></p>");
          return;
       }
-      else
+
+      byte[] ntlmHeader = "NTLMSSP".getBytes();
+      if (reqToken.length > 7)
       {
-         writer.println("<p><b>Unsupported negotiation mechanism, possibly NTLM!</b></p>");
-         return;
+         byte[] reqHeader = new byte[7];
+         System.arraycopy(reqToken, 0, reqHeader, 0, 7);
+
+         if (Arrays.equals(ntlmHeader, reqHeader))
+         {
+            writer.println("<h3>NTLM</h3>");
+
+            return;
+         }
+
       }
 
+      writer.println("<p><b>Unsupported negotiation mechanism</b></p>");
    }
 
 }

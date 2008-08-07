@@ -102,6 +102,11 @@
         <artifactId>jboss-negotiation</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.jboss.security</groupId>
+        <artifactId>jboss-negotiation-ntlm</artifactId>
+        <version>${project.version}</version>
+      </dependency>      
     
       <!-- External Dependencies -->
       <dependency>

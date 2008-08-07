@@ -20,10 +20,10 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.security.negotiation;
+package org.jboss.security.negotiation.common;
 
 import org.apache.log4j.Logger;
-import org.jboss.security.negotiation.spnego.encoding.DebugHelper;
+
 
 /**
  * Handle message tracing hierarchy.

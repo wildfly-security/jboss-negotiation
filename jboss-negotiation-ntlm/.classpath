@@ -1,17 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry kind="src" path="src/resources"/>
-	<classpathentry kind="src" path="src/tests/java"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="var" path="M2_REPO/apache-log4j/log4j/1.2.14/log4j-1.2.14.jar"/>
-	<classpathentry kind="var" path="M2_REPO/jboss/jbosssx/4.2.2.GA/jbosssx-4.2.2.GA.jar"/>
-	<classpathentry kind="var" path="M2_REPO/jboss/jboss-common/4.2.2.GA/jboss-common-4.2.2.GA.jar"/>
-	<classpathentry kind="var" path="M2_REPO/apache-codec/commons-codec/1.2/commons-codec-1.2.jar"/>
-	<classpathentry kind="var" path="M2_REPO/jboss/web/jbossweb/2.1.0.GA/jbossweb-2.1.0.GA.jar"/>
-	<classpathentry kind="var" path="M2_REPO/jboss/web/servlet-api/2.1.0.GA/servlet-api-2.1.0.GA.jar"/>
-	<classpathentry kind="var" path="M2_REPO/junit/junit/3.8.1/junit-3.8.1.jar"/>
-	<classpathentry kind="var" path="M2_REPO/jboss/jboss-jmx/4.2.2.GA/jboss-jmx-4.2.2.GA.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jboss-negotiation"/>
-	<classpathentry kind="output" path="target/eclipse-classes"/>
+  <classpathentry kind="src" path="src/main/java"/>
+  <classpathentry kind="src" path="src/resources"/>
+  <classpathentry kind="src" path="src/tests" output="target/test-classes"/>
+  <classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+  <classpathentry kind="var" path="M2_REPO/jboss/jboss-common/4.2.2.GA/jboss-common-4.2.2.GA.jar"/>
+  <classpathentry kind="var" path="M2_REPO/junit/junit/3.8.1/junit-3.8.1.jar"/>
 </classpath>

@@ -14,7 +14,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  */
 
-package org.jboss.security.negotiation.spnego.encoding;
+package org.jboss.security.negotiation.common;
 
 import org.apache.commons.codec.binary.Hex;
 

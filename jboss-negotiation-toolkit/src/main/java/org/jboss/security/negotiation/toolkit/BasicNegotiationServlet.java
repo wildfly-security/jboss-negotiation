@@ -37,7 +37,7 @@ import org.apache.log4j.Logger;
 import org.ietf.jgss.GSSException;
 import org.ietf.jgss.Oid;
 import org.jboss.security.negotiation.OidNameUtil;
-import org.jboss.security.negotiation.spnego.encoding.DebugHelper;
+import org.jboss.security.negotiation.common.DebugHelper;
 import org.jboss.security.negotiation.spnego.encoding.NegTokenInit;
 import org.jboss.security.negotiation.spnego.encoding.NegTokenInitDecoder;
 

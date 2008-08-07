@@ -43,7 +43,8 @@ import org.ietf.jgss.GSSManager;
 import org.ietf.jgss.Oid;
 import org.jboss.security.SimpleGroup;
 import org.jboss.security.auth.spi.AbstractServerLoginModule;
-import org.jboss.security.negotiation.MessageTrace;
+
+import org.jboss.security.negotiation.common.MessageTrace;
 import org.jboss.security.negotiation.spnego.encoding.NegTokenInit;
 import org.jboss.security.negotiation.spnego.encoding.NegTokenInitDecoder;
 import org.jboss.security.negotiation.spnego.encoding.NegTokenTarg;

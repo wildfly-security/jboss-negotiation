@@ -18,6 +18,9 @@ package org.jboss.security.negotiation.spnego.encoding;
 
 import java.util.Arrays;
 
+import org.jboss.security.negotiation.common.DebugHelper;
+import org.jboss.security.negotiation.spnego.encoding.NegTokenEncoder;
+
 import junit.framework.TestCase;
 
 /**

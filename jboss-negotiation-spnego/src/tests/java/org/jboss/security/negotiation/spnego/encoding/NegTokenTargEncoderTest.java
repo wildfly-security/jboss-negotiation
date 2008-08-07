@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import org.ietf.jgss.GSSException;
 import org.ietf.jgss.Oid;
+import org.jboss.security.negotiation.common.DebugHelper;
 
 import junit.framework.TestCase;
 

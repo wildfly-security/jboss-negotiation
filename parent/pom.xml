@@ -104,9 +104,19 @@
       </dependency>
       <dependency>
         <groupId>org.jboss.security</groupId>
+        <artifactId>jboss-negotiation-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>       
+      <dependency>
+        <groupId>org.jboss.security</groupId>
         <artifactId>jboss-negotiation-ntlm</artifactId>
         <version>${project.version}</version>
       </dependency>      
+     <dependency>
+        <groupId>org.jboss.security</groupId>
+        <artifactId>jboss-negotiation-spnego</artifactId>
+        <version>${project.version}</version>
+      </dependency>         
     
       <!-- External Dependencies -->
       <dependency>

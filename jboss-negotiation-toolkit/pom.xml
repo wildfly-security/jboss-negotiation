@@ -33,7 +33,7 @@
     <!-- Local Dependencies -->
     <dependency>
       <groupId>org.jboss.security</groupId>
-      <artifactId>jboss-negotiation</artifactId>
+      <artifactId>jboss-negotiation-spnego</artifactId>
       <scope>provided</scope>
     </dependency>
     

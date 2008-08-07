@@ -31,9 +31,24 @@
   <!-- Do not add version information here, use ../parent/pom.xml instead -->
   <dependencies>
     <!-- Local Dependencies -->
-    
+    <dependency>
+      <groupId>org.jboss.security</groupId>
+      <artifactId>jboss-negotiation</artifactId>
+    </dependency>    
+    <dependency>
+      <groupId>org.jboss.security</groupId>
+      <artifactId>jboss-negotiation-common</artifactId>
+    </dependency>
+          
     <!-- Global dependencies -->
-
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jbosssx</artifactId>
+    </dependency>    
   </dependencies>
 
 </project>

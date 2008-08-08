@@ -31,16 +31,8 @@
   <!-- Do not add version information here, use ../parent/pom.xml instead -->
   <dependencies>
     <!-- Local Dependencies -->
-    <dependency>
-      <groupId>org.jboss.security</groupId>
-      <artifactId>jboss-negotiation-ntlm</artifactId>
-    </dependency>  
-  
+ 
     <!-- Global dependencies -->
-    <dependency>
-      <groupId>apache-codec</groupId>
-      <artifactId>commons-codec</artifactId>
-    </dependency>
     <dependency>
       <groupId>apache-log4j</groupId>
       <artifactId>log4j</artifactId>
@@ -56,23 +48,12 @@
     <dependency>
       <groupId>jboss</groupId>
       <artifactId>jbosssx</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-system</artifactId>
     </dependency>    
     <dependency>
       <groupId>jboss.web</groupId>
       <artifactId>jbossweb</artifactId>
     </dependency>
-    <dependency>
-      <groupId>jboss.web</groupId>
-      <artifactId>servlet-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </dependency>
+
   </dependencies>
 
 </project>

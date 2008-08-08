@@ -45,6 +45,7 @@ import org.jboss.security.SimpleGroup;
 import org.jboss.security.auth.spi.AbstractServerLoginModule;
 
 import org.jboss.security.negotiation.common.MessageTrace;
+import org.jboss.security.negotiation.common.NegotiationContext;
 import org.jboss.security.negotiation.spnego.encoding.NegTokenInit;
 import org.jboss.security.negotiation.spnego.encoding.NegTokenInitDecoder;
 import org.jboss.security.negotiation.spnego.encoding.NegTokenTarg;
@@ -105,7 +106,7 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
 
       super.loginOk = false;
 
-      SPNEGOContext spnegoContext = SPNEGOContext.getCurrentSPNEGOContext();
+      NegotiationContext spnegoContext = NegotiationContext.getCurrentSPNEGOContext();
 
       try
       {
@@ -195,9 +196,9 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
    private class AcceptSecContext implements PrivilegedAction
    {
 
-      private final SPNEGOContext spnegoContext;
+      private final NegotiationContext spnegoContext;
 
-      public AcceptSecContext(final SPNEGOContext spnegoContext)
+      public AcceptSecContext(final NegotiationContext spnegoContext)
       {
          this.spnegoContext = spnegoContext;
       }

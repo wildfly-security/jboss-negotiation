@@ -4,6 +4,7 @@
   <projects>
     <project>jboss-negotiation</project>
     <project>jboss-negotiation-common</project>
+    <project>jboss-negotiation-ntlm</project>
     <project>jboss-negotiation-spnego</project>
   </projects>
   <buildSpec>

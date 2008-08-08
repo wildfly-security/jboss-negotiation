@@ -32,6 +32,7 @@ import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.log4j.Logger;
+import org.jboss.security.negotiation.common.NegotiationContext;
 
 /**
  * An authenticator to manage SPNEGO authentication in connection with the
@@ -79,12 +80,12 @@ public class SPNEGOAuthenticator extends AuthenticatorBase
       }
 
       Session session = request.getSessionInternal();
-      SPNEGOContext spnegoContext = (SPNEGOContext) session.getNote(SPNEGO_CONTEXT);
+      NegotiationContext spnegoContext = (NegotiationContext) session.getNote(SPNEGO_CONTEXT);
       if (spnegoContext == null)
       {
          log.debug("Creating new SPNEGOContext");
          {
-            spnegoContext = new SPNEGOContext();
+            spnegoContext = new NegotiationContext();
             session.setNote(SPNEGO_CONTEXT, spnegoContext);
          }
       }

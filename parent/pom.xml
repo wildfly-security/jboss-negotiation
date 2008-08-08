@@ -116,7 +116,7 @@
         <groupId>org.jboss.security</groupId>
         <artifactId>jboss-negotiation-spnego</artifactId>
         <version>${project.version}</version>
-      </dependency>         
+     </dependency>         
     
       <!-- External Dependencies -->
       <dependency>

@@ -32,12 +32,12 @@ import org.ietf.jgss.GSSContext;
  * @author darran.lofthouse@jboss.com
  * @version $Revision$
  */
-public class SPNEGOContext
+public class NegotiationContext
 {
 
-   private static final Logger log = Logger.getLogger(SPNEGOContext.class);
+   private static final Logger log = Logger.getLogger(NegotiationContext.class);
 
-   private static final ThreadLocal<SPNEGOContext> spnegoContext = new ThreadLocal<SPNEGOContext>();
+   private static final ThreadLocal<NegotiationContext> spnegoContext = new ThreadLocal<NegotiationContext>();
 
    private boolean authenticated = false;
 
@@ -49,12 +49,12 @@ public class SPNEGOContext
    //        byte[] for transport.
    private GSSContext gssContext = null;
 
-   public static SPNEGOContext getCurrentSPNEGOContext()
+   public static NegotiationContext getCurrentSPNEGOContext()
    {
       return spnegoContext.get();
    }
 
-   void associate()
+   public void associate()
    {
       log.trace("associate " + this.hashCode());
       spnegoContext.set(this);
@@ -63,7 +63,7 @@ public class SPNEGOContext
    /**
     * Clear any information that is not required to be retained between invocations.
     */
-   void clear()
+   public void clear()
    {
       log.trace("clear " + this.hashCode());
       requestHeader = null;

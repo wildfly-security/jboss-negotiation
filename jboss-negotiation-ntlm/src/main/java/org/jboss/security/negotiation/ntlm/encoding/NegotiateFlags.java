@@ -16,6 +16,8 @@
 
 package org.jboss.security.negotiation.ntlm.encoding;
 
+import java.lang.reflect.Method;
+
 /**
  * Representation of NTLM NegotiateFlags
  * 
@@ -24,5 +26,322 @@ package org.jboss.security.negotiation.ntlm.encoding;
  */
 public class NegotiateFlags
 {
+
+   private boolean encryption56Bit;
+
+   private boolean explicitKeyExchange;
+
+   private boolean sessionKeyExchange128Bit;
+
+   private boolean negotiateVersion;
+
+   private boolean targetInfo;
+
+   private boolean requestNonNTSessionKey;
+
+   private boolean identify;
+
+   private boolean ntlm2;
+
+   private boolean targetTypeShare;
+
+   private boolean targetTypeServer;
+
+   private boolean targetTypeDomain;
+
+   private boolean alwaysSign;
+
+   private boolean oemWorkstationSupplied;
+
+   private boolean oemDomainSupplied;
+
+   private boolean ntOnly;
+
+   private boolean ntlm;
+
+   private boolean lmKey;
+
+   private boolean datagram;
+
+   private boolean seal;
+
+   private boolean sign;
+
+   private boolean requestTarget;
+
+   private boolean oem;
+
+   private boolean unicode;
+
+   public boolean isEncryption56Bit()
+   {
+      return encryption56Bit;
+   }
+
+   public void setEncryption56Bit(boolean encryption56Bit)
+   {
+      this.encryption56Bit = encryption56Bit;
+   }
+
+   public boolean isExplicitKeyExchange()
+   {
+      return explicitKeyExchange;
+   }
+
+   public void setExplicitKeyExchange(boolean explicitKeyExchange)
+   {
+      this.explicitKeyExchange = explicitKeyExchange;
+   }
+
+   public boolean isSessionKeyExchange128Bit()
+   {
+      return sessionKeyExchange128Bit;
+   }
+
+   public void setSessionKeyExchange128Bit(boolean sessionKeyExchange128Bit)
+   {
+      this.sessionKeyExchange128Bit = sessionKeyExchange128Bit;
+   }
+
+   public boolean isNegotiateVersion()
+   {
+      return negotiateVersion;
+   }
+
+   public void setNegotiateVersion(boolean negotiateVersion)
+   {
+      this.negotiateVersion = negotiateVersion;
+   }
+
+   public boolean isTargetInfo()
+   {
+      return targetInfo;
+   }
+
+   public void setTargetInfo(boolean targetInfo)
+   {
+      this.targetInfo = targetInfo;
+   }
+
+   public boolean isRequestNonNTSessionKey()
+   {
+      return requestNonNTSessionKey;
+   }
+
+   public void setRequestNonNTSessionKey(boolean requestNonNTSessionKey)
+   {
+      this.requestNonNTSessionKey = requestNonNTSessionKey;
+   }
+
+   public boolean isIdentify()
+   {
+      return identify;
+   }
+
+   public void setIdentify(boolean identify)
+   {
+      this.identify = identify;
+   }
+
+   public boolean isNtlm2()
+   {
+      return ntlm2;
+   }
+
+   public void setNtlm2(boolean ntlm2)
+   {
+      this.ntlm2 = ntlm2;
+   }
+
+   public boolean isTargetTypeShare()
+   {
+      return targetTypeShare;
+   }
+
+   public void setTargetTypeShare(boolean targetTypeShare)
+   {
+      this.targetTypeShare = targetTypeShare;
+   }
+
+   public boolean isTargetTypeServer()
+   {
+      return targetTypeServer;
+   }
+
+   public void setTargetTypeServer(boolean targetTypeServer)
+   {
+      this.targetTypeServer = targetTypeServer;
+   }
+
+   public boolean isTargetTypeDomain()
+   {
+      return targetTypeDomain;
+   }
+
+   public void setTargetTypeDomain(boolean targetTypeDomain)
+   {
+      this.targetTypeDomain = targetTypeDomain;
+   }
+
+   public boolean isAlwaysSign()
+   {
+      return alwaysSign;
+   }
+
+   public void setAlwaysSign(boolean alwaysSign)
+   {
+      this.alwaysSign = alwaysSign;
+   }
+
+   public boolean isOemWorkstationSupplied()
+   {
+      return oemWorkstationSupplied;
+   }
+
+   public void setOemWorkstationSupplied(boolean oemWorkstationSupplied)
+   {
+      this.oemWorkstationSupplied = oemWorkstationSupplied;
+   }
+
+   public boolean isOemDomainSupplied()
+   {
+      return oemDomainSupplied;
+   }
+
+   public void setOemDomainSupplied(boolean oemDomainSupplied)
+   {
+      this.oemDomainSupplied = oemDomainSupplied;
+   }
+
+   public boolean isNtOnly()
+   {
+      return ntOnly;
+   }
+
+   public void setNtOnly(boolean ntOnly)
+   {
+      this.ntOnly = ntOnly;
+   }
+
+   public boolean isNtlm()
+   {
+      return ntlm;
+   }
+
+   public void setNtlm(boolean ntlm)
+   {
+      this.ntlm = ntlm;
+   }
+
+   public boolean isLmKey()
+   {
+      return lmKey;
+   }
+
+   public void setLmKey(boolean lmKey)
+   {
+      this.lmKey = lmKey;
+   }
+
+   public boolean isDatagram()
+   {
+      return datagram;
+   }
+
+   public void setDatagram(boolean datagram)
+   {
+      this.datagram = datagram;
+   }
+
+   public boolean isSeal()
+   {
+      return seal;
+   }
+
+   public void setSeal(boolean seal)
+   {
+      this.seal = seal;
+   }
+
+   public boolean isSign()
+   {
+      return sign;
+   }
+
+   public void setSign(boolean sign)
+   {
+      this.sign = sign;
+   }
+
+   public boolean isRequestTarget()
+   {
+      return requestTarget;
+   }
+
+   public void setRequestTarget(boolean requestTarget)
+   {
+      this.requestTarget = requestTarget;
+   }
+
+   public boolean isOem()
+   {
+      return oem;
+   }
+
+   public void setOem(boolean oem)
+   {
+      this.oem = oem;
+   }
+
+   public boolean isUnicode()
+   {
+      return unicode;
+   }
+
+   public void setUnicode(boolean unicode)
+   {
+      this.unicode = unicode;
+   }
+
+   @Override
+   public String toString()
+   {
+      StringBuffer sb = new StringBuffer();
+
+      java.lang.reflect.Field[] fields = getClass().getDeclaredFields();
+
+      for (java.lang.reflect.Field current : fields)
+      {
+         if (current.getType().equals(boolean.class))
+         {
+            try
+            {
+               boolean value = current.getBoolean(this);
+               if (value == true)
+               {
+                  sb.append("{").append(current.getName()).append("}");
+               }
+            }
+            catch (Exception e)
+            {
+               e.printStackTrace();
+            }
+         }
+      }
+
+      /*Method[] methods = getClass().getMethods();
+      
+      for (Method current : methods)
+      {
+         String name = current.getName();
+         if (name.startsWith("is") && current.getReturnType().equals(boolean.class))
+         {
+            boolean value = 
+         }
+          
+      }*/
+
+      return sb.toString();
+   }
 
 }

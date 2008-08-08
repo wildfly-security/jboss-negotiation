@@ -35,8 +35,6 @@ public class NegTokenInitDecoderTest extends TestCase
     */
    public void testReadLength() throws Exception
    {
-      NegTokenInitDecoder decoder = new NegTokenInitDecoder();
-
       byte[] b1 = new byte[]
       {0x01};
       assertEquals(1, NegTokenDecoder.readLength(new ByteArrayInputStream(b1)));

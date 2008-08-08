@@ -27,7 +27,13 @@ public class NegotiateMessage
 
    private NegotiateFlags negotiateFlags;
 
+   private Field domainNameFields;
+
    private String domainName;
+
+   private byte[] version;
+
+   private Field workstationFields;
 
    private String workstationName;
 
@@ -41,6 +47,26 @@ public class NegotiateMessage
       this.negotiateFlags = negotiateFlags;
    }
 
+   public byte[] getVersion()
+   {
+      return version;
+   }
+
+   public void setVersion(byte[] version)
+   {
+      this.version = version;
+   }
+
+   public Field getDomainNameFields()
+   {
+      return domainNameFields;
+   }
+
+   public void setDomainNameFields(Field domainNameFields)
+   {
+      this.domainNameFields = domainNameFields;
+   }
+
    public String getDomainName()
    {
       return domainName;
@@ -49,6 +75,16 @@ public class NegotiateMessage
    public void setDomainName(String domainName)
    {
       this.domainName = domainName;
+   }
+
+   public Field getWorkstationFields()
+   {
+      return workstationFields;
+   }
+
+   public void setWorkstationFields(Field workstationFields)
+   {
+      this.workstationFields = workstationFields;
    }
 
    public String getWorkstationName()

@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
+import org.jboss.security.negotiation.common.DebugHelper;
 import org.jboss.security.negotiation.ntlm.Constants;
 
 /**
@@ -60,8 +61,26 @@ public class NegotiateMessageDecoder
       data.read += dataRead.length;
    }
 
+   private static void readVersion(final InputStream is, final DecoderData data) throws IOException
+   {
+      byte[] version;
+      if (data.message.getNegotiateFlags().isNegotiateVersion() == true)
+      {
+         version = new byte[8];
+      }
+      else
+      {
+         version = new byte[0];
+      }
+      is.read(version);
+      data.read += version.length;
+
+      data.message.setVersion(version);
+   }
+
    public static NegotiateMessage decode(final byte[] token) throws IOException
    {
+      System.out.println(DebugHelper.convertToHex(token));
       System.out.println("Token - ");
       for (byte current : token)
       {
@@ -77,7 +96,14 @@ public class NegotiateMessageDecoder
       readVerifySignature(bais, data);
       readVerifyMessageType(bais, data);
       NegotiateFlagsDecoder.readNegotiateFlags(bais, data);
+      data.message.setDomainNameFields(FieldDecoder.readFieldLengths(bais, data));
+      data.message.setWorkstationFields(FieldDecoder.readFieldLengths(bais, data));
+      readVersion(bais, data);
 
+      
+      System.out.println("\n" + data.message.getNegotiateFlags());
+      System.out.println(data.read);
+      System.out.println(bais.available());
       return data.message;
    }
 }

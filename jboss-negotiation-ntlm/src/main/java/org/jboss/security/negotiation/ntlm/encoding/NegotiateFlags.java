@@ -16,7 +16,6 @@
 
 package org.jboss.security.negotiation.ntlm.encoding;
 
-import java.lang.reflect.Method;
 
 /**
  * Representation of NTLM NegotiateFlags
@@ -328,18 +327,6 @@ public class NegotiateFlags
             }
          }
       }
-
-      /*Method[] methods = getClass().getMethods();
-      
-      for (Method current : methods)
-      {
-         String name = current.getName();
-         if (name.startsWith("is") && current.getReturnType().equals(boolean.class))
-         {
-            boolean value = 
-         }
-          
-      }*/
 
       return sb.toString();
    }

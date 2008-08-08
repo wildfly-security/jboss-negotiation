@@ -30,7 +30,7 @@
   </properties>
   <build>
     <sourceDirectory>src/main/java</sourceDirectory>
-    <testSourceDirectory>src/tests</testSourceDirectory>
+    <testSourceDirectory>src/tests/java</testSourceDirectory>
     <finalName>${artifactId}</finalName>
     <resources>
       <resource>

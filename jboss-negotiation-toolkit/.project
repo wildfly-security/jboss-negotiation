@@ -2,10 +2,9 @@
   <name>jboss-negotiation-toolkit</name>
   <comment>JBoss Negotiation Toolkit</comment>
   <projects>
-    <project>jboss-negotiation-spnego</project>
     <project>jboss-negotiation</project>
-    <project>jboss-negotiation-ntlm</project>
     <project>jboss-negotiation-common</project>
+    <project>jboss-negotiation-spnego</project>
   </projects>
   <buildSpec>
     <buildCommand>

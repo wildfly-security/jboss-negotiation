@@ -1,9 +1,7 @@
 <projectDescription>
   <name>jboss-negotiation</name>
   <comment>JBoss Negotiation Library</comment>
-  <projects>
-    <project>jboss-negotiation-ntlm</project>
-  </projects>
+  <projects/>
   <buildSpec>
     <buildCommand>
       <name>org.eclipse.jdt.core.javabuilder</name>

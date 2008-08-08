@@ -20,7 +20,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.security.negotiation.spnego;
+package org.jboss.security.negotiation.common;
 
 import org.apache.log4j.Logger;
 import org.ietf.jgss.GSSContext;

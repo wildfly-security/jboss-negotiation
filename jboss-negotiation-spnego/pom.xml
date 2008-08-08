@@ -30,11 +30,7 @@
 
   <!-- Do not add version information here, use ../parent/pom.xml instead -->
   <dependencies>
-    <!-- Local Dependencies -->
-    <dependency>
-      <groupId>org.jboss.security</groupId>
-      <artifactId>jboss-negotiation</artifactId>
-    </dependency>    
+    <!-- Local Dependencies -->    
     <dependency>
       <groupId>org.jboss.security</groupId>
       <artifactId>jboss-negotiation-common</artifactId>

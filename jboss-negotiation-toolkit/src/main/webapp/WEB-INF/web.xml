@@ -10,6 +10,13 @@
 		</servlet-class>
 	</servlet>
 
+    <servlet>
+      <servlet-name>NTLMNegotiation</servlet-name>
+      <servlet-class>
+        org.jboss.security.negotiation.toolkit.NTLMNegotiationServlet
+      </servlet-class>
+    </servlet>
+
 	<servlet>
 		<servlet-name>SecurityDomainTest</servlet-name>
 		<servlet-class>
@@ -27,7 +34,11 @@
 	<servlet-mapping>
 		<servlet-name>BasicNegotiation</servlet-name>
 		<url-pattern>/BasicNegotiation</url-pattern>
-	</servlet-mapping>    
+	</servlet-mapping>
+    <servlet-mapping>
+      <servlet-name>NTLMNegotiation</servlet-name>
+      <url-pattern>/NTLMNegotiation</url-pattern>
+    </servlet-mapping>      
 	<servlet-mapping>
 		<servlet-name>SecurityDomainTest</servlet-name>
 		<url-pattern>/SecurityDomainTest</url-pattern>

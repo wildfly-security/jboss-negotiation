@@ -27,6 +27,7 @@ import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +39,7 @@ import org.ietf.jgss.GSSException;
 import org.ietf.jgss.Oid;
 import org.jboss.security.negotiation.OidNameUtil;
 import org.jboss.security.negotiation.common.DebugHelper;
+import org.jboss.security.negotiation.ntlm.Constants;
 import org.jboss.security.negotiation.spnego.encoding.NegTokenInit;
 import org.jboss.security.negotiation.spnego.encoding.NegTokenInitDecoder;
 
@@ -47,6 +49,8 @@ import org.jboss.security.negotiation.spnego.encoding.NegTokenInitDecoder;
  * 
  * Clients that return an NTLM header do not trust the server sufficiently so the KDC
  * configuration will need to be checked.
+ * 
+ * NTLM responses received will be forwarded to the NTLMNegotiationServlet for display.
  * 
  * @author darran.lofthouse@jboss.com
  * @version $Revision$
@@ -66,7 +70,7 @@ public class BasicNegotiationServlet extends HttpServlet
       if (authHeader == null)
       {
          log.info("No Authorization Header, sending 401");
-         resp.setHeader("WWW-Authenticate", "NTLM");
+         resp.setHeader("WWW-Authenticate", "Negotiate");
          resp.sendError(401);
 
          return;
@@ -92,19 +96,56 @@ public class BasicNegotiationServlet extends HttpServlet
       writer.println(authHeader);
       writer.println("    </p>");
 
-      try
+      String requestHeader = "";
+      if (authHeader.startsWith("Negotiate "))
       {
-         writeHeaderDetail(authHeader, writer);
+         // Drop the 'Negotiate ' from the header.
+         requestHeader = authHeader.substring(10);
       }
-      catch (Exception e)
+      else if (authHeader.startsWith("NTLM "))
       {
-         if (e instanceof RuntimeException)
+         // Drop the 'NTLM ' from the header.
+         requestHeader = authHeader.substring(5);
+      }
+
+      if (requestHeader.length() == 0)
+      {
+         writer.println("<p><b>Header WWW-Authenticate does not beging with 'Negotiate' or 'NTLM'!</b></p>");
+      }
+      else
+      {
+         byte[] reqToken = Base64.decode(requestHeader);
+
+         byte[] ntlmSignature = Constants.SIGNATURE;
+         if (reqToken.length > 8)
          {
-            throw (RuntimeException) e;
+            byte[] reqHeader = new byte[8];
+            System.arraycopy(reqToken, 0, reqHeader, 0, 8);
+
+            if (Arrays.equals(ntlmSignature, reqHeader))
+            {
+
+               RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/NTLMNegotiation");
+               dispatcher.forward(req, resp);
+
+               return;
+            }
          }
-         else
+
+         try
          {
-            throw new ServletException("Unable to writeHeaderDetail", e);
+            writeHeaderDetail(reqToken, writer);
+         }
+         catch (Exception e)
+         {
+            if (e instanceof RuntimeException)
+            {
+               throw (RuntimeException) e;
+            }
+            else
+            {
+               throw new ServletException("Unable to writeHeaderDetail", e);
+            }
          }
       }
 
@@ -121,26 +162,8 @@ public class BasicNegotiationServlet extends HttpServlet
       doGet(req, resp);
    }
 
-   private void writeHeaderDetail(final String authHeader, final PrintWriter writer) throws IOException, GSSException
+   private void writeHeaderDetail(final byte[] reqToken, final PrintWriter writer) throws IOException, GSSException
    {
-      String requestHeader;
-      if (authHeader.startsWith("Negotiate "))
-      {
-         // Drop the 'Negotiate ' from the header.
-         requestHeader = authHeader.substring(10);
-      }
-      else if (authHeader.startsWith("NTLM "))
-      {
-         // Drop the 'NTLM ' from the header.
-         requestHeader = authHeader.substring(5);
-      }
-      else
-      {
-         writer.println("<p><b>Header WWW-Authenticate does not beging with 'Negotiate' or 'NTLM'!</b></p>");
-         return;
-      }
-
-      byte[] reqToken = Base64.decode(requestHeader);
 
       if (reqToken[0] == 0x60)
       {
@@ -192,21 +215,6 @@ public class BasicNegotiationServlet extends HttpServlet
       {
          writer.println("<p><b>Unexpected NegTokenTarg, first token should be NegTokenInit!</b></p>");
          return;
-      }
-
-      byte[] ntlmHeader = "NTLMSSP".getBytes();
-      if (reqToken.length > 7)
-      {
-         byte[] reqHeader = new byte[7];
-         System.arraycopy(reqToken, 0, reqHeader, 0, 7);
-
-         if (Arrays.equals(ntlmHeader, reqHeader))
-         {
-            writer.println("<h3>NTLM</h3>");
-
-            return;
-         }
-
       }
 
       writer.println("<p><b>Unsupported negotiation mechanism</b></p>");

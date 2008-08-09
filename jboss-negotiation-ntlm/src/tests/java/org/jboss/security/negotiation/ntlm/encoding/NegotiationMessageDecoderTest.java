@@ -41,6 +41,11 @@ public class NegotiationMessageDecoderTest extends TestCase
       byte[] requestMessage = Base64.decode(message);
 
       NegotiateMessage negMessage = NegotiateMessageDecoder.decode(requestMessage);
+
+      assertEquals("Domain", "domain", negMessage.getDomainName());
+      assertEquals("Name", "KERBEROS", negMessage.getWorkstationName());
+
+      System.out.println(negMessage);
    }
 
 }

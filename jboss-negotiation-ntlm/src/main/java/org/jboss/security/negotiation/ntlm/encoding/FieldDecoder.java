@@ -29,9 +29,9 @@ public class FieldDecoder
 {
    public static final byte MSB_MASK = (byte) 0x80;
 
-   static Field readFieldLengths(final InputStream is, final DecoderData data) throws IOException
+   static NTLMField readFieldLengths(final InputStream is, final DecoderData data) throws IOException
    {
-      Field field = new Field();
+      NTLMField field = new NTLMField();
 
       byte[] len = new byte[2];
       byte[] maxLen = new byte[2];

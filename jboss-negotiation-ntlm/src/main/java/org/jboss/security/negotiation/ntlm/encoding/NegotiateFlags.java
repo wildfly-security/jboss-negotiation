@@ -16,6 +16,7 @@
 
 package org.jboss.security.negotiation.ntlm.encoding;
 
+import java.lang.reflect.Field;
 
 /**
  * Representation of NTLM NegotiateFlags
@@ -307,9 +308,9 @@ public class NegotiateFlags
    {
       StringBuffer sb = new StringBuffer();
 
-      java.lang.reflect.Field[] fields = getClass().getDeclaredFields();
+      Field[] fields = getClass().getDeclaredFields();
 
-      for (java.lang.reflect.Field current : fields)
+      for (Field current : fields)
       {
          if (current.getType().equals(boolean.class))
          {
@@ -318,12 +319,12 @@ public class NegotiateFlags
                boolean value = current.getBoolean(this);
                if (value == true)
                {
-                  sb.append("{").append(current.getName()).append("}");
+                  sb.append("(").append(current.getName()).append(")");
                }
             }
-            catch (Exception e)
+            catch (Exception ignored)
             {
-               e.printStackTrace();
+               // Access should not be a problem.
             }
          }
       }

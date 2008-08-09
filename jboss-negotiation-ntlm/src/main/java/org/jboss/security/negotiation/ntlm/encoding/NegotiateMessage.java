@@ -27,13 +27,13 @@ public class NegotiateMessage
 
    private NegotiateFlags negotiateFlags;
 
-   private Field domainNameFields;
+   private NTLMField domainNameFields;
 
    private String domainName;
 
    private byte[] version;
 
-   private Field workstationFields;
+   private NTLMField workstationFields;
 
    private String workstationName;
 
@@ -57,12 +57,12 @@ public class NegotiateMessage
       this.version = version;
    }
 
-   public Field getDomainNameFields()
+   public NTLMField getDomainNameFields()
    {
       return domainNameFields;
    }
 
-   public void setDomainNameFields(Field domainNameFields)
+   public void setDomainNameFields(NTLMField domainNameFields)
    {
       this.domainNameFields = domainNameFields;
    }
@@ -77,12 +77,12 @@ public class NegotiateMessage
       this.domainName = domainName;
    }
 
-   public Field getWorkstationFields()
+   public NTLMField getWorkstationFields()
    {
       return workstationFields;
    }
 
-   public void setWorkstationFields(Field workstationFields)
+   public void setWorkstationFields(NTLMField workstationFields)
    {
       this.workstationFields = workstationFields;
    }
@@ -95,6 +95,19 @@ public class NegotiateMessage
    public void setWorkstationName(String workstationName)
    {
       this.workstationName = workstationName;
+   }
+
+   @Override
+   public String toString()
+   {
+      StringBuilder sb = new StringBuilder();
+      sb.append("{domainName=").append(domainName).append("}");
+      sb.append("{domainNameFields=").append(domainNameFields).append("}");
+      sb.append("{workstationName=").append(workstationName).append("}");
+      sb.append("{workstationNameFields=").append(workstationFields).append("}");
+      sb.append("{negotiateFlags=").append(negotiateFlags).append("}");
+
+      return sb.toString();
    }
 
 }

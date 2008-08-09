@@ -22,7 +22,7 @@ package org.jboss.security.negotiation.ntlm.encoding;
  * @author darran.lofthouse@jboss.com
  * @since 8th August 2008
  */
-public class Field
+public class NTLMField
 {
 
    private int length;
@@ -59,6 +59,17 @@ public class Field
    public void setOffset(int offset)
    {
       this.offset = offset;
+   }
+
+   @Override
+   public String toString()
+   {
+      StringBuilder sb = new StringBuilder();
+      sb.append("{length=").append(length).append("}");
+      sb.append("{maxLength=").append(maxLength).append("}");
+      sb.append("{offset=").append(offset).append("}");
+
+      return sb.toString();
    }
 
 }

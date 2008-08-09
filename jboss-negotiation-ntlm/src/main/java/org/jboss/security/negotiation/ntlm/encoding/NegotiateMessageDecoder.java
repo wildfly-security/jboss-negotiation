@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-import org.jboss.security.negotiation.common.DebugHelper;
 import org.jboss.security.negotiation.ntlm.Constants;
 
 /**
@@ -78,18 +77,76 @@ public class NegotiateMessageDecoder
       data.message.setVersion(version);
    }
 
+   private static String readPayloadValue(final InputStream is, final DecoderData data, final NTLMField field)
+         throws IOException
+   {
+      byte[] dataRead = new byte[field.getLength()];
+
+      int offset = field.getOffset();
+      int bytesRead = data.read;
+
+      if (bytesRead < offset)
+      {
+         int toSkip = offset - bytesRead;
+         is.skip(toSkip);
+         data.read += toSkip;
+      }
+      else if (bytesRead > offset)
+      {
+         throw new IllegalStateException("Read beyond offset.");
+      }
+
+      is.read(dataRead);
+      data.read += dataRead.length;
+
+      return new String(dataRead);
+   }
+
+   private static void readPayload(final InputStream is, final DecoderData data) throws IOException
+   {
+      NegotiateMessage message = data.message;
+      NTLMField domainFields = message.getDomainNameFields();
+      NTLMField workstationFields = message.getWorkstationFields();
+
+      boolean readDomainName = (domainFields.getLength() > 0);
+      boolean readWSName = (workstationFields.getLength() > 0);
+
+      String domainName = "";
+      String workstationName = "";
+
+      if (readWSName && readDomainName)
+      {
+         // If both are required we need to check the ordering.
+         int wsOffset = workstationFields.getOffset();
+         int domainOffset = domainFields.getOffset();
+
+         if (wsOffset < domainOffset)
+         {
+            workstationName = readPayloadValue(is, data, workstationFields);
+            domainName = readPayloadValue(is, data, domainFields);
+         }
+         else
+         {
+            domainName = readPayloadValue(is, data, domainFields);
+            workstationName = readPayloadValue(is, data, workstationFields);
+         }
+
+         message.setDomainName(domainName);
+         message.setWorkstationName(workstationName);
+      }
+      else if (readWSName)
+      {
+         workstationName = readPayloadValue(is, data, workstationFields);
+      }
+      else if (readDomainName)
+      {
+         domainName = readPayloadValue(is, data, domainFields);
+      }
+
+   }
+
    public static NegotiateMessage decode(final byte[] token) throws IOException
    {
-      System.out.println(DebugHelper.convertToHex(token));
-      System.out.println("Token - ");
-      for (byte current : token)
-      {
-         if (current == 0)
-         {
-            continue;
-         }
-         System.out.print("'" + (char) current + "', ");
-      }
       DecoderData data = new DecoderData();
       ByteArrayInputStream bais = new ByteArrayInputStream(token);
 
@@ -99,11 +156,8 @@ public class NegotiateMessageDecoder
       data.message.setDomainNameFields(FieldDecoder.readFieldLengths(bais, data));
       data.message.setWorkstationFields(FieldDecoder.readFieldLengths(bais, data));
       readVersion(bais, data);
+      readPayload(bais, data);
 
-      
-      System.out.println("\n" + data.message.getNegotiateFlags());
-      System.out.println(data.read);
-      System.out.println(bais.available());
       return data.message;
    }
 }

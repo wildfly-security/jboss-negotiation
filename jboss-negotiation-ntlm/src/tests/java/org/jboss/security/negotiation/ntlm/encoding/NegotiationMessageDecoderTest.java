@@ -35,7 +35,7 @@ public class NegotiationMessageDecoderTest extends TestCase
     * Simple test case to test decoding an NTLM message
     * created by Java.
     */
-   public void testDecode() throws Exception
+   public void testDecode_JavaClient() throws Exception
    {
       String message = "TlRMTVNTUAABAAAAA7IAAAYABgAoAAAACAAIACAAAABLRVJCRVJPU2RvbWFpbg==";
       byte[] requestMessage = Base64.decode(message);
@@ -48,4 +48,16 @@ public class NegotiationMessageDecoderTest extends TestCase
       System.out.println(negMessage);
    }
 
+   public void testDecode_FirefoxClient() throws Exception
+   {
+      String message = "TlRMTVNTUAABAAAAB4IIAAAAAAAAAAAAAAAAAAAAAAA=";
+      byte[] requestMessage = Base64.decode(message);
+
+      NegotiateMessage negMessage = NegotiateMessageDecoder.decode(requestMessage);
+
+      assertNull("Domain", negMessage.getDomainName());
+      assertNull("Name", negMessage.getWorkstationName());
+
+      System.out.println(negMessage);
+   }
 }

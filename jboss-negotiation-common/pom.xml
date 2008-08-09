@@ -32,11 +32,7 @@
   <dependencies>
     <!-- Local Dependencies -->
     
-    <!-- Global dependencies -->
-    <dependency>
-      <groupId>apache-codec</groupId>
-      <artifactId>commons-codec</artifactId>
-    </dependency>    
+    <!-- Global dependencies -->    
     <dependency>
       <groupId>apache-log4j</groupId>
       <artifactId>log4j</artifactId>

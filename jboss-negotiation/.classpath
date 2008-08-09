@@ -12,7 +12,6 @@
   <classpathentry kind="var" path="M2_REPO/jboss/web/jbossweb/2.1.0.GA/jbossweb-2.1.0.GA.jar"/>
   <classpathentry kind="var" path="M2_REPO/jboss/web/servlet-api/2.1.0.GA/servlet-api-2.1.0.GA.jar"/>
   <classpathentry kind="src" path="/jboss-negotiation-common"/>
-  <classpathentry kind="var" path="M2_REPO/apache-codec/commons-codec/1.2/commons-codec-1.2.jar"/>
   <classpathentry kind="src" path="/jboss-negotiation-ntlm"/>
   <classpathentry kind="var" path="M2_REPO/junit/junit/3.8.1/junit-3.8.1.jar"/>
   <classpathentry kind="src" path="/jboss-negotiation-spnego"/>

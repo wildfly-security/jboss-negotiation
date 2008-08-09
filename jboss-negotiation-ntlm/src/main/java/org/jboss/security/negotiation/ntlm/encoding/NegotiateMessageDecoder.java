@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
+import org.jboss.security.negotiation.common.DebugHelper;
 import org.jboss.security.negotiation.ntlm.Constants;
 
 /**
@@ -147,6 +148,8 @@ public class NegotiateMessageDecoder
 
    public static NegotiateMessage decode(final byte[] token) throws IOException
    {
+      System.out.println(DebugHelper.convertToHex(token));
+      
       DecoderData data = new DecoderData();
       ByteArrayInputStream bais = new ByteArrayInputStream(token);
 

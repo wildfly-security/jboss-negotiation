@@ -20,7 +20,6 @@
    </scm>
   <properties>
     <version.apache-log4j.log4j>1.2.14</version.apache-log4j.log4j>
-    <version.apache-codec.commons-codec>1.2</version.apache-codec.commons-codec>
     <version.jboss.jboss-common>4.2.2.GA</version.jboss.jboss-common>
     <version.jboss.jbosssx>4.2.2.GA</version.jboss.jbosssx>
     <version.jboss.jmx>4.2.2.GA</version.jboss.jmx>
@@ -119,11 +118,6 @@
      </dependency>         
     
       <!-- External Dependencies -->
-      <dependency>
-        <groupId>apache-codec</groupId>
-        <artifactId>commons-codec</artifactId>
-        <version>${version.apache-codec.commons-codec}</version>
-      </dependency>
       <dependency>
         <groupId>apache-log4j</groupId>
         <artifactId>log4j</artifactId>

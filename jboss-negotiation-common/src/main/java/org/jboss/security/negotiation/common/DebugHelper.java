@@ -16,8 +16,6 @@
 
 package org.jboss.security.negotiation.common;
 
-import org.apache.commons.codec.binary.Hex;
-
 /**
  * Utility class to assist debugging.
  * 
@@ -26,22 +24,27 @@ import org.apache.commons.codec.binary.Hex;
 public class DebugHelper
 {
 
+   private static final char[] HEX_VALUES = new char[]
+   {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+
    public static String convertToHex(final byte[] message)
    {
-      StringBuffer sb = new StringBuffer(message.length * 5);
-      
-      char[] hex = Hex.encodeHex(message);
+      StringBuilder sb = new StringBuilder(message.length * 5);
 
-      for (int i = 0; i < hex.length; i++)
+      for (byte current : message)
       {
-         if (i % 2 == 0)
-         {
-            sb.append(" 0x");
-         }
-
-         sb.append(hex[i]);
+         sb.append(" 0x").append(toHex(current));
       }
 
       return sb.toString();
    }
+
+   private static String toHex(byte b)
+   {
+      char[] characters = new char[2];
+      characters[0] = HEX_VALUES[(b >>> 4) & 0x0F];
+      characters[1] = HEX_VALUES[b & 0x0F];
+      return new String(characters);
+   }
+
 }

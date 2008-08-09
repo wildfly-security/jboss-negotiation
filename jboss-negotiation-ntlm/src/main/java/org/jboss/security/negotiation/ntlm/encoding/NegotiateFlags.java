@@ -306,7 +306,7 @@ public class NegotiateFlags
    @Override
    public String toString()
    {
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
 
       Field[] fields = getClass().getDeclaredFields();
 

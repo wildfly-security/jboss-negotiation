@@ -20,7 +20,7 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package org.jboss.security.negotiation.spnego;
+package org.jboss.security.negotiation;
 
 import java.io.IOException;
 import java.security.Principal;
@@ -35,20 +35,27 @@ import org.apache.log4j.Logger;
 import org.jboss.security.negotiation.common.NegotiationContext;
 
 /**
- * An authenticator to manage SPNEGO authentication in connection with the
- * SPNEGO login module.
+ * An authenticator to manage Negotiation based authentication in connection with the
+ * Negotiation login module.
  * 
  * @author darran.lofthouse@jboss.com
  * @version $Revision$
  */
-public class SPNEGOAuthenticator extends AuthenticatorBase
+public class NegotiationAuthenticator extends AuthenticatorBase
 {
 
-   private static final Logger log = Logger.getLogger(SPNEGOAuthenticator.class);
+   private static final Logger log = Logger.getLogger(NegotiationAuthenticator.class);
+
+   private static final String NEGOTIATE = "Negotiate";
 
    private static final String SPNEGO = "SPNEGO";
 
-   private static final String SPNEGO_CONTEXT = "SPNEGO_CONTEXT";
+   private static final String NEGOTIATION_CONTEXT = "NEGOTIATION_CONTEXT";
+
+   protected String getNegotiateScheme()
+   {
+      return NEGOTIATE;
+   }
 
    @Override
    protected boolean authenticate(final Request request, final Response response, final LoginConfig config)
@@ -64,29 +71,31 @@ public class SPNEGOAuthenticator extends AuthenticatorBase
          return true;
       }
 
+      String negotiateScheme = getNegotiateScheme();
+
       log.info("Header - " + request.getHeader("Authorization"));
       String authHeader = request.getHeader("Authorization");
       if (authHeader == null)
       {
          log.debug("No Authorization Header, sending 401");
-         response.setHeader("WWW-Authenticate", "Negotiate");
+         response.setHeader("WWW-Authenticate", negotiateScheme);
          response.sendError(401);
 
          return false;
       }
-      else if (authHeader.startsWith("Negotiate ") == false)
+      else if (authHeader.startsWith(negotiateScheme + " ") == false)
       {
          throw new IOException("Invalid 'Authorization' header.");
       }
 
       Session session = request.getSessionInternal();
-      NegotiationContext spnegoContext = (NegotiationContext) session.getNote(SPNEGO_CONTEXT);
-      if (spnegoContext == null)
+      NegotiationContext negotiationContext = (NegotiationContext) session.getNote(NEGOTIATION_CONTEXT);
+      if (negotiationContext == null)
       {
-         log.debug("Creating new SPNEGOContext");
+         log.debug("Creating new NegotiationContext");
          {
-            spnegoContext = new NegotiationContext();
-            session.setNote(SPNEGO_CONTEXT, spnegoContext);
+            negotiationContext = new NegotiationContext();
+            session.setNote(NEGOTIATION_CONTEXT, negotiationContext);
          }
       }
 
@@ -96,8 +105,8 @@ public class SPNEGOAuthenticator extends AuthenticatorBase
       try
       {
          // Set the ThreadLocal association.
-         spnegoContext.associate();
-         spnegoContext.setRequestHeader(authHeader.substring(10));
+         negotiationContext.associate();
+         negotiationContext.setRequestHeader(authHeader.substring(negotiateScheme.length() + 1));
 
          Realm realm = context.getRealm();
 
@@ -106,17 +115,17 @@ public class SPNEGOAuthenticator extends AuthenticatorBase
          if (log.isDebugEnabled())
             log.debug("authenticated principal = " + principal);
 
-         String responseHeader = spnegoContext.getResponseHeader();
+         String responseHeader = negotiationContext.getResponseHeader();
          if (responseHeader != null)
          {
-            response.setHeader("WWW-Authenticate", "Negotiate " + responseHeader);
+            response.setHeader("WWW-Authenticate", negotiateScheme + " " + responseHeader);
          }
 
       }
       finally
       {
          // Clear the headers and remove the ThreadLocal association.
-         spnegoContext.clear();
+         negotiationContext.clear();
       }
 
       if (principal == null)
@@ -125,6 +134,9 @@ public class SPNEGOAuthenticator extends AuthenticatorBase
       }
       else
       {
+         // TODO - Set the scheme based on what happened - the NegotiationContext
+         // is probably the correct vehicle for this as it is the result of the 
+         // negotiation that sets the outcome.
          register(request, response, principal, SPNEGO, username, null);
       }
 

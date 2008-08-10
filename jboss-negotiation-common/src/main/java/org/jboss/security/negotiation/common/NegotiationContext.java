@@ -23,11 +23,11 @@
 package org.jboss.security.negotiation.common;
 
 import org.apache.log4j.Logger;
-import org.ietf.jgss.GSSContext;
 
 /**
- * The SPNEGOContext is the holder to contain the state of the current authentication process
- * and is used to transfer data between the authenticator valve and the login module.
+ * The NegotiationContext is the holder to contain the state of the current authentication 
+ * process and is used to transfer data between the authenticator valve and the login 
+ * module.
  * 
  * @author darran.lofthouse@jboss.com
  * @version $Revision$
@@ -45,9 +45,7 @@ public class NegotiationContext
 
    private String responseHeader = null;
 
-   // TODO : This class needs to be Externalizable so this can be converted to a 
-   //        byte[] for transport.
-   private GSSContext gssContext = null;
+   private Object schemeContext = null;
 
    public static NegotiationContext getCurrentSPNEGOContext()
    {
@@ -101,14 +99,14 @@ public class NegotiationContext
       this.responseHeader = responseHeader;
    }
 
-   public GSSContext getGssContext()
+   public Object getSchemeContext()
    {
-      return gssContext;
+      return schemeContext;
    }
 
-   public void setGssContext(GSSContext gssContext)
+   public void setSchemeContext(Object schemeContext)
    {
-      this.gssContext = gssContext;
+      this.schemeContext = schemeContext;
    }
 
 }

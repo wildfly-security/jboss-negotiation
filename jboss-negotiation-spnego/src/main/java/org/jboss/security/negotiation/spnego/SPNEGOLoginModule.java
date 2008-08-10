@@ -35,7 +35,6 @@ import javax.security.auth.kerberos.KerberosPrincipal;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
-import org.jboss.util.Base64;
 import org.ietf.jgss.GSSContext;
 import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSException;
@@ -43,7 +42,6 @@ import org.ietf.jgss.GSSManager;
 import org.ietf.jgss.Oid;
 import org.jboss.security.SimpleGroup;
 import org.jboss.security.auth.spi.AbstractServerLoginModule;
-
 import org.jboss.security.negotiation.common.MessageTrace;
 import org.jboss.security.negotiation.common.NegotiationContext;
 import org.jboss.security.negotiation.spnego.encoding.NegTokenInit;
@@ -51,6 +49,7 @@ import org.jboss.security.negotiation.spnego.encoding.NegTokenInitDecoder;
 import org.jboss.security.negotiation.spnego.encoding.NegTokenTarg;
 import org.jboss.security.negotiation.spnego.encoding.NegTokenTargDecoder;
 import org.jboss.security.negotiation.spnego.encoding.NegTokenTargEncoder;
+import org.jboss.util.Base64;
 
 /**
  * Login module to work in conjunction with SPNEGOAuthenticator to handle the 
@@ -98,8 +97,6 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
    {
       if (super.login() == true)
       {
-         // TODO - Does this login module need to do anything with the identity?
-         //        Especially as this module does not do any role mapping.
          log.debug("super.login()==true");
          return true;
       }
@@ -270,14 +267,20 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
                throw new LoginException("Unsupported negotiation mechanism.");
             }
 
-            GSSContext gssContext = spnegoContext.getGssContext();
+            Object schemeContext = spnegoContext.getSchemeContext();
+            if (schemeContext != null && schemeContext instanceof GSSContext == false)
+            {
+               throw new IllegalStateException("The schemeContext is not a GSSContext");
+            }
+
+            GSSContext gssContext = (GSSContext) schemeContext;
             if (gssContext == null)
             {
                log.debug("Creating new GSSContext.");
                GSSManager manager = GSSManager.getInstance();
                gssContext = manager.createContext((GSSCredential) null);
 
-               spnegoContext.setGssContext(gssContext);
+               spnegoContext.setSchemeContext(gssContext);
             }
 
             if (gssContext.isEstablished())

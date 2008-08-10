@@ -16,7 +16,12 @@
 
 package org.jboss.security.negotiation;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.log4j.Logger;
 
 /**
  * The base message factory for reading messages from InputStreams and
@@ -29,24 +34,101 @@ import java.io.InputStream;
 public abstract class MessageFactory
 {
 
+   private static final Logger log = Logger.getLogger(MessageFactory.class);
+
+   private static final String NTLM_MESSAGE_FACTORY_NAME = "org.jboss.security.negotiation.ntlm.NTLMMessageFactory";
+
+   private static final String SPNEGO_MESSAGE_FACTORY_NAME = "org.jboss.security.negotiation.spnego.SPNEGOMessageFactory";
+
+   private static final Class<MessageFactory> NTLM_MESSAGE_FACTORY;
+
+   private static final Class<MessageFactory> SPNEGO_MESSAGE_FACTORY;
+
+   static
+   {
+      NTLM_MESSAGE_FACTORY = loadClass(NTLM_MESSAGE_FACTORY_NAME);
+      SPNEGO_MESSAGE_FACTORY = loadClass(SPNEGO_MESSAGE_FACTORY_NAME);
+   }
+
+   /**
+    * Return the specified class or null if it can not be loaded.
+    */
+   @SuppressWarnings("unchecked")
+   private static Class<MessageFactory> loadClass(final String classname)
+   {
+      ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+      Class<MessageFactory> clazz = null;
+
+      try
+      {
+         clazz = (Class<MessageFactory>) classLoader.loadClass(classname);
+      }
+      catch (Exception e)
+      {
+         log.trace("Unable to load class '" + classname + "'", e);
+      }
+
+      return clazz;
+   }
+
    /**
     * @return a new MessageFactory to process a message available from an InputStream.
     */
-   public static MessageFactory newInstance()
+   public static MessageFactory newInstance() throws NegotiationException
    {
-      return null;
+      MessageFactory ntlm = newInstance(NTLM_MESSAGE_FACTORY);
+      MessageFactory spnego = newInstance(SPNEGO_MESSAGE_FACTORY);
+
+      if (ntlm != null && spnego != null)
+      {
+         List<MessageFactory> delegates = new ArrayList<MessageFactory>(2);
+         delegates.add(spnego);
+         delegates.add(ntlm);
+
+         return new DelegatingMessageFactory(delegates);
+      }
+      else if (ntlm != null)
+      {
+         return ntlm;
+      }
+      else if (spnego != null)
+      {
+         return spnego;
+      }
+
+      throw new IllegalStateException("No MessageFactories available to instantiate");
+   }
+
+   private static MessageFactory newInstance(final Class<MessageFactory> clazz) throws NegotiationException
+   {
+      MessageFactory response = null;
+
+      if (clazz != null)
+      {
+         try
+         {
+            response = clazz.newInstance();
+         }
+         catch (Exception e)
+         {
+            throw new NegotiationException("Unable to instantiate '" + clazz.getName() + "'", e);
+         }
+
+      }
+
+      return response;
    }
 
    /**
     * Peek at the data in the InputStream and return true if this
     * MessageFactory can handle the data.
     */
-   public abstract boolean accepts(final InputStream in);
+   public abstract boolean accepts(final InputStream in) throws IOException;
 
    /**
     * Read the message from the InputStream and create the Java
     * representation of the message.
     */
-   public abstract Object createMessage(final InputStream in);
+   public abstract NegotiationMessage createMessage(final InputStream in) throws IOException;
 
 }

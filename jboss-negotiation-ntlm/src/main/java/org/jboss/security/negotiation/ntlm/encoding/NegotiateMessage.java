@@ -16,13 +16,19 @@
 
 package org.jboss.security.negotiation.ntlm.encoding;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
+import org.jboss.security.negotiation.NegotiationMessage;
+import org.jboss.util.NotImplementedException;
+
 /**
  * Representation of an NTLM NEGOTIATIE_MESSAGE
  * 
  * @author darran.lofthouse@jboss.com
  * @since 7th August 2008
  */
-public class NegotiateMessage
+public class NegotiateMessage extends NegotiationMessage
 {
 
    private NegotiateFlags negotiateFlags;
@@ -108,6 +114,12 @@ public class NegotiateMessage
       sb.append("{negotiateFlags=").append(negotiateFlags).append("}");
 
       return sb.toString();
+   }
+
+   @Override
+   public void writeTo(OutputStream os) throws IOException
+   {
+      throw new NotImplementedException();
    }
 
 }

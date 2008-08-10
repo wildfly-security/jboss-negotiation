@@ -38,6 +38,10 @@
       <artifactId>log4j</artifactId>
     </dependency>
     <dependency>
+      <groupId>jboss</groupId>
+      <artifactId>jboss-common</artifactId>
+    </dependency>    
+    <dependency>
       <groupId>jboss.web</groupId>
       <artifactId>jbossweb</artifactId>
     </dependency>

@@ -145,19 +145,25 @@ public class NegotiateMessageDecoder
 
    }
 
-   public static NegotiateMessage decode(final byte[] token) throws IOException
+   public static NegotiateMessage decode(final InputStream is) throws IOException
    {
       DecoderData data = new DecoderData();
-      ByteArrayInputStream bais = new ByteArrayInputStream(token);
 
-      readVerifySignature(bais, data);
-      readVerifyMessageType(bais, data);
-      NegotiateFlagsDecoder.readNegotiateFlags(bais, data);
-      data.message.setDomainNameFields(FieldDecoder.readFieldLengths(bais, data));
-      data.message.setWorkstationFields(FieldDecoder.readFieldLengths(bais, data));
-      readVersion(bais, data);
-      readPayload(bais, data);
+      readVerifySignature(is, data);
+      readVerifyMessageType(is, data);
+      NegotiateFlagsDecoder.readNegotiateFlags(is, data);
+      data.message.setDomainNameFields(FieldDecoder.readFieldLengths(is, data));
+      data.message.setWorkstationFields(FieldDecoder.readFieldLengths(is, data));
+      readVersion(is, data);
+      readPayload(is, data);
 
       return data.message;
+   }
+
+   public static NegotiateMessage decode(final byte[] token) throws IOException
+   {
+      ByteArrayInputStream bais = new ByteArrayInputStream(token);
+
+      return decode(bais);
    }
 }

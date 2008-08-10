@@ -22,9 +22,9 @@
  */
 package org.jboss.security.negotiation.toolkit;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -32,10 +32,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
-import org.jboss.security.negotiation.ntlm.Constants;
+import org.jboss.security.negotiation.MessageFactory;
+import org.jboss.security.negotiation.NegotiationException;
 import org.jboss.security.negotiation.ntlm.encoding.NTLMField;
 import org.jboss.security.negotiation.ntlm.encoding.NegotiateMessage;
-import org.jboss.security.negotiation.ntlm.encoding.NegotiateMessageDecoder;
 import org.jboss.util.Base64;
 
 /**
@@ -134,40 +134,44 @@ public class NTLMNegotiationServlet extends HttpServlet
 
       byte[] reqToken = Base64.decode(requestHeader);
 
-      byte[] ntlmSignature = Constants.SIGNATURE;
-      if (reqToken.length > 8)
+      MessageFactory messageFactory = null;
+
+      try
       {
-         byte[] reqHeader = new byte[8];
-         System.arraycopy(reqToken, 0, reqHeader, 0, 8);
+         messageFactory = MessageFactory.newInstance();
+      }
+      catch (NegotiationException e)
+      {
+         writer.println("<p><b>Unable to obtain MessageFactory '" + e.getMessage() + "'</b></p>");
+      }
 
-         if (Arrays.equals(ntlmSignature, reqHeader))
+      ByteArrayInputStream bais = new ByteArrayInputStream(reqToken);
+      if (messageFactory != null && messageFactory.accepts(bais))
+      {
+         NegotiateMessage message = (NegotiateMessage) messageFactory.createMessage(bais);
+         writer.println("<h3>NTLM - Negotiate_Message</h3>");
+
+         writer.write("<h4><font color='red'>"
+               + "Warning, this is NTLM, please verify that you were not expecting SPNEGO!</font></h4>");
+
+         writer.write("<b>Negotiate Flags</b> - ");
+         writer.write(String.valueOf(message.getNegotiateFlags()));
+         writer.write("<br>");
+
+         writeNTLMField("Domain Name", message.getDomainName(), message.getDomainNameFields(), writer);
+         writeNTLMField("Workstation Name", message.getWorkstationName(), message.getWorkstationFields(), writer);
+
+         if (message.getVersion() != null && message.getVersion().length > 0)
          {
-            NegotiateMessage message = NegotiateMessageDecoder.decode(reqToken);
-            writer.println("<h3>NTLM - Negotiate_Message</h3>");
-
-            writer.write("<h4><font color='red'>"
-                  + "Warning, this is NTLM, please verify that you were not expecting SPNEGO!</font></h4>");
-
-            writer.write("<b>Negotiate Flags</b> - ");
-            writer.write(String.valueOf(message.getNegotiateFlags()));
+            writer.write("<b>Version </b> - ");
+            writer.write(new String(message.getVersion()));
             writer.write("<br>");
-
-            writeNTLMField("Domain Name", message.getDomainName(), message.getDomainNameFields(), writer);
-            writeNTLMField("Workstation Name", message.getWorkstationName(), message.getWorkstationFields(), writer);
-
-            if (message.getVersion() != null && message.getVersion().length > 0)
-            {
-               writer.write("<b>Version </b> - ");
-               writer.write(new String(message.getVersion()));
-               writer.write("<br>");
-            }
-
-         }
-         else
-         {
-            writer.println("<p><b>Unsupported negotiation mechanism</b></p>");
          }
 
+      }
+      else
+      {
+         writer.println("<p><b>Unsupported negotiation mechanism</b></p>");
       }
 
    }

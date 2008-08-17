@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.jboss.security.negotiation.MessageFactory;
 import org.jboss.security.negotiation.NegotiationException;
+import org.jboss.security.negotiation.NegotiationMessage;
 import org.jboss.security.negotiation.ntlm.encoding.NTLMField;
 import org.jboss.security.negotiation.ntlm.encoding.NegotiateMessage;
 import org.jboss.util.Base64;
@@ -55,7 +56,9 @@ public class NTLMNegotiationServlet extends HttpServlet
    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
    {
       String authHeader = req.getHeader("Authorization");
-      if (authHeader == null)
+      NegotiationMessage message = (NegotiationMessage) req.getAttribute("message");
+
+      if (message == null && authHeader == null)
       {
          log.info("No Authorization Header, sending 401");
          resp.setHeader("WWW-Authenticate", "NTLM");
@@ -64,7 +67,64 @@ public class NTLMNegotiationServlet extends HttpServlet
          return;
       }
 
-      log.info("Authorization header received - formatting web page response.");
+      log.info("Authorization header received - decoding token.");
+
+      Object response = null;
+      if (message == null)
+      {
+         String requestHeader = "";
+         if (authHeader.startsWith("Negotiate "))
+         {
+            // Drop the 'Negotiate ' from the header.
+            requestHeader = authHeader.substring(10);
+         }
+         else if (authHeader.startsWith("NTLM "))
+         {
+            // Drop the 'NTLM ' from the header.
+            requestHeader = authHeader.substring(5);
+         }
+
+         if (requestHeader.length() > 0)
+         {
+            byte[] reqToken = Base64.decode(requestHeader);
+            ByteArrayInputStream bais = new ByteArrayInputStream(reqToken);
+            MessageFactory mf = null;
+
+            try
+            {
+               mf = MessageFactory.newInstance();
+            }
+            catch (NegotiationException e)
+            {
+               throw new ServletException("Unable to create MessageFactory", e);
+            }
+
+            if (mf.accepts(bais))
+            {
+               message = mf.createMessage(bais);
+               if (message instanceof NegotiateMessage)
+               {
+                  response = message;
+               }
+               else
+               {
+                  response = "<p><b>Unsuported negotiation token.</b></p>";
+               }
+
+            }
+            else
+            {
+               response = "<p><b>Unsuported negotiation token.</b></p>";
+            }
+
+         }
+
+      }
+      else
+      {
+         log.info("Using existing message.");
+         response = message;
+      }
 
       /* At this stage no further negotiation will take place so the information */
       /* can be output in the servlet response.                                  */
@@ -86,7 +146,7 @@ public class NTLMNegotiationServlet extends HttpServlet
 
       try
       {
-         writeHeaderDetail(authHeader, writer);
+         writeHeaderDetail(response, writer);
       }
       catch (Exception e)
       {
@@ -113,42 +173,16 @@ public class NTLMNegotiationServlet extends HttpServlet
       doGet(req, resp);
    }
 
-   private void writeHeaderDetail(final String authHeader, final PrintWriter writer) throws IOException
+   private void writeHeaderDetail(final Object response, final PrintWriter writer) throws IOException
    {
-      String requestHeader;
-      if (authHeader.startsWith("Negotiate "))
-      {
-         // Drop the 'Negotiate ' from the header.
-         requestHeader = authHeader.substring(10);
-      }
-      else if (authHeader.startsWith("NTLM "))
-      {
-         // Drop the 'NTLM ' from the header.
-         requestHeader = authHeader.substring(5);
-      }
-      else
-      {
-         writer.println("<p><b>Header WWW-Authenticate does not beging with 'Negotiate' or 'NTLM'!</b></p>");
-         return;
-      }
 
-      byte[] reqToken = Base64.decode(requestHeader);
-
-      MessageFactory messageFactory = null;
-
-      try
+      if (response instanceof String)
       {
-         messageFactory = MessageFactory.newInstance();
+         writer.println((String) response);
       }
-      catch (NegotiationException e)
+      else if (response instanceof NegotiateMessage)
       {
-         writer.println("<p><b>Unable to obtain MessageFactory '" + e.getMessage() + "'</b></p>");
-      }
-
-      ByteArrayInputStream bais = new ByteArrayInputStream(reqToken);
-      if (messageFactory != null && messageFactory.accepts(bais))
-      {
-         NegotiateMessage message = (NegotiateMessage) messageFactory.createMessage(bais);
+         NegotiateMessage message = (NegotiateMessage) response;
          writer.println("<h3>NTLM - Negotiate_Message</h3>");
 
          writer.write("<h4><font color='red'>"
@@ -167,11 +201,6 @@ public class NTLMNegotiationServlet extends HttpServlet
             writer.write(new String(message.getVersion()));
             writer.write("<br>");
          }
-
-      }
-      else
-      {
-         writer.println("<p><b>Unsupported negotiation mechanism</b></p>");
       }
 
    }

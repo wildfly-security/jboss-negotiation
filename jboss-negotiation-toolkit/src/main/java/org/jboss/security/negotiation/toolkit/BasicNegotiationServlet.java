@@ -22,9 +22,9 @@
  */
 package org.jboss.security.negotiation.toolkit;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.RequestDispatcher;
@@ -33,15 +33,17 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jboss.util.Base64;
 import org.apache.log4j.Logger;
-import org.ietf.jgss.GSSException;
 import org.ietf.jgss.Oid;
+import org.jboss.security.negotiation.MessageFactory;
+import org.jboss.security.negotiation.NegotiationException;
+import org.jboss.security.negotiation.NegotiationMessage;
 import org.jboss.security.negotiation.OidNameUtil;
 import org.jboss.security.negotiation.common.DebugHelper;
-import org.jboss.security.negotiation.ntlm.Constants;
+import org.jboss.security.negotiation.ntlm.encoding.NegotiateMessage;
 import org.jboss.security.negotiation.spnego.encoding.NegTokenInit;
-import org.jboss.security.negotiation.spnego.encoding.NegTokenInitDecoder;
+import org.jboss.security.negotiation.spnego.encoding.NegTokenTarg;
+import org.jboss.util.Base64;
 
 /**
  * A basic servlet to test that if prompted the client browser will return a SPNEGO
@@ -76,7 +78,71 @@ public class BasicNegotiationServlet extends HttpServlet
          return;
       }
 
-      log.info("Authorization header received - formatting web page response.");
+      log.info("Authorization header received - decoding token.");
+
+      Object response = null;
+
+      String requestHeader = "";
+      if (authHeader.startsWith("Negotiate "))
+      {
+         // Drop the 'Negotiate ' from the header.
+         requestHeader = authHeader.substring(10);
+      }
+      else if (authHeader.startsWith("NTLM "))
+      {
+         // Drop the 'NTLM ' from the header.
+         requestHeader = authHeader.substring(5);
+      }
+
+      if (requestHeader.length() > 0)
+      {
+         byte[] reqToken = Base64.decode(requestHeader);
+         ByteArrayInputStream bais = new ByteArrayInputStream(reqToken);
+         MessageFactory mf = null;
+
+         try
+         {
+            mf = MessageFactory.newInstance();
+         }
+         catch (NegotiationException e)
+         {
+            throw new ServletException("Unable to create MessageFactory", e);
+         }
+
+         if (mf.accepts(bais))
+         {
+            NegotiationMessage message = mf.createMessage(bais);
+
+            if (message instanceof NegotiateMessage)
+            {
+               req.setAttribute("message", message);
+
+               RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/NTLMNegotiation");
+               dispatcher.forward(req, resp);
+
+               return;
+            }
+
+            if (message instanceof NegTokenInit)
+            {
+               response = message;
+            }
+            else if (message instanceof NegTokenTarg)
+            {
+               response = "<p><b>Unexpected NegTokenTarg, first token should be NegTokenInit!</b></p>";
+            }
+
+         }
+         else
+         {
+            response = "<p><b>Unsuported negotiation token.</b></p>";
+         }
+
+      }
+      else
+      {
+         response = "<p><b>Header WWW-Authenticate does not beging with 'Negotiate' or 'NTLM'!</b></p>";
+      }
 
       /* At this stage no further negotiation will take place so the information */
       /* can be output in the servlet response.                                  */
@@ -96,58 +162,7 @@ public class BasicNegotiationServlet extends HttpServlet
       writer.println(authHeader);
       writer.println("    </p>");
 
-      String requestHeader = "";
-      if (authHeader.startsWith("Negotiate "))
-      {
-         // Drop the 'Negotiate ' from the header.
-         requestHeader = authHeader.substring(10);
-      }
-      else if (authHeader.startsWith("NTLM "))
-      {
-         // Drop the 'NTLM ' from the header.
-         requestHeader = authHeader.substring(5);
-      }
-
-      if (requestHeader.length() == 0)
-      {
-         writer.println("<p><b>Header WWW-Authenticate does not beging with 'Negotiate' or 'NTLM'!</b></p>");
-      }
-      else
-      {
-         byte[] reqToken = Base64.decode(requestHeader);
-
-         byte[] ntlmSignature = Constants.SIGNATURE;
-         if (reqToken.length > 8)
-         {
-            byte[] reqHeader = new byte[8];
-            System.arraycopy(reqToken, 0, reqHeader, 0, 8);
-
-            if (Arrays.equals(ntlmSignature, reqHeader))
-            {
-
-               RequestDispatcher dispatcher = getServletContext().getRequestDispatcher("/NTLMNegotiation");
-               dispatcher.forward(req, resp);
-
-               return;
-            }
-         }
-
-         try
-         {
-            writeHeaderDetail(reqToken, writer);
-         }
-         catch (Exception e)
-         {
-            if (e instanceof RuntimeException)
-            {
-               throw (RuntimeException) e;
-            }
-            else
-            {
-               throw new ServletException("Unable to writeHeaderDetail", e);
-            }
-         }
-      }
+      writeHeaderDetail(response, writer);
 
       writer.println("  </body>");
       writer.println("</html>");
@@ -162,12 +177,15 @@ public class BasicNegotiationServlet extends HttpServlet
       doGet(req, resp);
    }
 
-   private void writeHeaderDetail(final byte[] reqToken, final PrintWriter writer) throws IOException, GSSException
+   private void writeHeaderDetail(final Object response, final PrintWriter writer) throws IOException
    {
-
-      if (reqToken[0] == 0x60)
+      if (response instanceof String)
       {
-         NegTokenInit negTokenInit = NegTokenInitDecoder.decode(reqToken);
+         writer.println((String) response);
+      }
+      else if (response instanceof NegTokenInit)
+      {
+         NegTokenInit negTokenInit = (NegTokenInit) response;
          writer.println("<h3>NegTokenInit</h3>");
 
          writer.print("<b>Message Oid - </b>");
@@ -207,17 +225,8 @@ public class BasicNegotiationServlet extends HttpServlet
             writer.print(new String(Base64.encodeBytes(mechTokenMic)));
          }
          writer.println("<br>");
-
-         return;
       }
 
-      if (reqToken[0] == (byte) 0xa1)
-      {
-         writer.println("<p><b>Unexpected NegTokenTarg, first token should be NegTokenInit!</b></p>");
-         return;
-      }
-
-      writer.println("<p><b>Unsupported negotiation mechanism</b></p>");
    }
 
 }

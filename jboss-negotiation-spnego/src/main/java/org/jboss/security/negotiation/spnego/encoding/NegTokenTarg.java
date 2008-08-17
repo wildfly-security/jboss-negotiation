@@ -16,6 +16,9 @@
 
 package org.jboss.security.negotiation.spnego.encoding;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 import org.ietf.jgss.Oid;
 
 /**
@@ -23,7 +26,7 @@ import org.ietf.jgss.Oid;
  * 
  * @author <a href="darranlofthouse@hotmail.com">Darran Lofthouse</a>
  */
-public class NegTokenTarg
+public class NegTokenTarg extends SPNEGOMessage
 {
    public static final Integer ACCEPT_COMPLETED = new Integer(1);
 
@@ -79,4 +82,12 @@ public class NegTokenTarg
       this.mechListMIC = mechListMIC;
    }
 
+   @Override
+   public void writeTo(final OutputStream os) throws IOException
+   {
+      // TODO Auto-generated method stub
+      
+   }
+
+   
 }

@@ -16,17 +16,20 @@
 
 package org.jboss.security.negotiation.spnego.encoding;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.ietf.jgss.Oid;
+import org.jboss.util.NotImplementedException;
 
 /**
  * Representation of NegTokenInit.
  * 
  * @author <a href="darranlofthouse@hotmail.com">Darran Lofthouse</a>
  */
-public class NegTokenInit
+public class NegTokenInit extends SPNEGOMessage
 {
 
    private Oid messageOid;
@@ -90,4 +93,11 @@ public class NegTokenInit
       this.mechListMIC = mechListMIC;
    }
 
+   @Override
+   public void writeTo(OutputStream os) throws IOException
+   {
+     throw new NotImplementedException();      
+   }
+
+   
 }

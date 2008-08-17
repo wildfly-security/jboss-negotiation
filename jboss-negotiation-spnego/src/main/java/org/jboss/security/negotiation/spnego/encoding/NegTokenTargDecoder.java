@@ -124,18 +124,24 @@ public class NegTokenTargDecoder extends NegTokenDecoder
 
    }
 
-   public static NegTokenTarg decode(final byte[] token) throws IOException, GSSException
+   public static NegTokenTarg decode(final InputStream is) throws IOException, GSSException
    {
       NegTokenTarg negTokenTarg = new NegTokenTarg();
-      ByteArrayInputStream bais = new ByteArrayInputStream(token);
 
       // TODO - Drop or verify.
-      byte firstByte = (byte) bais.read();
+      byte firstByte = (byte) is.read();
       // TODO - Drop or verify.
-      int totalLength = readLength(bais);
+      int totalLength = readLength(is);
 
-      decodeNegTokenTargSequence(bais, negTokenTarg);
+      decodeNegTokenTargSequence(is, negTokenTarg);
 
       return negTokenTarg;
+   }
+
+   public static NegTokenTarg decode(final byte[] token) throws IOException, GSSException
+   {
+      ByteArrayInputStream bais = new ByteArrayInputStream(token);
+
+      return decode(bais);
    }
 }

@@ -63,7 +63,7 @@ public class NegTokenInitDecoder extends NegTokenDecoder
       int length = NegTokenDecoder.readLength(is);
       // TODO - Verify type.
       byte type = (byte) is.read();
-      
+
       int tokenLength = readLength(is);
 
       byte[] mechToken = new byte[tokenLength];
@@ -115,6 +115,27 @@ public class NegTokenInitDecoder extends NegTokenDecoder
 
    }
 
+   public static NegTokenInit decode(final InputStream is) throws IOException, GSSException
+   {
+      NegTokenInit negTokenInit = new NegTokenInit();
+
+      // TODO - Drop or verify.
+      byte firstByte = (byte) is.read();
+      // TODO - Drop or verify.
+      int totalLength = NegTokenDecoder.readLength(is);
+
+      negTokenInit.setMessageOid(new Oid(is));
+
+      // TODO - Verify
+      int tokenType = is.read();
+      // TODO - Drop or verify.
+      int remainingLength = NegTokenDecoder.readLength(is);
+
+      decodeNegTokenInitSequence(is, negTokenInit);
+
+      return negTokenInit;
+   }
+
    /**
     *  Decode the SPNEGO message contained witin the byte[] and return a
     *  NegTokenInit object.
@@ -127,22 +148,8 @@ public class NegTokenInitDecoder extends NegTokenDecoder
     */
    public static NegTokenInit decode(final byte[] token) throws IOException, GSSException
    {
-      NegTokenInit negTokenInit = new NegTokenInit();
       ByteArrayInputStream bais = new ByteArrayInputStream(token);
-      // TODO - Drop or verify.
-      byte firstByte = (byte) bais.read();
-      // TODO - Drop or verify.
-      int totalLength = NegTokenDecoder.readLength(bais);
 
-      negTokenInit.setMessageOid(new Oid(bais));
-
-      // TODO - Verify
-      int tokenType = bais.read();
-      // TODO - Drop or verify.
-      int remainingLength = NegTokenDecoder.readLength(bais);
-
-      decodeNegTokenInitSequence(bais, negTokenInit);
-
-      return negTokenInit;
+      return decode(bais);
    }
 }

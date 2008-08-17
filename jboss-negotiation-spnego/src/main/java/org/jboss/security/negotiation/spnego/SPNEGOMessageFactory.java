@@ -19,8 +19,12 @@ package org.jboss.security.negotiation.spnego;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.log4j.Logger;
+import org.ietf.jgss.GSSException;
 import org.jboss.security.negotiation.MessageFactory;
 import org.jboss.security.negotiation.NegotiationMessage;
+import org.jboss.security.negotiation.spnego.encoding.NegTokenInitDecoder;
+import org.jboss.security.negotiation.spnego.encoding.NegTokenTargDecoder;
 
 /**
  * The message factory for reading SPNEGO messages from InputStreams and
@@ -32,6 +36,8 @@ import org.jboss.security.negotiation.NegotiationMessage;
  */
 public class SPNEGOMessageFactory extends MessageFactory
 {
+
+   private static final Logger log = Logger.getLogger(SPNEGOMessageFactory.class);
 
    @Override
    public boolean accepts(InputStream in) throws IOException
@@ -51,8 +57,33 @@ public class SPNEGOMessageFactory extends MessageFactory
    @Override
    public NegotiationMessage createMessage(InputStream in) throws IOException
    {
-      // TODO Auto-generated method stub
-      return null;
+      if (accepts(in) == true)
+      {
+         in.mark(1);
+         int dataRead = in.read();
+         in.reset();
+
+         try
+         {
+            if (dataRead == 0x60)
+            {
+               return NegTokenInitDecoder.decode(in);
+            }
+            // The accepts method will have confirmed it is either 0x60 or 0xa1
+            return NegTokenTargDecoder.decode(in);
+         }
+         catch (GSSException e)
+         {
+            IOException ioe = new IOException("Unable to createMessage");
+            ioe.initCause(e);
+
+            throw ioe;
+         }
+      }
+      else
+      {
+         throw new IllegalArgumentException("InputStream does not contain SPNEGO message.");
+      }
    }
 
 }

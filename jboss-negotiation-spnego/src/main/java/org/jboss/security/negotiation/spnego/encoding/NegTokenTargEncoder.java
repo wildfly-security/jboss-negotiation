@@ -18,6 +18,7 @@ package org.jboss.security.negotiation.spnego.encoding;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -124,19 +125,29 @@ public class NegTokenTargEncoder extends NegTokenEncoder
       tokens.add(0, sequenceLength);
    }
 
-   protected static byte[] contructMessage(final List<byte[]> tokens) throws IOException
+   protected static void contructMessage(final List<byte[]> tokens, final OutputStream os) throws IOException
    {
       int length = getTotalLength(tokens);
-
-      ByteArrayOutputStream baous = new ByteArrayOutputStream(length);
 
       Iterator<byte[]> it = tokens.iterator();
       while (it.hasNext())
       {
-         baous.write((byte[]) it.next());
+         os.write((byte[]) it.next());
       }
+   }
 
-      return baous.toByteArray();
+   public void encode(final NegTokenTarg negTokenTarg, final OutputStream os) throws GSSException, IOException
+   {
+      List<byte[]> tokens = new LinkedList<byte[]>();
+
+      encodeMechListMIC(tokens, negTokenTarg.getMechListMIC());
+      encodeResponseToken(tokens, negTokenTarg.getResponseToken());
+      encodeSupportedMech(tokens, negTokenTarg.getSupportedMech());
+      encodeNegResult(tokens, negTokenTarg.getNegResult());
+      encodeConstructedSequence(tokens);
+      encodeNegTokenTarg(tokens);
+
+      contructMessage(tokens, os);
    }
 
    public static byte[] encode(final NegTokenTarg negTokenTarg) throws GSSException, IOException
@@ -150,6 +161,9 @@ public class NegTokenTargEncoder extends NegTokenEncoder
       encodeConstructedSequence(tokens);
       encodeNegTokenTarg(tokens);
 
-      return contructMessage(tokens);
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      contructMessage(tokens, baos);
+
+      return baos.toByteArray();
    }
 }

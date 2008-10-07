@@ -34,7 +34,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.jboss.security.SecurityAssociation;
 
 /**
@@ -49,14 +48,10 @@ public class SecuredServlet extends HttpServlet
 
    private static final long serialVersionUID = 4708999345009728352L;
 
-   private static final Logger log = Logger.getLogger(SecuredServlet.class);
-
    @Override
    protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
          IOException
    {
-      log.info(String.valueOf(req.getUserPrincipal()));
-
       PrintWriter writer = resp.getWriter();
 
       writer.println("<html>");
@@ -67,6 +62,9 @@ public class SecuredServlet extends HttpServlet
       writer.println("    <h1>Negotiation Toolkit</h1>");
       writer.println("    <h2>Secured</h2>");
 
+      writer.println("    <h5>Auth Type</h5>");
+      writeObject(req.getAuthType(), writer);
+      
       writer.println("    <h5>User Principal</h5>");
       writeObject(req.getUserPrincipal(), writer);
 

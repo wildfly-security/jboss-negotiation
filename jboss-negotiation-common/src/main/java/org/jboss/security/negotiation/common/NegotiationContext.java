@@ -23,6 +23,7 @@
 package org.jboss.security.negotiation.common;
 
 import org.apache.log4j.Logger;
+import org.jboss.security.negotiation.NegotiationMessage;
 
 /**
  * The NegotiationContext is the holder to contain the state of the current authentication 
@@ -37,25 +38,27 @@ public class NegotiationContext
 
    private static final Logger log = Logger.getLogger(NegotiationContext.class);
 
-   private static final ThreadLocal<NegotiationContext> spnegoContext = new ThreadLocal<NegotiationContext>();
+   private static final ThreadLocal<NegotiationContext> negotiationContext = new ThreadLocal<NegotiationContext>();
 
    private boolean authenticated = false;
 
-   private String requestHeader = null;
+   private String authenticationMethod;
 
-   private String responseHeader = null;
+   private NegotiationMessage requestMessage = null;
+
+   private NegotiationMessage responseMessage = null;
 
    private Object schemeContext = null;
 
-   public static NegotiationContext getCurrentSPNEGOContext()
+   public static NegotiationContext getCurrentNegotiationContext()
    {
-      return spnegoContext.get();
+      return negotiationContext.get();
    }
 
    public void associate()
    {
       log.trace("associate " + this.hashCode());
-      spnegoContext.set(this);
+      negotiationContext.set(this);
    }
 
    /**
@@ -64,9 +67,9 @@ public class NegotiationContext
    public void clear()
    {
       log.trace("clear " + this.hashCode());
-      requestHeader = null;
-      responseHeader = null;
-      spnegoContext.remove();
+      requestMessage = null;
+      responseMessage = null;
+      negotiationContext.remove();
    }
 
    public boolean isAuthenticated()
@@ -79,24 +82,34 @@ public class NegotiationContext
       this.authenticated = authenticated;
    }
 
-   public String getRequestHeader()
+   public String getAuthenticationMethod()
    {
-      return requestHeader;
+      return authenticationMethod;
    }
 
-   public void setRequestHeader(String requestHeader)
+   public void setAuthenticationMethod(String authenticationMethod)
    {
-      this.requestHeader = requestHeader;
+      this.authenticationMethod = authenticationMethod;
    }
 
-   public String getResponseHeader()
+   public NegotiationMessage getRequestMessage()
    {
-      return responseHeader;
+      return requestMessage;
    }
 
-   public void setResponseHeader(String responseHeader)
+   public void setRequestMessage(NegotiationMessage requestMessage)
    {
-      this.responseHeader = responseHeader;
+      this.requestMessage = requestMessage;
+   }
+
+   public NegotiationMessage getResponseMessage()
+   {
+      return responseMessage;
+   }
+
+   public void setResponseMessage(NegotiationMessage responseMessage)
+   {
+      this.responseMessage = responseMessage;
    }
 
    public Object getSchemeContext()

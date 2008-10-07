@@ -22,6 +22,8 @@
  */
 package org.jboss.security.negotiation;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.Principal;
 
@@ -32,7 +34,9 @@ import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.log4j.Logger;
+import org.jboss.security.negotiation.common.MessageTrace;
 import org.jboss.security.negotiation.common.NegotiationContext;
+import org.jboss.util.Base64;
 
 /**
  * An authenticator to manage Negotiation based authentication in connection with the
@@ -47,8 +51,6 @@ public class NegotiationAuthenticator extends AuthenticatorBase
    private static final Logger log = Logger.getLogger(NegotiationAuthenticator.class);
 
    private static final String NEGOTIATE = "Negotiate";
-
-   private static final String SPNEGO = "SPNEGO";
 
    private static final String NEGOTIATION_CONTEXT = "NEGOTIATION_CONTEXT";
 
@@ -88,6 +90,12 @@ public class NegotiationAuthenticator extends AuthenticatorBase
          throw new IOException("Invalid 'Authorization' header.");
       }
 
+      String authTokenBase64 = authHeader.substring(negotiateScheme.length() + 1);
+      byte[] authToken = Base64.decode(authTokenBase64);
+      ByteArrayInputStream authTokenIS = new ByteArrayInputStream(authToken);
+      MessageTrace.logRequestBase64(authTokenBase64);
+      MessageTrace.logRequestHex(authToken);
+
       Session session = request.getSessionInternal();
       NegotiationContext negotiationContext = (NegotiationContext) session.getNote(NEGOTIATION_CONTEXT);
       if (negotiationContext == null)
@@ -102,25 +110,45 @@ public class NegotiationAuthenticator extends AuthenticatorBase
       // TODO - Probably not good if session reused.
       //        Maybe create arbitary ID or use SSO ID.
       String username = session.getId();
+      String authenticationMethod = "";
       try
       {
          // Set the ThreadLocal association.
          negotiationContext.associate();
-         negotiationContext.setRequestHeader(authHeader.substring(negotiateScheme.length() + 1));
+
+         MessageFactory mf = MessageFactory.newInstance();
+         if (mf.accepts(authTokenIS) == false)
+         {
+            throw new IOException("Unsupported negotiation mechanism.");
+         }
+
+         NegotiationMessage requestMessage = mf.createMessage(authTokenIS);
+         negotiationContext.setRequestMessage(requestMessage);
 
          Realm realm = context.getRealm();
-
          principal = realm.authenticate(username, (String) null);
+         authenticationMethod = negotiationContext.getAuthenticationMethod();
 
          if (log.isDebugEnabled())
             log.debug("authenticated principal = " + principal);
 
-         String responseHeader = negotiationContext.getResponseHeader();
+         NegotiationMessage responseMessage = negotiationContext.getResponseMessage();
+         ByteArrayOutputStream responseMessageOS = new ByteArrayOutputStream();
+         responseMessage.writeTo(responseMessageOS, true);
+         String responseHeader = responseMessageOS.toString();
+
+         MessageTrace.logResponseBase64(responseHeader);
+         // TODO - MessageTrace.logResponseHex()
+
          if (responseHeader != null)
          {
             response.setHeader("WWW-Authenticate", negotiateScheme + " " + responseHeader);
          }
 
+      }
+      catch (NegotiationException e)
+      {
+         throw new IOException("Error processing " + negotiateScheme + " header.", e);
       }
       finally
       {
@@ -134,10 +162,7 @@ public class NegotiationAuthenticator extends AuthenticatorBase
       }
       else
       {
-         // TODO - Set the scheme based on what happened - the NegotiationContext
-         // is probably the correct vehicle for this as it is the result of the 
-         // negotiation that sets the outcome.
-         register(request, response, principal, SPNEGO, username, null);
+         register(request, response, principal, authenticationMethod, username, null);
       }
 
       return (principal != null);

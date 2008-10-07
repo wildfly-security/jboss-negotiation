@@ -24,7 +24,6 @@ package org.jboss.security.negotiation.common;
 
 import org.apache.log4j.Logger;
 
-
 /**
  * Handle message tracing hierarchy.
  * 

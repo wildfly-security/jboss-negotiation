@@ -41,12 +41,19 @@ public class SPNEGOAuthenticator extends NegotiationAuthenticator
 
    private static final Logger log = Logger.getLogger(SPNEGOAuthenticator.class);
 
+   private static boolean warned = false;
+
    @Override
    public void setNext(Valve valve)
    {
-      String thisClass = this.getClass().getName();
-      String superClass = NegotiationAuthenticator.class.getName();
-      log.warn("'" + thisClass + "' is deprecated, use '" + superClass + "' instead.");
+      if (warned == false)
+      {
+         warned = true;
+         String thisClass = this.getClass().getName();
+         String superClass = NegotiationAuthenticator.class.getName();
+         log.warn("'" + thisClass + "' is deprecated, use '" + superClass + "' instead.");
+      }
+
       super.setNext(valve);
    }
 

@@ -42,14 +42,11 @@ import org.ietf.jgss.GSSManager;
 import org.ietf.jgss.Oid;
 import org.jboss.security.SimpleGroup;
 import org.jboss.security.auth.spi.AbstractServerLoginModule;
-import org.jboss.security.negotiation.common.MessageTrace;
+import org.jboss.security.negotiation.NegotiationMessage;
 import org.jboss.security.negotiation.common.NegotiationContext;
 import org.jboss.security.negotiation.spnego.encoding.NegTokenInit;
-import org.jboss.security.negotiation.spnego.encoding.NegTokenInitDecoder;
 import org.jboss.security.negotiation.spnego.encoding.NegTokenTarg;
-import org.jboss.security.negotiation.spnego.encoding.NegTokenTargDecoder;
-import org.jboss.security.negotiation.spnego.encoding.NegTokenTargEncoder;
-import org.jboss.util.Base64;
+import org.jboss.security.negotiation.spnego.encoding.SPNEGOMessage;
 
 /**
  * Login module to work in conjunction with SPNEGOAuthenticator to handle the 
@@ -60,6 +57,8 @@ import org.jboss.util.Base64;
  */
 public class SPNEGOLoginModule extends AbstractServerLoginModule
 {
+
+   private static final String SPNEGO = "SPNEGO";
 
    private static final Oid kerberos;
 
@@ -103,12 +102,12 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
 
       super.loginOk = false;
 
-      NegotiationContext spnegoContext = NegotiationContext.getCurrentSPNEGOContext();
+      NegotiationContext negotiationContext = NegotiationContext.getCurrentNegotiationContext();
 
       try
       {
          Subject server = getServerSubject();
-         AcceptSecContext action = new AcceptSecContext(spnegoContext);
+         AcceptSecContext action = new AcceptSecContext(negotiationContext);
          Object result = Subject.doAs(server, action);
 
          log.trace("Result - " + result);
@@ -172,7 +171,7 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
       Group callerPrincipal = new SimpleGroup("CallerPrincipal");
       Group[] groups =
       {roles, callerPrincipal};
-      callerPrincipal.addMember(identity);
+      callerPrincipal.addMember(getIdentity());
       return groups;
    }
 
@@ -193,28 +192,28 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
    private class AcceptSecContext implements PrivilegedAction
    {
 
-      private final NegotiationContext spnegoContext;
+      private final NegotiationContext negotiationContext;
 
-      public AcceptSecContext(final NegotiationContext spnegoContext)
+      public AcceptSecContext(final NegotiationContext negotiationContext)
       {
-         this.spnegoContext = spnegoContext;
+         this.negotiationContext = negotiationContext;
       }
 
       public Object run()
       {
          try
          {
-            String requestHeader = spnegoContext.getRequestHeader();
-            byte[] reqToken = Base64.decode(requestHeader);
-
-            MessageTrace.logRequestBase64(spnegoContext.getRequestHeader());
-            MessageTrace.logRequestHex(reqToken);
-            byte[] gssToken = null;
-
-            // TODO - If Section from MY Code!!
-            if (reqToken[0] == 0x60)
+            NegotiationMessage requestMessage = negotiationContext.getRequestMessage();
+            if (requestMessage instanceof SPNEGOMessage == false)
             {
-               NegTokenInit negTokenInit = NegTokenInitDecoder.decode(reqToken);
+               throw new LoginException("Unsupported negotiation mechanism.");
+            }
+
+            // TODO - Ensure no way to fall through with gssToken still null.
+            byte[] gssToken = null;
+            if (requestMessage instanceof NegTokenInit)
+            {
+               NegTokenInit negTokenInit = (NegTokenInit) requestMessage;
                List<Oid> mechList = negTokenInit.getMechTypes();
 
                if (mechList.get(0).equals(kerberos))
@@ -242,32 +241,20 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
                   {
                      negTokenTarg.setNegResult(NegTokenTarg.REJECTED);
                   }
-
-                  byte[] respSpnego = NegTokenTargEncoder.encode(negTokenTarg);
-                  String respEncoded = Base64.encodeBytes(respSpnego);
-
-                  MessageTrace.logResponseBase64(respEncoded);
-                  MessageTrace.logResponseHex(respSpnego);
-
-                  spnegoContext.setResponseHeader(respEncoded);
+                  negotiationContext.setResponseMessage(negTokenTarg);
 
                   return Boolean.FALSE;
                }
 
             }
-            else if (reqToken[0] == (byte) 0xa1)
+            else if (requestMessage instanceof NegTokenTarg)
             {
-               NegTokenTarg negTokenTarg = NegTokenTargDecoder.decode(reqToken);
+               NegTokenTarg negTokenTarg = (NegTokenTarg) requestMessage;
 
                gssToken = negTokenTarg.getResponseToken();
             }
-            else
-            {
-               // TODO - Detect NTLM to specific error can be reported.
-               throw new LoginException("Unsupported negotiation mechanism.");
-            }
 
-            Object schemeContext = spnegoContext.getSchemeContext();
+            Object schemeContext = negotiationContext.getSchemeContext();
             if (schemeContext != null && schemeContext instanceof GSSContext == false)
             {
                throw new IllegalStateException("The schemeContext is not a GSSContext");
@@ -280,19 +267,22 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
                GSSManager manager = GSSManager.getInstance();
                gssContext = manager.createContext((GSSCredential) null);
 
-               spnegoContext.setSchemeContext(gssContext);
+               negotiationContext.setSchemeContext(gssContext);
             }
 
             if (gssContext.isEstablished())
             {
                log.warn("Authentication was performed despite already being authenticated!");
+
+               // TODO - Refactor to only do this once.
                identity = new KerberosPrincipal(gssContext.getSrcName().toString());
 
                log.debug("context.getCredDelegState() = " + gssContext.getCredDelegState());
                log.debug("context.getMutualAuthState() = " + gssContext.getMutualAuthState());
                log.debug("context.getSrcName() = " + gssContext.getSrcName().toString());
 
-               spnegoContext.setAuthenticated(true);
+               negotiationContext.setAuthenticationMethod(SPNEGO);
+               negotiationContext.setAuthenticated(true);
 
                return Boolean.TRUE;
             }
@@ -304,13 +294,7 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
                NegTokenTarg negTokenTarg = new NegTokenTarg();
                negTokenTarg.setResponseToken(respToken);
 
-               byte[] respSpnego = NegTokenTargEncoder.encode(negTokenTarg);
-               String respEncoded = Base64.encodeBytes(respSpnego);
-
-               MessageTrace.logResponseBase64(respEncoded);
-               MessageTrace.logResponseHex(respSpnego);
-
-               spnegoContext.setResponseHeader(respEncoded);
+               negotiationContext.setResponseMessage(negTokenTarg);
             }
 
             if (gssContext.isEstablished() == false)
@@ -325,7 +309,9 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
                log.debug("context.getMutualAuthState() = " + gssContext.getMutualAuthState());
                log.debug("context.getSrcName() = " + gssContext.getSrcName().toString());
 
-               spnegoContext.setAuthenticated(true);
+               // TODO - Get these two in synch - maybe isAuthenticated based on an authentication method been set?
+               negotiationContext.setAuthenticationMethod(SPNEGO);
+               negotiationContext.setAuthenticated(true);
                return Boolean.TRUE;
             }
 

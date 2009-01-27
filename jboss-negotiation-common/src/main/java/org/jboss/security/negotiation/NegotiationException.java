@@ -26,6 +26,8 @@ package org.jboss.security.negotiation;
 public class NegotiationException extends Exception
 {
 
+   private static final long serialVersionUID = 1673369082849726544L;
+
    public NegotiationException()
    {
       super();

@@ -107,8 +107,6 @@ public class NegotiationAuthenticator extends AuthenticatorBase
          }
       }
 
-      // TODO - Probably not good if session reused.
-      //        Maybe create arbitary ID or use SSO ID.
       String username = session.getId();
       String authenticationMethod = "";
       try
@@ -138,7 +136,6 @@ public class NegotiationAuthenticator extends AuthenticatorBase
          String responseHeader = responseMessageOS.toString();
 
          MessageTrace.logResponseBase64(responseHeader);
-         // TODO - MessageTrace.logResponseHex()
 
          if (responseHeader != null)
          {

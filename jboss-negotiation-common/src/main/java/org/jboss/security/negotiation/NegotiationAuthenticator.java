@@ -145,7 +145,9 @@ public class NegotiationAuthenticator extends AuthenticatorBase
       }
       catch (NegotiationException e)
       {
-         throw new IOException("Error processing " + negotiateScheme + " header.", e);
+         IOException ioe = new IOException("Error processing " + negotiateScheme + " header.");
+         ioe.initCause(e);
+         throw  ioe;
       }
       finally
       {

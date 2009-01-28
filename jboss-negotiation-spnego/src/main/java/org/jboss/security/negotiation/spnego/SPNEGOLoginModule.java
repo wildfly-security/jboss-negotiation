@@ -103,6 +103,13 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
       super.loginOk = false;
 
       NegotiationContext negotiationContext = NegotiationContext.getCurrentNegotiationContext();
+      NegotiationMessage requestMessage = negotiationContext.getRequestMessage();
+      if (requestMessage instanceof SPNEGOMessage == false)
+      {
+         String message = "Unsupported negotiation mechanism '" + requestMessage.getMessageType() + "'.";
+         log.warn(message);
+         throw new LoginException(message);
+      }
 
       try
       {
@@ -152,7 +159,6 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
       else
       {
          throw new LoginException("Continuation Required.");
-
       }
 
    }
@@ -203,11 +209,9 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
       {
          try
          {
+            // The message type will have already been checked before this point so we know it is
+            // a SPNEGO message.
             NegotiationMessage requestMessage = negotiationContext.getRequestMessage();
-            if (requestMessage instanceof SPNEGOMessage == false)
-            {
-               throw new LoginException("Unsupported negotiation mechanism.");
-            }
 
             // TODO - Ensure no way to fall through with gssToken still null.
             byte[] gssToken = null;

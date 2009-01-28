@@ -136,7 +136,7 @@ public class NegTokenTargEncoder extends NegTokenEncoder
       }
    }
 
-   public void encode(final NegTokenTarg negTokenTarg, final OutputStream os) throws GSSException, IOException
+   public static void encode(final NegTokenTarg negTokenTarg, final OutputStream os) throws GSSException, IOException
    {
       List<byte[]> tokens = new LinkedList<byte[]>();
 
@@ -152,17 +152,8 @@ public class NegTokenTargEncoder extends NegTokenEncoder
 
    public static byte[] encode(final NegTokenTarg negTokenTarg) throws GSSException, IOException
    {
-      List<byte[]> tokens = new LinkedList<byte[]>();
-
-      encodeMechListMIC(tokens, negTokenTarg.getMechListMIC());
-      encodeResponseToken(tokens, negTokenTarg.getResponseToken());
-      encodeSupportedMech(tokens, negTokenTarg.getSupportedMech());
-      encodeNegResult(tokens, negTokenTarg.getNegResult());
-      encodeConstructedSequence(tokens);
-      encodeNegTokenTarg(tokens);
-
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      contructMessage(tokens, baos);
+      encode(negTokenTarg, baos);
 
       return baos.toByteArray();
    }

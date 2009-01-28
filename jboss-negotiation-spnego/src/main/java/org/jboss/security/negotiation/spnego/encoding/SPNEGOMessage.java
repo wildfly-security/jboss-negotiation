@@ -28,4 +28,10 @@ import org.jboss.security.negotiation.NegotiationMessage;
 public abstract class SPNEGOMessage extends NegotiationMessage
 {
 
+   @Override
+   public String getMessageType()
+   {
+      return "SPNEGO";
+   }
+
 }

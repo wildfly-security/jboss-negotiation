@@ -19,6 +19,7 @@ package org.jboss.security.negotiation.spnego.encoding;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.ietf.jgss.GSSException;
 import org.ietf.jgss.Oid;
 
 /**
@@ -85,9 +86,17 @@ public class NegTokenTarg extends SPNEGOMessage
    @Override
    public void writeTo(final OutputStream os) throws IOException
    {
-      // TODO Auto-generated method stub
-      
+      try
+      {
+         NegTokenTargEncoder.encode(this, os);
+      }
+      catch (GSSException e)
+      {
+         IOException ioe = new IOException("Unable to encode NegTokenTarg message.");
+         ioe.initCause(e);
+         throw ioe;
+      }
+
    }
 
-   
 }

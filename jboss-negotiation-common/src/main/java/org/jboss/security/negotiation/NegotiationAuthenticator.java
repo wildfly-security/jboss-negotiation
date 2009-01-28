@@ -75,7 +75,7 @@ public class NegotiationAuthenticator extends AuthenticatorBase
 
       String negotiateScheme = getNegotiateScheme();
 
-      log.info("Header - " + request.getHeader("Authorization"));
+      log.debug("Header - " + request.getHeader("Authorization"));
       String authHeader = request.getHeader("Authorization");
       if (authHeader == null)
       {
@@ -125,20 +125,21 @@ public class NegotiationAuthenticator extends AuthenticatorBase
 
          Realm realm = context.getRealm();
          principal = realm.authenticate(username, (String) null);
+
          authenticationMethod = negotiationContext.getAuthenticationMethod();
 
-         if (log.isDebugEnabled())
+         if (log.isDebugEnabled() && principal != null)
             log.debug("authenticated principal = " + principal);
 
          NegotiationMessage responseMessage = negotiationContext.getResponseMessage();
-         ByteArrayOutputStream responseMessageOS = new ByteArrayOutputStream();
-         responseMessage.writeTo(responseMessageOS, true);
-         String responseHeader = responseMessageOS.toString();
-
-         MessageTrace.logResponseBase64(responseHeader);
-
-         if (responseHeader != null)
+         if (responseMessage != null)
          {
+            ByteArrayOutputStream responseMessageOS = new ByteArrayOutputStream();
+            responseMessage.writeTo(responseMessageOS, true);
+            String responseHeader = responseMessageOS.toString();
+
+            MessageTrace.logResponseBase64(responseHeader);
+
             response.setHeader("WWW-Authenticate", negotiateScheme + " " + responseHeader);
          }
 
@@ -147,7 +148,7 @@ public class NegotiationAuthenticator extends AuthenticatorBase
       {
          IOException ioe = new IOException("Error processing " + negotiateScheme + " header.");
          ioe.initCause(e);
-         throw  ioe;
+         throw ioe;
       }
       finally
       {

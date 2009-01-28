@@ -186,7 +186,7 @@ public class NTLMNegotiationServlet extends HttpServlet
          writer.println("<h3>NTLM - Negotiate_Message</h3>");
 
          writer.write("<h4><font color='red'>"
-               + "Warning, this is NTLM, please verify that you were not expecting SPNEGO!</font></h4>");
+               + "Warning, this is NTLM, only SPNEGO is supported!</font></h4>");
 
          writer.write("<b>Negotiate Flags</b> - ");
          writer.write(String.valueOf(message.getNegotiateFlags()));

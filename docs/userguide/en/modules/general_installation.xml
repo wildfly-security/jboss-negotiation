@@ -62,26 +62,64 @@
       </para>
 
       <para>
-        After copying the jar to the above location you will need to add
-        the authenticator itself to the following descriptor -
-        <code>
-          {jboss.home}/server/{configuration}/deploy/jboss-web.deployer/META-INF/jboss-service.xml
-        </code>
+        The locations to define the authenticator are slightly different
+        between JBoss AS 4.2.x and JBoss AS 5.0.x.
       </para>
 
-      <para>
-        Within this descriptor you should see a set of authenticators,
-        to add SPNEGO you should add the following entry: -
-      </para>
+      <section>
+        <title>JBoss AS 4.2.x</title>
 
-      <programlisting>
-        <![CDATA[
+        <para>
+          After copying the jar to the above location you will need to
+          add the authenticator itself to the following descriptor -
+          <code>
+            {jboss.home}/server/{configuration}/deploy/jboss-web.deployer/META-INF/jboss-service.xml
+          </code>
+        </para>
+
+        <para>
+          Within this descriptor you should see a set of authenticators,
+          to add negotiation you should add the following entry: -
+        </para>
+
+        <programlisting>
+          <![CDATA[
 <java:property>
   <java:key>SPNEGO</java:key>
   <java:value>org.jboss.security.negotiation.NegotiationAuthenticator</java:value>
 </java:property>
       ]]>
-      </programlisting>
+        </programlisting>
+
+      </section>
+
+      <section>
+        <title>JBoss AS 5.0.x</title>
+
+        <para>
+          After copying the jar to the above location you will need to
+          add the authenticator itself to the following descriptor -
+          <code>
+            {jboss.home}/server/{configuration}/deployers/jbossweb.deployer/META-INF/war-deployers-jboss-beans.xml
+          </code>
+        </para>
+
+        <para>
+          Within this descriptor you should see a set of authenticators
+          defined using a property called "authenticators", you should
+          add the following entry: -
+        </para>
+
+        <programlisting>
+          <![CDATA[
+<entry>
+  <key>SPNEGO</key>
+  <value>org.jboss.security.negotiation.NegotiationAuthenticator</value>
+</entry>
+      ]]>
+        </programlisting>
+
+      </section>
 
 
       <tip>

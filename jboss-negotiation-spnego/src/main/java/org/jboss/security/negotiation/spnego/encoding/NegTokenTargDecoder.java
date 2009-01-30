@@ -80,16 +80,6 @@ public class NegTokenTargDecoder extends NegTokenDecoder
       negTokenTarg.setResponseToken(responseToken);
    }
 
-   private static void decodeMechListMIC(final InputStream is, final NegTokenTarg negTokenTarg) throws IOException
-   {
-      int length = readLength(is);
-
-      byte[] mechListMIC = new byte[length];
-      is.read(mechListMIC);
-
-      negTokenTarg.setMechListMIC(mechListMIC);
-   }
-
    private static void decodeNegTokenTargSequence(final InputStream is, final NegTokenTarg negTokenTarg)
          throws IOException, GSSException
    {

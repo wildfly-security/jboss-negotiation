@@ -40,8 +40,6 @@ public class NegTokenInit extends SPNEGOMessage
 
    private byte[] mechToken;
 
-   private byte[] mechListMIC;
-
    public Oid getMessageOid()
    {
       return messageOid;
@@ -81,16 +79,6 @@ public class NegTokenInit extends SPNEGOMessage
    public void setMechToken(byte[] mechToken)
    {
       this.mechToken = mechToken;
-   }
-
-   public byte[] getMechListMIC()
-   {
-      return mechListMIC;
-   }
-
-   public void setMechListMIC(byte[] mechListMIC)
-   {
-      this.mechListMIC = mechListMIC;
    }
 
    @Override

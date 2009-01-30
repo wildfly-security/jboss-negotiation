@@ -39,6 +39,12 @@ public abstract class NegotiationMessage
    public abstract void writeTo(final OutputStream os) throws IOException;
 
    /**
+    * @return The message type.
+    */
+   public abstract String getMessageType();
+   
+   
+   /**
     * Write the message to the provided output stream, if base64 is set the
     * output should be base64 encoded.
     */

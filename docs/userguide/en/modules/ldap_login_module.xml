@@ -24,14 +24,18 @@
     <para>
       The fully qualified classname of the new login module is
       <code>
-        org.jboss.security.negotiation.spnego.AdvancedLdapLoginModule
+        org.jboss.security.negotiation.AdvancedLdapLoginModule
       </code>
     </para>
 
     <warning>
       <para>
-        The classname of this login module is subject to change,
-        especially if it migrates to the core security project.
+        If you made use of the Beta releases the class name was
+        <code>
+          org.jboss.security.negotiation.spnego.AdvancedLdapLoginModule
+        </code>
+        the LoginModule is still available using this name, however it
+        has been deprecated and will be removed in a future release.
       </para>
     </warning>
 

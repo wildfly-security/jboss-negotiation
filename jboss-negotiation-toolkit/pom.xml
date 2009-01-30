@@ -46,6 +46,11 @@
       <artifactId>jboss-negotiation-spnego</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.jboss.security</groupId>
+      <artifactId>jboss-negotiation-ntlm</artifactId>
+      <scope>provided</scope>
+    </dependency>    
     
     <!-- Global dependencies -->
     <dependency>

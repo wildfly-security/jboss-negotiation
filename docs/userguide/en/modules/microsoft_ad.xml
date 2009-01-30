@@ -121,9 +121,11 @@
     </para>
 
     <note>
-      Some of the domain details are slightly different in these images
-      as the test domain I am using is slightly different to the domain
-      I am using in the examples in this document.
+      <para>
+        Some of the domain details are slightly different in these
+        images as the test domain I am using is slightly different to
+        the domain I am using in the examples in this document.
+      </para>
     </note>
 
   </section>

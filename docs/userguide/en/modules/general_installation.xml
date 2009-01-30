@@ -62,26 +62,64 @@
       </para>
 
       <para>
-        After copying the jar to the above location you will need to add
-        the authenticator itself to the following descriptor -
-        <code>
-          {jboss.home}/server/{configuration}/deploy/jboss-web.deployer/META-INF/jboss-service.xml
-        </code>
+        The locations to define the authenticator are slightly different
+        between JBoss AS 4.2.x and JBoss AS 5.0.x.
       </para>
 
-      <para>
-        Within this descriptor you should see a set of authenticators,
-        to add SPNEGO you should add the following entry: -
-      </para>
+      <section>
+        <title>JBoss AS 4.2.x</title>
 
-      <programlisting>
-        <![CDATA[
+        <para>
+          After copying the jar to the above location you will need to
+          add the authenticator itself to the following descriptor -
+          <code>
+            {jboss.home}/server/{configuration}/deploy/jboss-web.deployer/META-INF/jboss-service.xml
+          </code>
+        </para>
+
+        <para>
+          Within this descriptor you should see a set of authenticators,
+          to add negotiation you should add the following entry: -
+        </para>
+
+        <programlisting>
+          <![CDATA[
 <java:property>
   <java:key>SPNEGO</java:key>
-  <java:value>org.jboss.security.negotiation.spnego.SPNEGOAuthenticator</java:value>
+  <java:value>org.jboss.security.negotiation.NegotiationAuthenticator</java:value>
 </java:property>
       ]]>
-      </programlisting>
+        </programlisting>
+
+      </section>
+
+      <section>
+        <title>JBoss AS 5.0.x</title>
+
+        <para>
+          After copying the jar to the above location you will need to
+          add the authenticator itself to the following descriptor -
+          <code>
+            {jboss.home}/server/{configuration}/deployers/jbossweb.deployer/META-INF/war-deployers-jboss-beans.xml
+          </code>
+        </para>
+
+        <para>
+          Within this descriptor you should see a set of authenticators
+          defined using a property called "authenticators", you should
+          add the following entry: -
+        </para>
+
+        <programlisting>
+          <![CDATA[
+<entry>
+  <key>SPNEGO</key>
+  <value>org.jboss.security.negotiation.NegotiationAuthenticator</value>
+</entry>
+      ]]>
+        </programlisting>
+
+      </section>
 
 
       <tip>
@@ -90,6 +128,19 @@
           this can cause the deployment to fail.
         </para>
       </tip>
+
+      <warning>
+        <para>
+          If you have been using the Beta releases then you may have
+          been using the authenticator called
+          <code>
+            org.jboss.security.negotiation.spnego.SPNEGOAuthenticator
+          </code>
+          this authenticator is now deprecated and will be removed in a
+          future release so you should switch to the
+          NegotiationAuthenticator as shown above.
+        </para>
+      </warning>
 
 
       <para>
@@ -129,6 +180,15 @@
         </listitem>
       </itemizedlist>
 
+      <para>
+        Both of these properties are specific to the JVM so further
+        information is available from
+        <ulink
+          url="http://java.sun.com/j2se/1.5.0/docs/guide/security/jgss/tutorials/KerberosReq.html">
+          http://java.sun.com/j2se/1.5.0/docs/guide/security/jgss/tutorials/KerberosReq.html
+        </ulink>
+      </para>
+
       <section>
         <title>Command Line</title>
 
@@ -160,10 +220,9 @@
 
         <para>
           The properties service is documented in the Wiki at
-          <link
-            linkend="http://wiki.jboss.org/wiki/PropertiesService">
+          <ulink url="http://wiki.jboss.org/wiki/PropertiesService">
             http://wiki.jboss.org/wiki/PropertiesService
-          </link>
+          </ulink>
         </para>
 
         <para>
@@ -192,6 +251,35 @@
         </programlisting>
 
       </section>
+
+      <section>
+        <title>Multiple KDCs</title>
+
+        <para>
+          If in addition to your master KDC if you also have one or more
+          slave KDCs then it is also possible list these using the
+          java.security.krb5.kdc system property, this will allow an
+          alternative to be used if it is not possible to contact the
+          master KDC.
+        </para>
+
+        <para>
+          This is a feature of Java GSS
+          <ulink
+            url="http://java.sun.com/j2se/1.5.0/docs/guide/security/jgss/jgss-features.html">
+            http://java.sun.com/j2se/1.5.0/docs/guide/security/jgss/jgss-features.html
+          </ulink>
+          The KDCs should be delimited using a colon (:) e.g.
+        </para>
+
+        <programlisting>
+          ./run.sh
+          -Djava.security.krb5.realm=KERBEROS.JBOSS.ORG:SLAVE_KDC.JBOSS.ORG
+          -Djava.security.krb5.kdc=kerberos.security.jboss.org
+        </programlisting>
+
+      </section>
+
     </section>
 
     <section id="host_security_domain">
@@ -237,7 +325,9 @@
 
       <itemizedlist>
         <listitem>
-          <para>storeKey - cache the key obtained locally</para>
+          <para>
+            storeKey - cache the private key within the Subject.
+          </para>
         </listitem>
         <listitem>
           <para>
@@ -277,6 +367,15 @@
         </para>
       </note>
 
+      <caution>
+        <para>
+          The Krb5LoginModule does have an option to be configured to
+          use a local credentials cache, this should be avoided as it is
+          incompatible with the storKey option which is required for
+          SPNEGO negotiation.
+        </para>
+      </caution>
+
     </section>
 
     <section>
@@ -285,8 +384,8 @@
       <para>
         The application also requires it's own security domain to be
         defined with a login module to work in connection with the
-        SPNEGOAuthenticator and a second login module to load the roles
-        of the authenticated user.
+        NegotiationAuthenticator and a second login module to load the
+        roles of the authenticated user.
       </para>
 
       <para>An example security domain is shown below.</para>

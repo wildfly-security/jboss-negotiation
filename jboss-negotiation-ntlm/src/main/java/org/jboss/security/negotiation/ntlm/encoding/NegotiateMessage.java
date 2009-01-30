@@ -122,4 +122,10 @@ public class NegotiateMessage extends NegotiationMessage
       throw new NotImplementedException();
    }
 
+   @Override
+   public String getMessageType()
+   {
+      return "NTLM";
+   }
+
 }

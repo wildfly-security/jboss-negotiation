@@ -78,7 +78,7 @@
         <![CDATA[
 <java:property>
   <java:key>SPNEGO</java:key>
-  <java:value>org.jboss.security.negotiation.spnego.SPNEGOAuthenticator</java:value>
+  <java:value>org.jboss.security.negotiation.NegotiationAuthenticator</java:value>
 </java:property>
       ]]>
       </programlisting>
@@ -90,6 +90,19 @@
           this can cause the deployment to fail.
         </para>
       </tip>
+
+      <warning>
+        <para>
+          If you have been using the Beta releases then you may have
+          been using the authenticator called
+          <code>
+            org.jboss.security.negotiation.spnego.SPNEGOAuthenticator
+          </code>
+          this authenticator is now deprecated and will be removed in a
+          future release so you should switch to the
+          NegotiationAuthenticator as shown above.
+        </para>
+      </warning>
 
 
       <para>
@@ -169,8 +182,7 @@
 
         <para>
           The properties service is documented in the Wiki at
-          <ulink
-            url="http://wiki.jboss.org/wiki/PropertiesService">
+          <ulink url="http://wiki.jboss.org/wiki/PropertiesService">
             http://wiki.jboss.org/wiki/PropertiesService
           </ulink>
         </para>
@@ -275,7 +287,9 @@
 
       <itemizedlist>
         <listitem>
-          <para>storeKey - cache the key obtained locally</para>
+          <para>
+            storeKey - cache the private key within the Subject.
+          </para>
         </listitem>
         <listitem>
           <para>
@@ -315,6 +329,15 @@
         </para>
       </note>
 
+      <caution>
+        <para>
+          The Krb5LoginModule does have an option to be configured to
+          use a local credentials cache, this should be avoided as it is
+          incompatible with the storKey option which is required for
+          SPNEGO negotiation.
+        </para>
+      </caution>
+
     </section>
 
     <section>
@@ -323,8 +346,8 @@
       <para>
         The application also requires it's own security domain to be
         defined with a login module to work in connection with the
-        SPNEGOAuthenticator and a second login module to load the roles
-        of the authenticated user.
+        NegotiationAuthenticator and a second login module to load the
+        roles of the authenticated user.
       </para>
 
       <para>An example security domain is shown below.</para>

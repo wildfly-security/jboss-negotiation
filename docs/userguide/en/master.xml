@@ -7,7 +7,7 @@
 
     <subtitle>A Guide for Administrators</subtitle>
 
-    <releaseinfo>2.0.3.Beta2</releaseinfo>
+    <releaseinfo>2.0.3.GA</releaseinfo>
 
     <authorgroup>
       <author>
@@ -41,8 +41,8 @@
     </para>
 
     <para>
-      JBoss Negotiation is currently under development and the most
-      recent release is a Beta release.
+      The initial development of JBoss Negotiation is now complete so
+      JBoss Negotiation 2.0.3.GA is the first GA release.
     </para>
 
     <para>
@@ -90,10 +90,10 @@
 
   <xi:include href="modules/microsoft_ad.xml"
     xmlns:xi="http://www.w3.org/2001/XInclude" xpointer="element(/1)" />
-  
+
   <xi:include href="modules/free_ipa.xml"
     xmlns:xi="http://www.w3.org/2001/XInclude" xpointer="element(/1)" />
-    
+
   <xi:include href="modules/internet_explorer.xml"
     xmlns:xi="http://www.w3.org/2001/XInclude" xpointer="element(/1)" />
 
@@ -102,10 +102,10 @@
 
   <xi:include href="modules/references.xml"
     xmlns:xi="http://www.w3.org/2001/XInclude" xpointer="element(/1)" />
-    
+
   <xi:include href="modules/troubleshooting.xml"
-    xmlns:xi="http://www.w3.org/2001/XInclude" xpointer="element(/1)" />    
-    
+    xmlns:xi="http://www.w3.org/2001/XInclude" xpointer="element(/1)" />
+
   <xi:include href="modules/ldap_login_module.xml"
-    xmlns:xi="http://www.w3.org/2001/XInclude" xpointer="element(/1)" />    
+    xmlns:xi="http://www.w3.org/2001/XInclude" xpointer="element(/1)" />
 </book>

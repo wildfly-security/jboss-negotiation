@@ -56,7 +56,7 @@
 
       <para>
         The authenticator is contained within a single jar '
-        <code>jboss-negotiation.jar</code>
+        <code>jboss-negotiation-2.0.3.GA.jar</code>
         ', this jar should be placed in the following location -
         <code>{jboss.home}/server/{configuration}/lib/</code>
       </para>

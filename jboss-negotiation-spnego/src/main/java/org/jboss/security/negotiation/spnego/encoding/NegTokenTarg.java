@@ -39,9 +39,7 @@ public class NegTokenTarg extends SPNEGOMessage
 
    private Oid supportedMech = null;
 
-   private byte[] responseToken = null;
-
-   private byte[] mechListMIC = null;
+   private byte[] responseToken = null;   
 
    public Integer getNegResult()
    {
@@ -71,16 +69,6 @@ public class NegTokenTarg extends SPNEGOMessage
    public void setResponseToken(byte[] responseToken)
    {
       this.responseToken = responseToken;
-   }
-
-   public byte[] getMechListMIC()
-   {
-      return mechListMIC;
-   }
-
-   public void setMechListMIC(byte[] mechListMIC)
-   {
-      this.mechListMIC = mechListMIC;
    }
 
    @Override

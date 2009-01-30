@@ -31,37 +31,47 @@ public class NegTokenDecoder
    {
       byte first = (byte) is.read();
       byte masked = (byte) (first & (byte) 128);
-   
+
       if (masked == 0)
       {
          return first;
       }
-   
+
       int lengthLength = first & (byte) 127;
-   
+
       byte[] lengthBytes = new byte[lengthLength];
       is.read(lengthBytes);
-   
+
       int length = 0;
       for (int i = 0; i < lengthLength; i++)
       {
          int currentPos = lengthLength - i - 1;
          int currentLength = lengthBytes[currentPos];
-   
+
          if (currentLength < 0)
          {
             currentLength += 256;
          }
-   
+
          if (i > 0)
          {
             currentLength = currentLength * (int) (Math.pow(2, 8 * i));
          }
-   
+
          length += currentLength;
       }
-   
+
       return length;
+   }
+
+   static void decodeMechListMIC(final InputStream is, final SPNEGOMessage spnegoMessage) throws IOException
+   {
+      int length = readLength(is);
+
+      byte[] mechListMIC = new byte[length];
+      is.read(mechListMIC);
+
+      spnegoMessage.setMechListMIC(mechListMIC);
    }
 
 }

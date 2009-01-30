@@ -72,15 +72,6 @@ public class NegTokenInitDecoder extends NegTokenDecoder
       negTokenInit.setMechToken(mechToken);
    }
 
-   protected static void decodeMechListMIC(final InputStream is, final NegTokenInit negTokenInit) throws IOException
-   {
-      int length = NegTokenDecoder.readLength(is);
-      byte[] mechListMIC = new byte[length];
-      is.read(mechListMIC);
-
-      negTokenInit.setMechListMIC(mechListMIC);
-   }
-
    protected static void decodeNegTokenInitSequence(final InputStream is, final NegTokenInit negTokenInit)
          throws IOException, GSSException
    {

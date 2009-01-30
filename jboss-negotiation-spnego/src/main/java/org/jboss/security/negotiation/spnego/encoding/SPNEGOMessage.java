@@ -28,10 +28,22 @@ import org.jboss.security.negotiation.NegotiationMessage;
 public abstract class SPNEGOMessage extends NegotiationMessage
 {
 
+   private byte[] mechListMIC = null;
+
    @Override
    public String getMessageType()
    {
       return "SPNEGO";
+   }
+
+   public byte[] getMechListMIC()
+   {
+      return mechListMIC;
+   }
+
+   public void setMechListMIC(byte[] mechListMIC)
+   {
+      this.mechListMIC = mechListMIC;
    }
 
 }

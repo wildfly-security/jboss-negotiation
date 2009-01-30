@@ -45,11 +45,13 @@
         .
       </para>
 
-      <para>
-        Also due to the supported encryption types of FreeIPA the JBoss
-        application server is required to be running on a Java 6 JVM
-        with unlimited cryptography enabled.
-      </para>
+      <warning>
+        <para>
+          Due to the supported encryption types of FreeIPA the JBoss
+          application server is required to be running on a Java 6 JVM
+          with unlimited cryptography enabled.
+        </para>
+      </warning>
     </section>
 
     <section>

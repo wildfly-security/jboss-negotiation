@@ -147,14 +147,14 @@
     <para>
       The installation of this module requires the externalised
       authenticator capability of JBoss which was added from JBoss
-      4.0.5.GA, these instructions have been prepared against JBoss
-      4.2.2.GA.
+      4.0.5.GA, these instructions have been prepared against JBoss AS
+      4.2.3.GA and JBoss AS 5.0.0.GA.
     </para>
 
     <para>
-      <link linkend="???">
+      <ulink url='http://www.jboss.org/community/docs/DOC-9729'>
         http://wiki.jboss.org/wiki/ExternalizeTomcatAuthenticators
-      </link>
+      </ulink>
     </para>
   </sect1>
 </chapter>

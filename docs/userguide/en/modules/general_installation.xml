@@ -132,10 +132,10 @@
       <para>
         Both of these properties are specific to the JVM so further
         information is available from
-        <link
-          linkend="http://java.sun.com/j2se/1.5.0/docs/guide/security/jgss/tutorials/KerberosReq.html">
+        <ulink
+          url="http://java.sun.com/j2se/1.5.0/docs/guide/security/jgss/tutorials/KerberosReq.html">
           http://java.sun.com/j2se/1.5.0/docs/guide/security/jgss/tutorials/KerberosReq.html
-        </link>
+        </ulink>
       </para>
 
       <section>
@@ -169,10 +169,10 @@
 
         <para>
           The properties service is documented in the Wiki at
-          <link
-            linkend="http://wiki.jboss.org/wiki/PropertiesService">
+          <ulink
+            url="http://wiki.jboss.org/wiki/PropertiesService">
             http://wiki.jboss.org/wiki/PropertiesService
-          </link>
+          </ulink>
         </para>
 
         <para>
@@ -215,10 +215,10 @@
 
         <para>
           This is a feature of Java GSS
-          <link
-            linkend="http://java.sun.com/j2se/1.5.0/docs/guide/security/jgss/jgss-features.html">
+          <ulink
+            url="http://java.sun.com/j2se/1.5.0/docs/guide/security/jgss/jgss-features.html">
             http://java.sun.com/j2se/1.5.0/docs/guide/security/jgss/jgss-features.html
-          </link>
+          </ulink>
           The KDCs should be delimited using a colon (:) e.g.
         </para>
 

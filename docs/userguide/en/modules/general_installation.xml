@@ -129,6 +129,15 @@
         </listitem>
       </itemizedlist>
 
+      <para>
+        Both of these properties are specific to the JVM so further
+        information is available from
+        <link
+          linkend="http://java.sun.com/j2se/1.5.0/docs/guide/security/jgss/tutorials/KerberosReq.html">
+          http://java.sun.com/j2se/1.5.0/docs/guide/security/jgss/tutorials/KerberosReq.html
+        </link>
+      </para>
+
       <section>
         <title>Command Line</title>
 
@@ -192,6 +201,35 @@
         </programlisting>
 
       </section>
+
+      <section>
+        <title>Multiple KDCs</title>
+
+        <para>
+          If in addition to your master KDC if you also have one or more
+          slave KDCs then it is also possible list these using the
+          java.security.krb5.kdc system property, this will allow an
+          alternative to be used if it is not possible to contact the
+          master KDC.
+        </para>
+
+        <para>
+          This is a feature of Java GSS
+          <link
+            linkend="http://java.sun.com/j2se/1.5.0/docs/guide/security/jgss/jgss-features.html">
+            http://java.sun.com/j2se/1.5.0/docs/guide/security/jgss/jgss-features.html
+          </link>
+          The KDCs should be delimited using a colon (:) e.g.
+        </para>
+
+        <programlisting>
+          ./run.sh
+          -Djava.security.krb5.realm=KERBEROS.JBOSS.ORG:SLAVE_KDC.JBOSS.ORG
+          -Djava.security.krb5.kdc=kerberos.security.jboss.org
+        </programlisting>
+
+      </section>
+
     </section>
 
     <section id="host_security_domain">

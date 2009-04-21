@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>jboss-negotiation-spnego</artifactId>
   <packaging>jar</packaging>
-  <name>JBoss Negotiation</name>
+  <name>JBoss Negotiation SPNEGO</name>
   <url>http://www.jboss.org</url>
   <description>JBoss Negotiation Library</description> 
   <build>

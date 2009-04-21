@@ -10,7 +10,7 @@
    <groupId>org.jboss.security</groupId>
    <artifactId>jboss-negotiation-main</artifactId>
    <packaging>pom</packaging>
-   <name>JBoss Negotiation - Aggregator</name>
+   <name>JBoss Negotiation Aggregator</name>
    <url>http://labs.jboss.org/portal/jbosssecurity/</url>
    <description>JBoss Security is a cross cutting project that handles security for the JEMS projects</description>
    <modules>

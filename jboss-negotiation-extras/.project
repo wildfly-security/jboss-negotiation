@@ -1,5 +1,5 @@
 <projectDescription>
-  <name>jboss-negotiation</name>
+  <name>jboss-negotiation-extras</name>
   <comment>JBoss Negotiation Library</comment>
   <projects>
     <project>jboss-negotiation-common</project>

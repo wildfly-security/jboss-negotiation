@@ -15,11 +15,12 @@
    <description>JBoss Security is a cross cutting project that handles security for the JEMS projects</description>
    <modules>
      <module>parent</module>
-     <module>jboss-negotiation</module>
      <module>jboss-negotiation-common</module>
+     <module>jboss-negotiation-extras</module>
      <module>jboss-negotiation-ntlm</module>
      <module>jboss-negotiation-spnego</module>
      <module>jboss-negotiation-toolkit</module>
+     <module>assembly</module>
   </modules>
    <scm>
     <connection>scm:svn:http://anonsvn.jboss.org/repos/jbossas/projects/security/security-negotiation/trunk</connection>

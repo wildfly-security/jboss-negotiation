@@ -6,38 +6,13 @@
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>jboss-negotiation</artifactId>
+  <artifactId>jboss-negotiation-extras</artifactId>
   <packaging>jar</packaging>
   <name>JBoss Negotiation</name>
   <url>http://www.jboss.org</url>
   <description>JBoss Negotiation Library</description> 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <configuration>
-              <artifactSet>
-                <includes>
-                  <include>org.jboss.security:jboss-negotiation-common</include>
-                  <include>org.jboss.security:jboss-negotiation-ntlm</include>
-                  <include>org.jboss.security:jboss-negotiation-spnego</include>
-                </includes>
-              </artifactSet>
-              <transformers>
-                <transformer implementation="org.apache.maven.plugins.shade.resource.ComponentsXmlResourceTransformer"/>
-              </transformers>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-        
+  <build>    
+    <plugins>          
       <plugin>
          <artifactId>maven-surefire-plugin</artifactId>
          <configuration>

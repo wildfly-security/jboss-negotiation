@@ -98,7 +98,7 @@
       <!-- Local Dependencies -->
       <dependency>
         <groupId>org.jboss.security</groupId>
-        <artifactId>jboss-negotiation</artifactId>
+        <artifactId>jboss-negotiation-extras</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

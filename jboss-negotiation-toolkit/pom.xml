@@ -62,10 +62,6 @@
       <groupId>org.jboss</groupId>
       <artifactId>jboss-common-core</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>    
-      <groupId>org.jboss.jbossas</groupId>
-      <artifactId>jboss-as-security</artifactId>
     </dependency>     
     <dependency>
       <groupId>log4j</groupId>

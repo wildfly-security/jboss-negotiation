@@ -38,8 +38,8 @@
     
     <!-- Global dependencies -->
     <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-common</artifactId>
+      <groupId>org.jboss</groupId>
+      <artifactId>jboss-common-core</artifactId>
     </dependency>  
     <dependency>
       <groupId>junit</groupId>

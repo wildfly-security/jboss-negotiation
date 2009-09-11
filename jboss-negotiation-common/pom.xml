@@ -34,12 +34,8 @@
     
     <!-- Global dependencies -->    
     <dependency>
-      <groupId>apache-log4j</groupId>
-      <artifactId>log4j</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-common</artifactId>
+      <groupId>org.jboss</groupId>
+      <artifactId>jboss-common-core</artifactId>
     </dependency>    
     <dependency>
       <groupId>jboss.web</groupId>
@@ -49,6 +45,10 @@
       <groupId>jboss.web</groupId>
       <artifactId>servlet-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+    </dependency>    
     
   </dependencies>
 

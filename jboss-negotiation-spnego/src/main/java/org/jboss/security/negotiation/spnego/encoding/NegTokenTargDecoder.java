@@ -54,6 +54,12 @@ public class NegTokenTargDecoder extends NegTokenDecoder
          default :
             throw new IOException("Unexpected negResult");
       }
+      // Used 'length - 2' as two bytes had been read from the input stream (type/length).
+      // TODO - Worked for windows vista clients, but has to be validated
+      for(int i = 0; i < length - 2; i++) {
+    	  // Reading extra byte information.
+    	  is.read();
+      } 
    }
 
    private static void decodeSupportedMech(final InputStream is, final NegTokenTarg negTokenTarg) throws IOException,

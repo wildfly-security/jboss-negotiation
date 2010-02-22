@@ -4,7 +4,7 @@
 
 <chapter id="general_installation">
   <title>General Installation</title>
-
+ 
   <section>
     <title>Introduction</title>
 
@@ -50,7 +50,7 @@
 
   <section>
     <title>Installation</title>
-
+    
     <section>
       <title>Authenticator Installation</title>
 
@@ -119,9 +119,6 @@
       ]]>
         </programlisting>
 
-      </section>
-
-
       <tip>
         <para>
           Ensure that there is no white space around the classname as
@@ -148,6 +145,9 @@
         recommended to be consistent with the rest of this document,
         this is also required by the Negotiation Toolkit.
       </para>
+
+      </section>
+
     </section>
 
     <section>
@@ -608,7 +608,7 @@ darranl@KERBEROS.JBOSS.ORG=Users
         <mediaobject>
           <imageobject>
             <imagedata align="center"
-              fileref="images/negotiation-toolkit.png" />
+              fileref="../images/negotiation-toolkit.png" />
           </imageobject>
         </mediaobject>
       </figure>
@@ -645,7 +645,7 @@ darranl@KERBEROS.JBOSS.ORG=Users
         <mediaobject>
           <imageobject>
             <imagedata align="center"
-              fileref="images/nt-basic-failed.png" />
+              fileref="../images/nt-basic-failed.png" />
           </imageobject>
         </mediaobject>
       </figure>
@@ -661,7 +661,7 @@ darranl@KERBEROS.JBOSS.ORG=Users
         <mediaobject>
           <imageobject>
             <imagedata align="center"
-              fileref="images/nt-basic-success.png" />
+              fileref="../images/nt-basic-success.png" />
           </imageobject>
         </mediaobject>
       </figure>
@@ -694,7 +694,7 @@ darranl@KERBEROS.JBOSS.ORG=Users
         <mediaobject>
           <imageobject>
             <imagedata align="center"
-              fileref="images/nt-domain-entry.png" />
+              fileref="../images/nt-domain-entry.png" />
           </imageobject>
         </mediaobject>
       </figure>
@@ -709,7 +709,7 @@ darranl@KERBEROS.JBOSS.ORG=Users
         <mediaobject>
           <imageobject>
             <imagedata align="center"
-              fileref="images/nt-domain-authenticated.png" />
+              fileref="../images/nt-domain-authenticated.png" />
           </imageobject>
         </mediaobject>
       </figure>
@@ -730,7 +730,7 @@ darranl@KERBEROS.JBOSS.ORG=Users
         <title>Secured</title>
         <mediaobject>
           <imageobject>
-            <imagedata align="center" fileref="images/nt-secured.png" />
+            <imagedata align="center" fileref="../images/nt-secured.png" />
           </imageobject>
         </mediaobject>
       </figure>
@@ -738,4 +738,5 @@ darranl@KERBEROS.JBOSS.ORG=Users
 
     </section>
   </section>
+  
 </chapter>

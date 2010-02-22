@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
-"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+      "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+      
 <chapter id="firefox">
   <title>Mozilla Firefox</title>
 
@@ -33,7 +34,7 @@
       <title>Firefox Configuration</title>
       <mediaobject>
         <imageobject>
-          <imagedata align="center" fileref="images/ff-about.png" />
+          <imagedata align="center" fileref="../images/ff-about.png" />
         </imageobject>
       </mediaobject>
     </figure>
@@ -62,7 +63,7 @@
       <title>Firefox Configuration</title>
       <mediaobject>
         <imageobject>
-          <imagedata align="center" fileref="images/ff-trusted.png" />
+          <imagedata align="center" fileref="../images/ff-trusted.png" />
         </imageobject>
       </mediaobject>
     </figure>
@@ -76,7 +77,7 @@
       <title>Firefox Negotiation Toolkit</title>
       <mediaobject>
         <imageobject>
-          <imagedata align="center" fileref="images/ff-secured.png" />
+          <imagedata align="center" fileref="../images/ff-secured.png" />
         </imageobject>
       </mediaobject>
     </figure>

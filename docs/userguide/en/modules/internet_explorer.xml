@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
-"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+      "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+      
 <chapter id="internet_explorer">
   <title>Microsoft Internet Explorer</title>
 
@@ -29,7 +30,7 @@
       <mediaobject>
         <imageobject>
           <imagedata align="center"
-            fileref="images/ie-tools-internet-options.png" />
+            fileref="../images/ie-tools-internet-options.png" />
         </imageobject>
       </mediaobject>
     </figure>
@@ -41,7 +42,7 @@
       <mediaobject>
         <imageobject>
           <imagedata align="center"
-            fileref="images/ie-internet-options.png" />
+            fileref="../images/ie-internet-options.png" />
         </imageobject>
       </mediaobject>
     </figure>
@@ -56,7 +57,7 @@
       <mediaobject>
         <imageobject>
           <imagedata align="center"
-            fileref="images/ie-local-intranet.png" />
+            fileref="../images/ie-local-intranet.png" />
         </imageobject>
       </mediaobject>
     </figure>
@@ -71,7 +72,7 @@
       <mediaobject>
         <imageobject>
           <imagedata align="center"
-            fileref="images/ie-local-intranet-added.png" />
+            fileref="../images/ie-local-intranet-added.png" />
         </imageobject>
       </mediaobject>
     </figure>

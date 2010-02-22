@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
-"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+      "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+
 <chapter id="microsoft_ad">
   <title>Microsoft Active Directory</title>
 
@@ -67,7 +68,7 @@
       <title>New User</title>
       <mediaobject>
         <imageobject>
-          <imagedata align="center" fileref="images/ad-new-user.png" />
+          <imagedata align="center" fileref="../images/ad-new-user.png" />
         </imageobject>
       </mediaobject>
     </figure>
@@ -77,7 +78,7 @@
       <mediaobject>
         <imageobject>
           <imagedata align="center"
-            fileref="images/ad-new-user-password.png" />
+            fileref="../images/ad-new-user-password.png" />
         </imageobject>
       </mediaobject>
     </figure>
@@ -92,7 +93,7 @@
       <mediaobject>
         <imageobject>
           <imagedata align="center"
-            fileref="images/ad-new-user-finish.png" />
+            fileref="../images/ad-new-user-finish.png" />
         </imageobject>
       </mediaobject>
     </figure>
@@ -108,7 +109,7 @@
       <mediaobject>
         <imageobject>
           <imagedata align="center"
-            fileref="images/ad-user-properties.png" />
+            fileref="../images/ad-user-properties.png" />
         </imageobject>
       </mediaobject>
     </figure>
@@ -153,15 +154,18 @@
       You should execute the following two command to map the testserver
       user to the correct service principals.
     </para>
-
-    <programlisting><![CDATA[setspn.exe -a host/testserver.kerberos.jboss.org testserver
-setspn.exe -a HTTP/testserver.kerberos.jboss.org testserver]]></programlisting>
+     
+    <programlisting>
+<![CDATA[setspn.exe -a host/testserver.kerberos.jboss.org testserver
+setspn.exe -a HTTP/testserver.kerberos.jboss.org testserver]]>
+    </programlisting>
+   
 
     <figure id="ad-setspn">
       <title>Set Service Principals</title>
       <mediaobject>
         <imageobject>
-          <imagedata align="center" fileref="images/ad-setspn.png" />
+          <imagedata align="center" fileref="../images/ad-setspn.png" />
         </imageobject>
       </mediaobject>
     </figure>
@@ -177,7 +181,7 @@ setspn.exe -a HTTP/testserver.kerberos.jboss.org testserver]]></programlisting>
       <title>List Service Principals</title>
       <mediaobject>
         <imageobject>
-          <imagedata align="center" fileref="images/ad-setspn-list.png" />
+          <imagedata align="center" fileref="../images/ad-setspn-list.png" />
         </imageobject>
       </mediaobject>
     </figure>
@@ -210,7 +214,7 @@ setspn.exe -a HTTP/testserver.kerberos.jboss.org testserver]]></programlisting>
       <mediaobject>
         <imageobject>
           <imagedata align="center"
-            fileref="images/ad-command-ktpass.png" />
+            fileref="../images/ad-command-ktpass.png" />
         </imageobject>
       </mediaobject>
     </figure>
@@ -227,7 +231,7 @@ setspn.exe -a HTTP/testserver.kerberos.jboss.org testserver]]></programlisting>
       <title>Export Keytab</title>
       <mediaobject>
         <imageobject>
-          <imagedata align="center" fileref="images/ad-ktab.png" />
+          <imagedata align="center" fileref="../images/ad-ktab.png" />
         </imageobject>
       </mediaobject>
     </figure>

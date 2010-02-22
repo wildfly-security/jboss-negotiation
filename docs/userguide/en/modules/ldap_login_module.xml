@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE appendix PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
-"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+      "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
 
 <appendix id="ldap_login_module">
   <title>Advanced LDAP Login Module</title>
@@ -134,14 +134,17 @@
             '
           </para>
         </note>
-      </section>
-
+        
       <para>
         As with the original LdapExtLoginModule all of of the properties
         provided to this login mode are passed into the
         InitialLdapContext constructor so you can make use of any of the
         options supported by the LdapCtxFactory you are using.
       </para>
+
+      </section>
+
+
 
     </section>
 

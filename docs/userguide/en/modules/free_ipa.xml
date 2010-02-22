@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
       "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
       
 <chapter id="free_ipa">
@@ -84,7 +84,7 @@
         <mediaobject>
           <imageobject>
             <imagedata align="center"
-              fileref="../images/ipa-add-service-principal.png" />
+              fileref="images/ipa-add-service-principal.png" />
           </imageobject>
         </mediaobject>
       </figure>
@@ -100,7 +100,7 @@
         <mediaobject>
           <imageobject>
             <imagedata align="center"
-              fileref="../images/ipa-view-service-principal.png" />
+              fileref="images/ipa-view-service-principal.png" />
           </imageobject>
         </mediaobject>
       </figure>
@@ -162,7 +162,7 @@
         <mediaobject>
           <imageobject>
             <imagedata align="center"
-              fileref="../images/ipa-getkeytab.png" />
+              fileref="images/ipa-getkeytab.png" />
           </imageobject>
         </mediaobject>
       </figure>

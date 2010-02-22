@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
       "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
 
 <chapter id="general_installation">
@@ -608,7 +608,7 @@ darranl@KERBEROS.JBOSS.ORG=Users
         <mediaobject>
           <imageobject>
             <imagedata align="center"
-              fileref="../images/negotiation-toolkit.png" />
+              fileref="images/negotiation-toolkit.png" />
           </imageobject>
         </mediaobject>
       </figure>
@@ -645,7 +645,7 @@ darranl@KERBEROS.JBOSS.ORG=Users
         <mediaobject>
           <imageobject>
             <imagedata align="center"
-              fileref="../images/nt-basic-failed.png" />
+              fileref="images/nt-basic-failed.png" />
           </imageobject>
         </mediaobject>
       </figure>
@@ -661,7 +661,7 @@ darranl@KERBEROS.JBOSS.ORG=Users
         <mediaobject>
           <imageobject>
             <imagedata align="center"
-              fileref="../images/nt-basic-success.png" />
+              fileref="images/nt-basic-success.png" />
           </imageobject>
         </mediaobject>
       </figure>
@@ -694,7 +694,7 @@ darranl@KERBEROS.JBOSS.ORG=Users
         <mediaobject>
           <imageobject>
             <imagedata align="center"
-              fileref="../images/nt-domain-entry.png" />
+              fileref="images/nt-domain-entry.png" />
           </imageobject>
         </mediaobject>
       </figure>
@@ -709,7 +709,7 @@ darranl@KERBEROS.JBOSS.ORG=Users
         <mediaobject>
           <imageobject>
             <imagedata align="center"
-              fileref="../images/nt-domain-authenticated.png" />
+              fileref="images/nt-domain-authenticated.png" />
           </imageobject>
         </mediaobject>
       </figure>
@@ -730,7 +730,7 @@ darranl@KERBEROS.JBOSS.ORG=Users
         <title>Secured</title>
         <mediaobject>
           <imageobject>
-            <imagedata align="center" fileref="../images/nt-secured.png" />
+            <imagedata align="center" fileref="images/nt-secured.png" />
           </imageobject>
         </mediaobject>
       </figure>

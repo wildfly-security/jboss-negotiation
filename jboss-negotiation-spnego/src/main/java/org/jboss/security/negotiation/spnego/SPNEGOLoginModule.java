@@ -234,20 +234,21 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
                      kerberosSupported = it.next().equals(kerberos);
                   }
 
-                  NegTokenTarg negTokenTarg = new NegTokenTarg();
-
                   if (kerberosSupported)
                   {
-                     negTokenTarg.setNegResult(NegTokenTarg.ACCEPT_INCOMPLETE);
-                     negTokenTarg.setSupportedMech(kerberos);
+                     log.warn("Kerberos MECH supported but not first in list.");
+                     gssToken = negTokenInit.getMechToken();
                   }
                   else
                   {
+                     NegTokenTarg negTokenTarg = new NegTokenTarg();
                      negTokenTarg.setNegResult(NegTokenTarg.REJECTED);
-                  }
-                  negotiationContext.setResponseMessage(negTokenTarg);
 
-                  return Boolean.FALSE;
+                     negotiationContext.setResponseMessage(negTokenTarg);
+
+                     return Boolean.FALSE;
+                  }
+
                }
 
             }

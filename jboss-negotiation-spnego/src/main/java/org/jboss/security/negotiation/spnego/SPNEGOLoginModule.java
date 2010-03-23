@@ -85,6 +85,7 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
    public void initialize(final Subject subject, final CallbackHandler callbackHandler, final Map sharedState,
          final Map options)
    {
+      log.info("SPNEGOLoginModule with additional TRACE logging.");
       super.initialize(subject, callbackHandler, sharedState, options);
       // Which security domain to authenticate the server.
       serverSecurityDomain = (String) options.get("serverSecurityDomain");
@@ -207,21 +208,34 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
 
       public Object run()
       {
+         boolean trace = log.isTraceEnabled();
          try
          {
             // The message type will have already been checked before this point so we know it is
             // a SPNEGO message.
             NegotiationMessage requestMessage = negotiationContext.getRequestMessage();
 
+            
+            log.trace("AcceptSecContext::run");
+            
             // TODO - Ensure no way to fall through with gssToken still null.
             byte[] gssToken = null;
+            if (trace)
+            {
+               log.trace("requestMessage=" + requestMessage.getClass().getName());
+            }
             if (requestMessage instanceof NegTokenInit)
             {
+               
                NegTokenInit negTokenInit = (NegTokenInit) requestMessage;
                List<Oid> mechList = negTokenInit.getMechTypes();
-
+               if (trace)
+               {
+                  log.trace("mechListLength=" + mechList.size());
+               }
                if (mechList.get(0).equals(kerberos))
                {
+                  log.trace("First mech " + kerberos.toString());
                   gssToken = negTokenInit.getMechToken();
                }
                else
@@ -229,9 +243,15 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
                   boolean kerberosSupported = false;
 
                   Iterator<Oid> it = mechList.iterator();
+                  log.trace("Iterating mechList");
                   while (it.hasNext() && kerberosSupported == false)
                   {
-                     kerberosSupported = it.next().equals(kerberos);
+                     Oid next = it.next();
+                     if (trace)
+                     {
+                        log.trace("Next - " + next.toString());
+                     }
+                     kerberosSupported = next.equals(kerberos);
                   }
 
                   if (kerberosSupported)
@@ -241,6 +261,7 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
                   }
                   else
                   {
+                     log.trace("Kerberos not supported, sending rejection");
                      NegTokenTarg negTokenTarg = new NegTokenTarg();
                      negTokenTarg.setNegResult(NegTokenTarg.REJECTED);
 
@@ -296,6 +317,7 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
 
             if (respToken != null)
             {
+               log.trace("respToken received from acceptSecContext");
                NegTokenTarg negTokenTarg = new NegTokenTarg();
                negTokenTarg.setResponseToken(respToken);
 
@@ -304,6 +326,7 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
 
             if (gssContext.isEstablished() == false)
             {
+               log.trace("gssContext.isEstablished() == false");
                return Boolean.FALSE;
             }
             else

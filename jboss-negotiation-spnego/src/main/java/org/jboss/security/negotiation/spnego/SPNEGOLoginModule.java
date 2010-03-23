@@ -85,8 +85,8 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
    public void initialize(final Subject subject, final CallbackHandler callbackHandler, final Map sharedState,
          final Map options)
    {
-      log.info("SPNEGOLoginModule with additional TRACE logging.");
       super.initialize(subject, callbackHandler, sharedState, options);
+      log.info("SPNEGOLoginModule with additional TRACE logging.");
       // Which security domain to authenticate the server.
       serverSecurityDomain = (String) options.get("serverSecurityDomain");
       log.debug("serverSecurityDomain=" + serverSecurityDomain);

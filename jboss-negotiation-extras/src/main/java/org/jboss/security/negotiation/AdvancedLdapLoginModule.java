@@ -633,6 +633,7 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
             {
                // Query the roleDN location for the value of roleNameAttributeID
                String roleDN = roleName;
+               roleDN = "\"" + roleDN + "\""; 
                String[] returnAttribute =
                {roleNameAttributeID};
                log.trace("Using roleDN: " + roleDN);

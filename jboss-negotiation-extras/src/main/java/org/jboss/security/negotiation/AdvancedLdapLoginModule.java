@@ -426,13 +426,7 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
    protected LdapContext constructLdapContext(String dn, Object credential, String authentication)
          throws LoginException
    {
-      Properties env = new Properties();
-      Iterator iter = options.entrySet().iterator();
-      while (iter.hasNext())
-      {
-         Entry entry = (Entry) iter.next();
-         env.put(entry.getKey(), entry.getValue());
-      }
+      Properties env = createBaseProperties();
 
       // Set defaults for key values if they are missing
       String factoryName = env.getProperty(Context.INITIAL_CONTEXT_FACTORY);
@@ -486,6 +480,19 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
          le.initCause(e);
          throw le;
       }
+   }
+
+   protected Properties createBaseProperties()
+   {
+      Properties env = new Properties();
+      Iterator iter = options.entrySet().iterator();
+      while (iter.hasNext())
+      {
+         Entry entry = (Entry) iter.next();
+         env.put(entry.getKey(), entry.getValue());
+      }
+
+      return env;
    }
 
    protected String findUserDN(LdapContext ctx) throws LoginException
@@ -632,48 +639,58 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
             if (roleAttributeIsDN)
             {
                // Query the roleDN location for the value of roleNameAttributeID
-               String roleDN = roleName;
-               roleDN = "\"" + roleDN + "\""; 
-               String[] returnAttribute =
-               {roleNameAttributeID};
-               log.trace("Using roleDN: " + roleDN);
-               try
-               {
-                  Attributes result2 = searchContext.getAttributes(roleDN, returnAttribute);
-                  Attribute roles2 = result2.get(roleNameAttributeID);
-                  if (roles2 != null)
-                  {
-                     for (int m = 0; m < roles2.size(); m++)
-                     {
-                        roleName = (String) roles2.get(m);
-                        addRole(roleName);
-                     }
-                  }
-               }
-               catch (NamingException e)
-               {
-                  log.trace("Failed to query roleNameAttrName", e);
-               }
+               String baseRoleDN = roleName;
+               String roleDN = "\"" + baseRoleDN + "\"";
 
-               if (recurseRoles)
-               {
-                  if (processedRoleDNs.contains(roleDN) == false)
-                  {
-                     processedRoleDNs.add(roleDN);
-                     log.trace("Recursive search for '" + roleDN + "'");
-                     rolesSearch(searchContext, roleDN);
-                  }
-                  else
-                  {
-                     log.trace("Already visited role '" + roleDN + "' ending recursion.");
-                  }
-               }
+               loadRoleByRoleNameAttributeID(searchContext, roleDN);
+               recurseRolesSearch(searchContext, baseRoleDN);
             }
             else
             {
                // The role attribute value is the role name
                addRole(roleName);
             }
+         }
+      }
+   }
+   
+   protected void loadRoleByRoleNameAttributeID(LdapContext searchContext, String roleDN)
+   {
+      String[] returnAttribute =
+      {roleNameAttributeID};
+      log.trace("Using roleDN: " + roleDN);
+      try
+      {
+         Attributes result2 = searchContext.getAttributes(roleDN, returnAttribute);
+         Attribute roles2 = result2.get(roleNameAttributeID);
+         if (roles2 != null)
+         {
+            for (int m = 0; m < roles2.size(); m++)
+            {
+               String roleName = (String) roles2.get(m);
+               addRole(roleName);
+            }
+         }
+      }
+      catch (NamingException e)
+      {
+         log.trace("Failed to query roleNameAttrName", e);
+      }
+   }
+   
+   protected void recurseRolesSearch(LdapContext searchContext, String roleDN) throws LoginException
+   {
+      if (recurseRoles)
+      {
+         if (processedRoleDNs.contains(roleDN) == false)
+         {
+            processedRoleDNs.add(roleDN);
+            log.trace("Recursive search for '" + roleDN + "'");
+            rolesSearch(searchContext, roleDN);
+         }
+         else
+         {
+            log.trace("Already visited role '" + roleDN + "' ending recursion.");
          }
       }
    }
@@ -691,7 +708,7 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
       }
    }
 
-   private String canonicalize(String searchResult)
+   protected String canonicalize(String searchResult)
    {
       String result = searchResult;
       int len = searchResult.length();

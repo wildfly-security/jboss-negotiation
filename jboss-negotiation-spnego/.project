@@ -1,6 +1,6 @@
 <projectDescription>
   <name>jboss-negotiation-spnego</name>
-  <comment>JBoss Negotiation Library</comment>
+  <comment>JBoss Negotiation Library. NO_M2ECLIPSE_SUPPORT: Project files created with the maven-eclipse-plugin are not supported in M2Eclipse.</comment>
   <projects>
     <project>jboss-negotiation-common</project>
   </projects>

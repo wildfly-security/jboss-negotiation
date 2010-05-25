@@ -33,10 +33,14 @@ public class NegTokenTargDecoder extends NegTokenDecoder
 
    private static void decodeNegResult(final InputStream is, final NegTokenTarg negTokenTarg) throws IOException
    {
-      // TODO - Drop or verify.
       int length = readLength(is);
-      // TODO - Verify
       byte type = (byte) is.read();
+      int enumLength = readLength(is);
+      
+      if (type != 0x0a || length > 3 || enumLength > 1)
+      {
+         throw new IOException("Invalif negResult format.");
+      }
 
       byte negResult = (byte) is.read();
 
@@ -53,7 +57,7 @@ public class NegTokenTargDecoder extends NegTokenDecoder
             break;
          default :
             throw new IOException("Unexpected negResult");
-      }
+      }            
    }
 
    private static void decodeSupportedMech(final InputStream is, final NegTokenTarg negTokenTarg) throws IOException,

@@ -60,10 +60,14 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
 
    private static final String SPNEGO = "SPNEGO";
 
+   private static final String REMOVE_REALM_FROM_PRINCIPAL = "removeRealmFromPrincipal";
+
    private static final Oid kerberos;
 
    // TODO - Pick a name for a default domain?
    private String serverSecurityDomain;
+
+   private boolean removeRealmFromPrincipal;
 
    private LoginContext serverLoginContext = null;
 
@@ -86,9 +90,16 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
          final Map options)
    {
       super.initialize(subject, callbackHandler, sharedState, options);
+      String temp;
       // Which security domain to authenticate the server.
       serverSecurityDomain = (String) options.get("serverSecurityDomain");
       log.debug("serverSecurityDomain=" + serverSecurityDomain);
+      temp = (String) options.get(REMOVE_REALM_FROM_PRINCIPAL);
+      removeRealmFromPrincipal = Boolean.valueOf(temp);
+      if (removeRealmFromPrincipal == false && principalClassName == null)
+      {
+         principalClassName = KerberosPrincipal.class.getName();
+      }
    }
 
    @Override
@@ -167,6 +178,20 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
    protected Principal getIdentity()
    {
       return identity;
+   }
+
+   @Override
+   protected Principal createIdentity(final String username) throws Exception
+   {
+      if (removeRealmFromPrincipal)
+      {
+         return super.createIdentity(username.substring(0, username.indexOf("@")));
+      }
+      else
+      {
+         return super.createIdentity(username);
+      }
+
    }
 
    @Override
@@ -307,7 +332,7 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
             }
             else
             {
-               identity = new KerberosPrincipal(gssContext.getSrcName().toString());
+               identity = createIdentity(gssContext.getSrcName().toString());
 
                log.debug("context.getCredDelegState() = " + gssContext.getCredDelegState());
                log.debug("context.getMutualAuthState() = " + gssContext.getMutualAuthState());

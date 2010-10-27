@@ -26,6 +26,7 @@
     <version.jboss.system>4.2.3.GA</version.jboss.system>
     <version.jboss-web>2.1.0.GA</version.jboss-web>
     <version.junit>3.8.1</version.junit>
+    <version.picketbox-commons>1.0.0.CR1</version.picketbox-commons>
   </properties>
   <build>
     <sourceDirectory>src/main/java</sourceDirectory>
@@ -80,6 +81,20 @@
     </plugins>
   </build>
   <repositories>
+  	<repository>
+      <id>jboss-public-repository-group</id>
+      <name>JBoss Public Maven Repository Group</name>
+      <url>http://repository.jboss.org/nexus/content/groups/public/</url>
+      <layout>default</layout>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </snapshots>
+    </repository>
     <repository>
       <id>jboss</id>
       <name>JBoss Repository</name>
@@ -157,6 +172,11 @@
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>${version.junit}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.picketbox</groupId>
+        <artifactId>picketbox-commons</artifactId>
+        <version>${version.picketbox-commons}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

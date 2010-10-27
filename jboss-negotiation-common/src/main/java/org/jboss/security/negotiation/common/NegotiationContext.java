@@ -57,7 +57,8 @@ public class NegotiationContext
 
    public void associate()
    {
-      log.trace("associate " + this.hashCode());
+      if (log.isTraceEnabled())
+         log.trace("associate " + this.hashCode());
       negotiationContext.set(this);
    }
 
@@ -66,7 +67,8 @@ public class NegotiationContext
     */
    public void clear()
    {
-      log.trace("clear " + this.hashCode());
+      if (log.isTraceEnabled())
+         log.trace("clear " + this.hashCode());
       requestMessage = null;
       responseMessage = null;
       negotiationContext.remove();

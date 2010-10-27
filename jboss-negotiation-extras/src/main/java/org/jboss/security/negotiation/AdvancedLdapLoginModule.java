@@ -265,7 +265,8 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
       AuthorizeAction action = new AuthorizeAction();
       if (AUTH_TYPE_GSSAPI.equals(bindAuthentication))
       {
-         log.trace("Using GSSAPI to connect to LDAP");
+         if (log.isTraceEnabled())
+            log.trace("Using GSSAPI to connect to LDAP");
          LoginContext lc = new LoginContext(jaasSecurityDomain);
          lc.login();
          Subject serverSubject = lc.getSubject();
@@ -310,7 +311,8 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
    {
       // Obtain the username and password
       processIdentityAndCredential();
-      log.trace("Identity - " + getIdentity().getName());
+      if (log.isTraceEnabled())
+         log.trace("Identity - " + getIdentity().getName());
       // Initialise search ctx
       String bindCredential = this.bindCredential;
       if (AUTH_TYPE_GSSAPI.equals(bindAuthentication) == false)
@@ -337,7 +339,8 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
       try
       {
          searchContext = constructLdapContext(bindDn, bindCredential, bindAuthentication);
-         log.debug("Obtained LdapContext");
+         if (log.isDebugEnabled())
+            log.debug("Obtained LdapContext");
 
          // Search for user in LDAP
          String userDN = findUserDN(searchContext);
@@ -392,7 +395,8 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
             }
             catch (Exception e)
             {
-               log.debug("Failed to create principal", e);
+               if (log.isDebugEnabled())
+                  log.debug("Failed to create principal", e);
                throw new LoginException("Failed to create principal: " + e.getMessage());
             }
          }
@@ -527,7 +531,8 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
          results.close();
          results = null;
 
-         log.trace("findUserDN - " + userDN);
+         if (log.isTraceEnabled())
+            log.trace("findUserDN - " + userDN);
          return userDN;
       }
       catch (NamingException e)
@@ -544,7 +549,8 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
       {
          if (allowEmptyPassword == false)
          {
-            log.trace("Rejecting empty password.");
+            if (log.isTraceEnabled())
+               log.trace("Rejecting empty password.");
             return;
          }
       }
@@ -556,7 +562,8 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
       }
       catch (NamingException ne)
       {
-         log.debug("Authentication failed - " + ne.getMessage());
+         if (log.isDebugEnabled())
+            log.debug("Authentication failed - " + ne.getMessage());
          LoginException le = new LoginException("Authentication failed");
          le.initCause(ne);
          throw le;
@@ -579,7 +586,8 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
       NamingEnumeration results = null;
       try
       {
-         log.trace("rolesCtxDN=" + rolesCtxDN + " roleFilter=" + roleFilter + " filterArgs[0]=" + filterArgs[0]
+         if (log.isTraceEnabled())
+            log.trace("rolesCtxDN=" + rolesCtxDN + " roleFilter=" + roleFilter + " filterArgs[0]=" + filterArgs[0]
                + " filterArgs[1]=" + filterArgs[1]);
 
          if (roleFilter != null && roleFilter.length() > 0)
@@ -624,7 +632,8 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
 
    protected void obtainRole(LdapContext searchContext, String dn) throws NamingException, LoginException
    {
-      log.trace("rolesSearch resultDN = " + dn);
+      if (log.isTraceEnabled())
+         log.trace("rolesSearch resultDN = " + dn);
 
       String[] attrNames =
       {roleAttributeID};
@@ -658,7 +667,8 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
    {
       String[] returnAttribute =
       {roleNameAttributeID};
-      log.trace("Using roleDN: " + roleDN);
+      if (log.isTraceEnabled())
+         log.trace("Using roleDN: " + roleDN);
       try
       {
          Attributes result2 = searchContext.getAttributes(roleDN, returnAttribute);
@@ -674,7 +684,8 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
       }
       catch (NamingException e)
       {
-         log.trace("Failed to query roleNameAttrName", e);
+         if (log.isTraceEnabled())
+            log.trace("Failed to query roleNameAttrName", e);
       }
    }
    
@@ -685,12 +696,14 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
          if (processedRoleDNs.contains(roleDN) == false)
          {
             processedRoleDNs.add(roleDN);
-            log.trace("Recursive search for '" + roleDN + "'");
+            if (log.isTraceEnabled())
+               log.trace("Recursive search for '" + roleDN + "'");
             rolesSearch(searchContext, roleDN);
          }
          else
          {
-            log.trace("Already visited role '" + roleDN + "' ending recursion.");
+            if (log.isTraceEnabled())
+               log.trace("Already visited role '" + roleDN + "' ending recursion.");
          }
       }
    }
@@ -737,7 +750,8 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
          }
          catch (Exception e)
          {
-            log.debug("Failed to create principal: " + roleName, e);
+            if (log.isDebugEnabled())
+               log.debug("Failed to create principal: " + roleName, e);
          }
       }
    }

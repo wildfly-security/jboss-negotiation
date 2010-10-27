@@ -18,7 +18,7 @@ package org.jboss.security.negotiation.ntlm.encoding;
 
 import org.jboss.security.negotiation.ntlm.encoding.NegotiateMessage;
 import org.jboss.security.negotiation.ntlm.encoding.NegotiateMessageDecoder;
-import org.jboss.util.Base64;
+import org.picketbox.commons.cipher.Base64;
 
 import junit.framework.TestCase;
 

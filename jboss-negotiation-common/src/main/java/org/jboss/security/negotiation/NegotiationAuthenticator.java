@@ -36,7 +36,7 @@ import org.apache.catalina.deploy.LoginConfig;
 import org.apache.log4j.Logger;
 import org.jboss.security.negotiation.common.MessageTrace;
 import org.jboss.security.negotiation.common.NegotiationContext;
-import org.jboss.util.Base64;
+import org.picketbox.commons.cipher.Base64;
 
 /**
  * An authenticator to manage Negotiation based authentication in connection with the
@@ -63,7 +63,8 @@ public class NegotiationAuthenticator extends AuthenticatorBase
    protected boolean authenticate(final Request request, final Response response, final LoginConfig config)
          throws IOException
    {
-      log.trace("Authenticating user");
+      if (log.isTraceEnabled())
+         log.trace("Authenticating user");
 
       Principal principal = request.getUserPrincipal();
       if (principal != null)
@@ -75,11 +76,13 @@ public class NegotiationAuthenticator extends AuthenticatorBase
 
       String negotiateScheme = getNegotiateScheme();
 
-      log.debug("Header - " + request.getHeader("Authorization"));
+      if (log.isDebugEnabled())
+         log.debug("Header - " + request.getHeader("Authorization"));
       String authHeader = request.getHeader("Authorization");
       if (authHeader == null)
       {
-         log.debug("No Authorization Header, sending 401");
+         if (log.isDebugEnabled())
+            log.debug("No Authorization Header, sending 401");
          response.setHeader("WWW-Authenticate", negotiateScheme);
          response.sendError(401);
 
@@ -100,11 +103,10 @@ public class NegotiationAuthenticator extends AuthenticatorBase
       NegotiationContext negotiationContext = (NegotiationContext) session.getNote(NEGOTIATION_CONTEXT);
       if (negotiationContext == null)
       {
-         log.debug("Creating new NegotiationContext");
-         {
-            negotiationContext = new NegotiationContext();
-            session.setNote(NEGOTIATION_CONTEXT, negotiationContext);
-         }
+         if (log.isDebugEnabled())
+            log.debug("Creating new NegotiationContext");
+         negotiationContext = new NegotiationContext();
+         session.setNote(NEGOTIATION_CONTEXT, negotiationContext);
       }
 
       String username = session.getId();

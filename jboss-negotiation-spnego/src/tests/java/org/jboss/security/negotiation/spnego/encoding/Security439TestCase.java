@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 import org.jboss.security.negotiation.MessageFactory;
 import org.jboss.security.negotiation.NegotiationMessage;
 import org.jboss.security.negotiation.common.DebugHelper;
-import org.jboss.util.Base64;
+import org.picketbox.commons.cipher.Base64;
 
 public class Security439TestCase extends TestCase
 {

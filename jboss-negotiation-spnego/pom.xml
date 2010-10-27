@@ -39,10 +39,6 @@
     <!-- Global dependencies -->
     <dependency>
       <groupId>jboss</groupId>
-      <artifactId>jboss-common</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jboss</groupId>
       <artifactId>jbosssx</artifactId>
     </dependency>    
     <dependency>

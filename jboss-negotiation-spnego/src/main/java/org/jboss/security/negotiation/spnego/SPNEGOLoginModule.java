@@ -93,7 +93,8 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
       String temp;
       // Which security domain to authenticate the server.
       serverSecurityDomain = (String) options.get("serverSecurityDomain");
-      log.debug("serverSecurityDomain=" + serverSecurityDomain);
+      if (log.isDebugEnabled())
+         log.debug("serverSecurityDomain=" + serverSecurityDomain);
       temp = (String) options.get(REMOVE_REALM_FROM_PRINCIPAL);
       removeRealmFromPrincipal = Boolean.valueOf(temp);
       if (removeRealmFromPrincipal == false && principalClassName == null)
@@ -107,7 +108,8 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
    {
       if (super.login() == true)
       {
-         log.debug("super.login()==true");
+         if (log.isDebugEnabled())
+            log.debug("super.login()==true");
          return true;
       }
 
@@ -128,7 +130,8 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
          AcceptSecContext action = new AcceptSecContext(negotiationContext);
          Object result = Subject.doAs(server, action);
 
-         log.trace("Result - " + result);
+         if (log.isTraceEnabled())
+            log.trace("Result - " + result);
 
          if (result instanceof Boolean)
          {
@@ -138,7 +141,8 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
                if (getUseFirstPass() == true)
                {
                   String userName = identity.getName();
-                  log.debug("Storing username '" + userName + "' and empty password");
+                  if (log.isDebugEnabled())
+                     log.debug("Storing username '" + userName + "' and empty password");
                   // Add the username and a null password to the shared state map
                   sharedState.put("javax.security.auth.login.name", identity);
                   sharedState.put("javax.security.auth.login.password", "");
@@ -162,7 +166,8 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
          }
       }
 
-      log.trace("super.loginOk " + super.loginOk);
+      if (log.isTraceEnabled())
+         log.trace("super.loginOk " + super.loginOk);
       if (super.loginOk == true)
       {
          return true;
@@ -214,8 +219,11 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
       serverLoginContext = lc;
 
       Subject serverSubject = serverLoginContext.getSubject();
-      log.debug("Subject = " + serverSubject);
-      log.debug("Logged in '" + serverSecurityDomain + "' LoginContext");
+      if (log.isDebugEnabled())
+      {
+         log.debug("Subject = " + serverSubject);
+         log.debug("Logged in '" + serverSecurityDomain + "' LoginContext");
+      }
 
       return serverSubject;
    }
@@ -292,7 +300,8 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
             GSSContext gssContext = (GSSContext) schemeContext;
             if (gssContext == null)
             {
-               log.debug("Creating new GSSContext.");
+               if (log.isDebugEnabled())
+                  log.debug("Creating new GSSContext.");
                GSSManager manager = GSSManager.getInstance();
                gssContext = manager.createContext((GSSCredential) null);
 
@@ -306,9 +315,12 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
                // TODO - Refactor to only do this once.
                identity = new KerberosPrincipal(gssContext.getSrcName().toString());
 
-               log.debug("context.getCredDelegState() = " + gssContext.getCredDelegState());
-               log.debug("context.getMutualAuthState() = " + gssContext.getMutualAuthState());
-               log.debug("context.getSrcName() = " + gssContext.getSrcName().toString());
+               if (log.isDebugEnabled())
+               {
+                  log.debug("context.getCredDelegState() = " + gssContext.getCredDelegState());
+                  log.debug("context.getMutualAuthState() = " + gssContext.getMutualAuthState());
+                  log.debug("context.getSrcName() = " + gssContext.getSrcName().toString());
+               }
 
                negotiationContext.setAuthenticationMethod(SPNEGO);
                negotiationContext.setAuthenticated(true);
@@ -334,9 +346,12 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
             {
                identity = createIdentity(gssContext.getSrcName().toString());
 
-               log.debug("context.getCredDelegState() = " + gssContext.getCredDelegState());
-               log.debug("context.getMutualAuthState() = " + gssContext.getMutualAuthState());
-               log.debug("context.getSrcName() = " + gssContext.getSrcName().toString());
+               if (log.isDebugEnabled())
+               {
+                  log.debug("context.getCredDelegState() = " + gssContext.getCredDelegState());
+                  log.debug("context.getMutualAuthState() = " + gssContext.getMutualAuthState());
+                  log.debug("context.getSrcName() = " + gssContext.getSrcName().toString());
+               }
 
                // TODO - Get these two in synch - maybe isAuthenticated based on an authentication method been set?
                negotiationContext.setAuthenticationMethod(SPNEGO);

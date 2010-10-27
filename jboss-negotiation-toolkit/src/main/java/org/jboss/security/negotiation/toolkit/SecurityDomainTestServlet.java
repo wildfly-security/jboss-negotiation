@@ -103,7 +103,8 @@ public class SecurityDomainTestServlet extends HttpServlet
       try
       {
          LoginContext context = new LoginContext(securityDomain);
-         log.debug("Obtained LoginContext for '" + securityDomain + "' security-domain.");
+         if (log.isDebugEnabled())
+            log.debug("Obtained LoginContext for '" + securityDomain + "' security-domain.");
 
          context.login();
          writer.println("<h4>Authenticated</h4>");         
@@ -124,7 +125,8 @@ public class SecurityDomainTestServlet extends HttpServlet
          writer.println("</code>");
          
          context.logout();
-         log.debug("logged out.");
+         if (log.isDebugEnabled())
+            log.debug("logged out.");
       }
       catch (Exception e)
       {

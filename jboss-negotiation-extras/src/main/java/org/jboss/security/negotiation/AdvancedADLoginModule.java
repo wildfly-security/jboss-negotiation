@@ -34,7 +34,7 @@ import javax.naming.directory.SearchResult;
 import javax.naming.ldap.LdapContext;
 import javax.security.auth.login.LoginException;
 
-import org.jboss.util.Base64;
+import org.picketbox.commons.cipher.Base64;
 
 /**
  * An extension of the AdvancedLdapLoginModule to also query the primary group
@@ -128,14 +128,16 @@ public class AdvancedADLoginModule extends AdvancedLdapLoginModule
             }
             else
             {
-               log.trace("primaryGroupIdAttribute or objectSidAttribute was null, skipping primary group search.");
+               if (log.isTraceEnabled())
+                  log.trace("primaryGroupIdAttribute or objectSidAttribute was null, skipping primary group search.");
             }
 
             super.rolesSearch(searchContext, dn);
          }
          catch (NamingException e)
          {
-            log.trace("Failed to load primary group", e);
+            if (log.isTraceEnabled())
+               log.trace("Failed to load primary group", e);
          }
          finally
          {

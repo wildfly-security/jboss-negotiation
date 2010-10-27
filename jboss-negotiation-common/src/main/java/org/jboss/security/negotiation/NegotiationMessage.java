@@ -20,7 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.jboss.util.Base64;
+import org.picketbox.commons.cipher.Base64;
 
 /**
  * The common base type for all negotiation messages.

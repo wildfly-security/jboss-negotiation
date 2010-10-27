@@ -1,18 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-  <name>jboss-negotiation-extras</name>
-  <comment>JBoss Negotiation Library</comment>
-  <projects>
-    <project>jboss-negotiation-common</project>
-    <project>jboss-negotiation-ntlm</project>
-    <project>jboss-negotiation-spnego</project>
-  </projects>
-  <buildSpec>
-    <buildCommand>
-      <name>org.eclipse.jdt.core.javabuilder</name>
-      <arguments/>
-    </buildCommand>
-  </buildSpec>
-  <natures>
-    <nature>org.eclipse.jdt.core.javanature</nature>
-  </natures>
+	<name>jboss-negotiation-extras</name>
+	<comment>JBoss Negotiation Library</comment>
+	<projects>
+		<project>jboss-negotiation-common</project>
+		<project>jboss-negotiation-ntlm</project>
+		<project>jboss-negotiation-spnego</project>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.jdt.core.javabuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+		<buildCommand>
+			<name>org.maven.ide.eclipse.maven2Builder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.maven.ide.eclipse.maven2Nature</nature>
+		<nature>org.eclipse.jdt.core.javanature</nature>
+	</natures>
 </projectDescription>

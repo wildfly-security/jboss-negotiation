@@ -547,8 +547,7 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
       {
          if (allowEmptyPassword == false)
          {
-            if (log.isTraceEnabled())
-               log.trace("Rejecting empty password.");
+            log.trace("Rejecting empty password.");
             return;
          }
       }

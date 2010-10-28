@@ -63,8 +63,8 @@ public class NegotiationAuthenticator extends AuthenticatorBase
    protected boolean authenticate(final Request request, final Response response, final LoginConfig config)
          throws IOException
    {
-      if (log.isTraceEnabled())
-         log.trace("Authenticating user");
+
+      log.trace("Authenticating user");
 
       Principal principal = request.getUserPrincipal();
       if (principal != null)
@@ -81,8 +81,8 @@ public class NegotiationAuthenticator extends AuthenticatorBase
       String authHeader = request.getHeader("Authorization");
       if (authHeader == null)
       {
-         if (log.isDebugEnabled())
-            log.debug("No Authorization Header, sending 401");
+
+         log.debug("No Authorization Header, sending 401");
          response.setHeader("WWW-Authenticate", negotiateScheme);
          response.sendError(401);
 
@@ -103,8 +103,8 @@ public class NegotiationAuthenticator extends AuthenticatorBase
       NegotiationContext negotiationContext = (NegotiationContext) session.getNote(NEGOTIATION_CONTEXT);
       if (negotiationContext == null)
       {
-         if (log.isDebugEnabled())
-            log.debug("Creating new NegotiationContext");
+
+         log.debug("Creating new NegotiationContext");
          negotiationContext = new NegotiationContext();
          session.setNote(NEGOTIATION_CONTEXT, negotiationContext);
       }

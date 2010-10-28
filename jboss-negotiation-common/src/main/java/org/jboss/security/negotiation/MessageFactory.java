@@ -65,8 +65,7 @@ public abstract class MessageFactory
       }
       catch (Exception e)
       {
-         if (log.isTraceEnabled())
-            log.trace("Unable to load class '" + classname + "'", e);
+         log.trace("Unable to load class '" + classname + "'", e);
       }
 
       return clazz;

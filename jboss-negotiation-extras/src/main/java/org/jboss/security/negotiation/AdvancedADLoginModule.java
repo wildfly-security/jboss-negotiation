@@ -128,8 +128,7 @@ public class AdvancedADLoginModule extends AdvancedLdapLoginModule
             }
             else
             {
-               if (log.isTraceEnabled())
-                  log.trace("primaryGroupIdAttribute or objectSidAttribute was null, skipping primary group search.");
+               log.trace("primaryGroupIdAttribute or objectSidAttribute was null, skipping primary group search.");
             }
 
             super.rolesSearch(searchContext, dn);

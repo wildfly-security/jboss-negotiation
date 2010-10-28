@@ -108,8 +108,7 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
    {
       if (super.login() == true)
       {
-         if (log.isDebugEnabled())
-            log.debug("super.login()==true");
+         log.debug("super.login()==true");
          return true;
       }
 
@@ -300,8 +299,7 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
             GSSContext gssContext = (GSSContext) schemeContext;
             if (gssContext == null)
             {
-               if (log.isDebugEnabled())
-                  log.debug("Creating new GSSContext.");
+               log.debug("Creating new GSSContext.");
                GSSManager manager = GSSManager.getInstance();
                gssContext = manager.createContext((GSSCredential) null);
 

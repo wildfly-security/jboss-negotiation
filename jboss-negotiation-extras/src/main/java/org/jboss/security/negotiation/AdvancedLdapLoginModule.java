@@ -265,8 +265,7 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
       AuthorizeAction action = new AuthorizeAction();
       if (AUTH_TYPE_GSSAPI.equals(bindAuthentication))
       {
-         if (log.isTraceEnabled())
-            log.trace("Using GSSAPI to connect to LDAP");
+         log.trace("Using GSSAPI to connect to LDAP");
          LoginContext lc = new LoginContext(jaasSecurityDomain);
          lc.login();
          Subject serverSubject = lc.getSubject();
@@ -339,8 +338,7 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
       try
       {
          searchContext = constructLdapContext(bindDn, bindCredential, bindAuthentication);
-         if (log.isDebugEnabled())
-            log.debug("Obtained LdapContext");
+         log.debug("Obtained LdapContext");
 
          // Search for user in LDAP
          String userDN = findUserDN(searchContext);

@@ -664,7 +664,8 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
    {
       String[] returnAttribute =
       {roleNameAttributeID};
-      if (log.isTraceEnabled())
+      boolean TRACE = log.isTraceEnabled();
+      if (TRACE)
          log.trace("Using roleDN: " + roleDN);
       try
       {
@@ -681,25 +682,26 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
       }
       catch (NamingException e)
       {
-         if (log.isTraceEnabled())
+         if (TRACE)
             log.trace("Failed to query roleNameAttrName", e);
       }
    }
    
    protected void recurseRolesSearch(LdapContext searchContext, String roleDN) throws LoginException
    {
+      boolean TRACE = log.isTraceEnabled();
       if (recurseRoles)
       {
          if (processedRoleDNs.contains(roleDN) == false)
          {
             processedRoleDNs.add(roleDN);
-            if (log.isTraceEnabled())
+            if (TRACE)
                log.trace("Recursive search for '" + roleDN + "'");
             rolesSearch(searchContext, roleDN);
          }
          else
          {
-            if (log.isTraceEnabled())
+            if (TRACE)
                log.trace("Already visited role '" + roleDN + "' ending recursion.");
          }
       }

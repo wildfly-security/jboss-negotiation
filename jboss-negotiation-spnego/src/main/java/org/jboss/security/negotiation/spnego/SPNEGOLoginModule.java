@@ -106,6 +106,7 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
    @Override
    public boolean login() throws LoginException
    {
+      boolean TRACE = log.isTraceEnabled();
       if (super.login() == true)
       {
          log.debug("super.login()==true");
@@ -129,7 +130,7 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
          AcceptSecContext action = new AcceptSecContext(negotiationContext);
          Object result = Subject.doAs(server, action);
 
-         if (log.isTraceEnabled())
+         if (TRACE)
             log.trace("Result - " + result);
 
          if (result instanceof Boolean)
@@ -165,7 +166,7 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
          }
       }
 
-      if (log.isTraceEnabled())
+      if (TRACE)
          log.trace("super.loginOk " + super.loginOk);
       if (super.loginOk == true)
       {
@@ -239,6 +240,7 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
 
       public Object run()
       {
+         boolean DEBUG = log.isDebugEnabled();
          try
          {
             // The message type will have already been checked before this point so we know it is
@@ -313,7 +315,7 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
                // TODO - Refactor to only do this once.
                identity = new KerberosPrincipal(gssContext.getSrcName().toString());
 
-               if (log.isDebugEnabled())
+               if (DEBUG)
                {
                   log.debug("context.getCredDelegState() = " + gssContext.getCredDelegState());
                   log.debug("context.getMutualAuthState() = " + gssContext.getMutualAuthState());
@@ -344,7 +346,7 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
             {
                identity = createIdentity(gssContext.getSrcName().toString());
 
-               if (log.isDebugEnabled())
+               if (DEBUG)
                {
                   log.debug("context.getCredDelegState() = " + gssContext.getCredDelegState());
                   log.debug("context.getMutualAuthState() = " + gssContext.getMutualAuthState());

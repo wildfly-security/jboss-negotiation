@@ -67,6 +67,7 @@ public class AdvancedADLoginModule extends AdvancedLdapLoginModule
    @Override
    protected void rolesSearch(LdapContext searchContext, String dn) throws LoginException
    {
+      boolean TRACE = log.isTraceEnabled();
       if (skipPrimaryGroupSearch == false)
       {
          skipPrimaryGroupSearch = true;
@@ -96,7 +97,7 @@ public class AdvancedADLoginModule extends AdvancedLdapLoginModule
                byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
                byteBuffer.putInt(primaryGroupId);
 
-               if (log.isTraceEnabled())
+               if (TRACE)
                {
                   String objectSidBase64 = Base64.encodeBytes(objectSid);
                   String searchObjectSidBase64 = Base64.encodeBytes(searchObjectSid);
@@ -116,7 +117,7 @@ public class AdvancedADLoginModule extends AdvancedLdapLoginModule
                   String baseResultDN = canonicalize(searchResult.getName());
                   String resultDN = "\"" + baseResultDN + "\"";
 
-                  if (log.isTraceEnabled())
+                  if (TRACE)
                   {
                      log.trace("Search found primary group " + resultDN);
                   }
@@ -135,7 +136,7 @@ public class AdvancedADLoginModule extends AdvancedLdapLoginModule
          }
          catch (NamingException e)
          {
-            if (log.isTraceEnabled())
+            if (TRACE)
                log.trace("Failed to load primary group", e);
          }
          finally

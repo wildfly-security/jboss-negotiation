@@ -64,6 +64,7 @@ public class NegotiationAuthenticator extends AuthenticatorBase
          throws IOException
    {
 
+      boolean DEBUG = log.isDebugEnabled();
       log.trace("Authenticating user");
 
       Principal principal = request.getUserPrincipal();
@@ -76,7 +77,7 @@ public class NegotiationAuthenticator extends AuthenticatorBase
 
       String negotiateScheme = getNegotiateScheme();
 
-      if (log.isDebugEnabled())
+      if (DEBUG)
          log.debug("Header - " + request.getHeader("Authorization"));
       String authHeader = request.getHeader("Authorization");
       if (authHeader == null)
@@ -130,7 +131,7 @@ public class NegotiationAuthenticator extends AuthenticatorBase
 
          authenticationMethod = negotiationContext.getAuthenticationMethod();
 
-         if (log.isDebugEnabled() && principal != null)
+         if (DEBUG && principal != null)
             log.debug("authenticated principal = " + principal);
 
          NegotiationMessage responseMessage = negotiationContext.getResponseMessage();

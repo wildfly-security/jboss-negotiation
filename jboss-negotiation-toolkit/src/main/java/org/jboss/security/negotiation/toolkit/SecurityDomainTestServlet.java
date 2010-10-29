@@ -103,8 +103,7 @@ public class SecurityDomainTestServlet extends HttpServlet
       try
       {
          LoginContext context = new LoginContext(securityDomain);
-         if (log.isDebugEnabled())
-            log.debug("Obtained LoginContext for '" + securityDomain + "' security-domain.");
+         log.debug("Obtained LoginContext for '" + securityDomain + "' security-domain.");
 
          context.login();
          writer.println("<h4>Authenticated</h4>");         

@@ -27,6 +27,7 @@
     <version.jboss-web>2.1.0.GA</version.jboss-web>
     <version.junit>3.8.1</version.junit>
     <version.picketbox-commons>1.0.0.CR1</version.picketbox-commons>
+    <version.picketbox>3.0.0.CR2</version.picketbox>
   </properties>
   <build>
     <sourceDirectory>src/main/java</sourceDirectory>
@@ -152,6 +153,11 @@
         <groupId>jboss</groupId>
         <artifactId>jbosssx</artifactId>
         <version>${version.jboss.jbosssx}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.picketbox</groupId>
+        <artifactId>jboss-security-spi</artifactId>
+        <version>${version.picketbox}</version>
       </dependency>
       <dependency>
         <groupId>jboss</groupId>

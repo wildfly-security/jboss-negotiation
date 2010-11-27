@@ -43,6 +43,10 @@
       <version>5.1.0.GA</version>
     </dependency>    
     <dependency>
+      <groupId>org.jboss.security</groupId>
+      <artifactId>jboss-security-spi</artifactId>    
+    </dependency>    
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>    

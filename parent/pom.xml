@@ -21,11 +21,12 @@
   <properties>
     <version.apache-log4j.log4j>1.2.14</version.apache-log4j.log4j>
     <version.jboss.jboss-common>4.2.3.GA</version.jboss.jboss-common>
-    <version.jboss.jbosssx>4.2.3.GA</version.jboss.jbosssx>
     <version.jboss.jmx>4.2.3.GA</version.jboss.jmx>
     <version.jboss.system>4.2.3.GA</version.jboss.system>
     <version.jboss-web>3.0.0-beta-7</version.jboss-web>
     <version.junit>3.8.1</version.junit>
+    <version.org.jboss.security.jbosssx-client>2.0.4.SP2</version.org.jboss.security.jbosssx-client>
+    <version.org.jboss.security.spi>2.0.2.SP1</version.org.jboss.security.spi>    
     <version.servlet.api>1.0.0.Final</version.servlet.api>    
   </properties>
   <build>
@@ -136,14 +137,19 @@
       </dependency>      
       <dependency>
         <groupId>jboss</groupId>
-        <artifactId>jbosssx</artifactId>
-        <version>${version.jboss.jbosssx}</version>
-      </dependency>
-      <dependency>
-        <groupId>jboss</groupId>
         <artifactId>jboss-system</artifactId>
         <version>${version.jboss.system}</version>
       </dependency>
+      <dependency>
+        <groupId>org.jboss.security</groupId>
+        <artifactId>jbosssx-client</artifactId>
+        <version>${version.org.jboss.security.jbosssx-client}</version>
+      </dependency>      
+      <dependency>
+        <groupId>org.jboss.security</groupId>
+        <artifactId>jboss-security-spi</artifactId>
+        <version>${version.org.jboss.security.spi}</version>
+      </dependency>      
       <dependency>
         <groupId>org.jboss.spec.javax.servlet</groupId>
         <artifactId>jboss-servlet-api_3.0_spec</artifactId>

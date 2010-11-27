@@ -5,9 +5,8 @@ import java.io.ByteArrayInputStream;
 import junit.framework.TestCase;
 
 import org.jboss.security.negotiation.MessageFactory;
-import org.jboss.security.negotiation.NegotiationMessage;
 import org.jboss.security.negotiation.common.DebugHelper;
-import org.picketbox.commons.cipher.Base64;
+import org.jboss.util.Base64;
 
 public class Security439TestCase extends TestCase
 {
@@ -29,12 +28,12 @@ public class Security439TestCase extends TestCase
    private void decode(final String message) throws Exception
    {
       byte[] authToken = Base64.decode(message);
-      String hex = DebugHelper.convertToHex(authToken);
+      DebugHelper.convertToHex(authToken);
 
       ByteArrayInputStream authTokenIS = new ByteArrayInputStream(authToken);
 
       MessageFactory mf = MessageFactory.newInstance();
-      NegotiationMessage requestMessage = mf.createMessage(authTokenIS);
+      mf.createMessage(authTokenIS);
    }
 
 }

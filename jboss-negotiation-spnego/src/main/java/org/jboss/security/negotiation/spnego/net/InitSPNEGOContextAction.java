@@ -106,7 +106,7 @@ public class InitSPNEGOContextAction implements PrivilegedAction<Object>
          if (DEBUG)
             log.trace("GSSContext established");
          Subject subject = lc.getSubject();
-         Principal principal = subject.getPrincipals().iterator().next();
+         Principal principal = (Principal)subject.getPrincipals().iterator().next();
          try
          {
             setSecurityContext(principal, null, subject, "CLIENT");

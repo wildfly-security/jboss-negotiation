@@ -46,10 +46,7 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>    
-    <dependency>
-    	<groupId>org.picketbox</groupId>
-    	<artifactId>jboss-security-spi</artifactId>
-    </dependency>
+
   </dependencies>
 
 </project>

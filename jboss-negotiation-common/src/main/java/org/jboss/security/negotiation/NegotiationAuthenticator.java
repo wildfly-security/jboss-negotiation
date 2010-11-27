@@ -27,16 +27,21 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.Principal;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.catalina.Realm;
 import org.apache.catalina.Session;
 import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
+
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.log4j.Logger;
 import org.jboss.security.negotiation.common.MessageTrace;
 import org.jboss.security.negotiation.common.NegotiationContext;
-import org.picketbox.commons.cipher.Base64;
+import org.jboss.util.Base64;
+
+
 
 /**
  * An authenticator to manage Negotiation based authentication in connection with the
@@ -60,7 +65,7 @@ public class NegotiationAuthenticator extends AuthenticatorBase
    }
 
    @Override
-   protected boolean authenticate(final Request request, final Response response, final LoginConfig config)
+   public boolean authenticate(final Request request, final HttpServletResponse response, final LoginConfig config)
          throws IOException
    {
 

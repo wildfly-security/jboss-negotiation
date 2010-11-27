@@ -42,16 +42,12 @@
       <artifactId>jboss-common</artifactId>
     </dependency>    
     <dependency>
-      <groupId>jboss.web</groupId>
+      <groupId>org.jboss.spec.javax.servlet</groupId>
+      <artifactId>jboss-servlet-api_3.0_spec</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.web</groupId>
       <artifactId>jbossweb</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jboss.web</groupId>
-      <artifactId>servlet-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.picketbox</groupId>
-      <artifactId>picketbox-commons</artifactId>
     </dependency>
     
   </dependencies>

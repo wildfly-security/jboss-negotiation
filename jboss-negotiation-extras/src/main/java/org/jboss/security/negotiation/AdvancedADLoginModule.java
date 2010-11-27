@@ -34,7 +34,7 @@ import javax.naming.directory.SearchResult;
 import javax.naming.ldap.LdapContext;
 import javax.security.auth.login.LoginException;
 
-import org.picketbox.commons.cipher.Base64;
+import org.jboss.util.Base64;
 
 /**
  * An extension of the AdvancedLdapLoginModule to also query the primary group

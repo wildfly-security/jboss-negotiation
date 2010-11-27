@@ -24,10 +24,9 @@
     <version.jboss.jbosssx>4.2.3.GA</version.jboss.jbosssx>
     <version.jboss.jmx>4.2.3.GA</version.jboss.jmx>
     <version.jboss.system>4.2.3.GA</version.jboss.system>
-    <version.jboss-web>2.1.0.GA</version.jboss-web>
+    <version.jboss-web>3.0.0-beta-7</version.jboss-web>
     <version.junit>3.8.1</version.junit>
-    <version.picketbox-commons>1.0.0.CR1</version.picketbox-commons>
-    <version.picketbox>3.0.0.CR2</version.picketbox>
+    <version.servlet.api>1.0.0.Final</version.servlet.api>    
   </properties>
   <build>
     <sourceDirectory>src/main/java</sourceDirectory>
@@ -82,20 +81,6 @@
     </plugins>
   </build>
   <repositories>
-  	<repository>
-      <id>jboss-public-repository-group</id>
-      <name>JBoss Public Maven Repository Group</name>
-      <url>http://repository.jboss.org/nexus/content/groups/public/</url>
-      <layout>default</layout>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-        <updatePolicy>never</updatePolicy>
-      </snapshots>
-    </repository>
     <repository>
       <id>jboss</id>
       <name>JBoss Repository</name>
@@ -155,34 +140,24 @@
         <version>${version.jboss.jbosssx}</version>
       </dependency>
       <dependency>
-        <groupId>org.picketbox</groupId>
-        <artifactId>jboss-security-spi</artifactId>
-        <version>${version.picketbox}</version>
-      </dependency>
-      <dependency>
         <groupId>jboss</groupId>
         <artifactId>jboss-system</artifactId>
         <version>${version.jboss.system}</version>
-      </dependency>      
-      <dependency>
-        <groupId>jboss.web</groupId>
-        <artifactId>jbossweb</artifactId>
-        <version>${version.jboss-web}</version>
       </dependency>
       <dependency>
-        <groupId>jboss.web</groupId>
-        <artifactId>servlet-api</artifactId>
+        <groupId>org.jboss.spec.javax.servlet</groupId>
+        <artifactId>jboss-servlet-api_3.0_spec</artifactId>
+        <version>${version.servlet.api}</version>
+      </dependency>       
+      <dependency>
+        <groupId>org.jboss.web</groupId>
+        <artifactId>jbossweb</artifactId>
         <version>${version.jboss-web}</version>
       </dependency>
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>${version.junit}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.picketbox</groupId>
-        <artifactId>picketbox-commons</artifactId>
-        <version>${version.picketbox-commons}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

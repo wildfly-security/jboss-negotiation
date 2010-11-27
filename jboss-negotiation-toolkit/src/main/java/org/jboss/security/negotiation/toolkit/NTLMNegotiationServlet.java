@@ -37,7 +37,7 @@ import org.jboss.security.negotiation.NegotiationException;
 import org.jboss.security.negotiation.NegotiationMessage;
 import org.jboss.security.negotiation.ntlm.encoding.NTLMField;
 import org.jboss.security.negotiation.ntlm.encoding.NegotiateMessage;
-import org.picketbox.commons.cipher.Base64;
+import org.jboss.util.Base64;
 
 /**
  * A basic servlet to specifically test the NTLM negotiation.

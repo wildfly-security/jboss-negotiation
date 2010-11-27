@@ -43,7 +43,7 @@ import org.jboss.security.negotiation.common.DebugHelper;
 import org.jboss.security.negotiation.ntlm.encoding.NegotiateMessage;
 import org.jboss.security.negotiation.spnego.encoding.NegTokenInit;
 import org.jboss.security.negotiation.spnego.encoding.NegTokenTarg;
-import org.picketbox.commons.cipher.Base64;
+import org.jboss.util.Base64;
 
 /**
  * A basic servlet to test that if prompted the client browser will return a SPNEGO

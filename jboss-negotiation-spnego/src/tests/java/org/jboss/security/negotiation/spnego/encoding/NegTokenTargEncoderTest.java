@@ -15,14 +15,14 @@
  */
 
 package org.jboss.security.negotiation.spnego.encoding;
+import static org.jboss.security.negotiation.Constants.KERBEROS_V5;
 
 import java.io.IOException;
 
-import org.ietf.jgss.GSSException;
-import org.ietf.jgss.Oid;
-import org.jboss.security.negotiation.common.DebugHelper;
-
 import junit.framework.TestCase;
+
+import org.ietf.jgss.GSSException;
+import org.jboss.security.negotiation.common.DebugHelper;
 
 /**
  * Test case for the NegTokenTargEncoder.
@@ -43,7 +43,7 @@ public class NegTokenTargEncoderTest extends TestCase
    {
       NegTokenTarg targ = new NegTokenTarg();
       targ.setNegResult(NegTokenTarg.ACCEPT_INCOMPLETE);
-      targ.setSupportedMech(new Oid("1.2.840.113554.1.2.2"));
+      targ.setSupportedMech(KERBEROS_V5);
 
       byte[] response = NegTokenTargEncoder.encode(targ);
 

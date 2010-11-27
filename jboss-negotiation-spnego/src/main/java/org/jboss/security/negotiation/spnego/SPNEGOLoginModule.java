@@ -22,6 +22,8 @@
  */
 package org.jboss.security.negotiation.spnego;
 
+import static org.jboss.security.negotiation.Constants.KERBEROS_V5;
+
 import java.security.Principal;
 import java.security.PrivilegedAction;
 import java.security.acl.Group;
@@ -37,7 +39,6 @@ import javax.security.auth.login.LoginException;
 
 import org.ietf.jgss.GSSContext;
 import org.ietf.jgss.GSSCredential;
-import org.ietf.jgss.GSSException;
 import org.ietf.jgss.GSSManager;
 import org.ietf.jgss.Oid;
 import org.jboss.security.SimpleGroup;
@@ -62,7 +63,7 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
 
    private static final String REMOVE_REALM_FROM_PRINCIPAL = "removeRealmFromPrincipal";
 
-   private static final Oid kerberos;
+   private static final Oid kerberos = KERBEROS_V5;
 
    // TODO - Pick a name for a default domain?
    private String serverSecurityDomain;
@@ -72,18 +73,6 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
    private LoginContext serverLoginContext = null;
 
    private Principal identity = null;
-
-   static
-   {
-      try
-      {
-         kerberos = new Oid("1.2.840.113554.1.2.2");
-      }
-      catch (GSSException e)
-      {
-         throw new RuntimeException("Unable to initialise Oid", e);
-      }
-   }
 
    @Override
    public void initialize(final Subject subject, final CallbackHandler callbackHandler, final Map sharedState,

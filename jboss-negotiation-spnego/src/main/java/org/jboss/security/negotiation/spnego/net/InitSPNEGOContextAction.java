@@ -21,6 +21,8 @@
  */
 package org.jboss.security.negotiation.spnego.net;
 
+import static org.jboss.security.negotiation.Constants.SPNEGO;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -80,7 +82,7 @@ public class InitSPNEGOContextAction implements PrivilegedAction<Object>
          DataInputStream inStream = new DataInputStream(socket.getInputStream());
          DataOutputStream outStream = new DataOutputStream(socket.getOutputStream());
 
-         Oid oid = new Oid("1.3.6.1.5.5.2");
+         Oid oid = SPNEGO;
          GSSName serverName = manager.createName("jboss/mmoyses", null);
          context = manager.createContext(serverName, oid, null, GSSContext.DEFAULT_LIFETIME);
          while (!context.isEstablished())

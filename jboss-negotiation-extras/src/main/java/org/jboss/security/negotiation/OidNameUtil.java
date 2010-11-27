@@ -22,7 +22,11 @@
  */
 package org.jboss.security.negotiation;
 
-import org.ietf.jgss.GSSException;
+import static org.jboss.security.negotiation.Constants.KERBEROS_V5;
+import static org.jboss.security.negotiation.Constants.KERBEROS_V5_LEGACY;
+import static org.jboss.security.negotiation.Constants.NTLM;
+import static org.jboss.security.negotiation.Constants.SPNEGO;
+
 import org.ietf.jgss.Oid;
 
 /**
@@ -34,29 +38,6 @@ import org.ietf.jgss.Oid;
 public class OidNameUtil
 {
 
-   private static final Oid KERBEROS_V5;
-
-   private static final Oid KERBEROS_V5_LEGACY;
-
-   private static final Oid NTLM;
-
-   private static final Oid SPNEGO;
-
-   static
-   {
-      try
-      {
-         KERBEROS_V5 = new Oid("1.2.840.113554.1.2.2");
-         KERBEROS_V5_LEGACY = new Oid("1.2.840.48018.1.2.2");
-         SPNEGO = new Oid("1.3.6.1.5.5.2");
-         NTLM = new Oid("1.3.6.1.4.1.311.2.2.10");
-      }
-      catch (GSSException e)
-      {
-         throw new RuntimeException("Unable to initialise Oid", e);
-      }
-   }
-
    /**
     * Return the name of the passed in Oid, if this is not available
     * return the identifier.
@@ -65,7 +46,7 @@ public class OidNameUtil
     * @return
     */
    public static String getName(final Oid oid)
-   {
+   {      
       if (KERBEROS_V5.equals(oid))
       {
          return "Kerberos V5";

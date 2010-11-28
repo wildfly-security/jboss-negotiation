@@ -65,7 +65,11 @@
     
    <login-config>
     <auth-method>SPNEGO</auth-method>
-    <realm-name>SPNEGO</realm-name>    
+    <realm-name>SPNEGO</realm-name>
+    <form-login-config>
+      <form-login-page>/login.html</form-login-page>
+      <form-error-page>/error.html</form-error-page>
+    </form-login-config>    
    </login-config>
           
     <security-role>

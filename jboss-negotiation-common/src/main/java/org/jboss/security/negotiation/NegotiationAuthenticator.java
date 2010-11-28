@@ -22,26 +22,33 @@
  */
 package org.jboss.security.negotiation;
 
+import static org.apache.catalina.authenticator.Constants.FORM_ACTION;
+import static org.apache.catalina.authenticator.Constants.FORM_PASSWORD;
+import static org.apache.catalina.authenticator.Constants.FORM_PRINCIPAL_NOTE;
+import static org.apache.catalina.authenticator.Constants.FORM_USERNAME;
+import static org.apache.catalina.authenticator.Constants.SESS_PASSWORD_NOTE;
+import static org.apache.catalina.authenticator.Constants.SESS_USERNAME_NOTE;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.Principal;
 
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.Realm;
 import org.apache.catalina.Session;
-import org.apache.catalina.authenticator.AuthenticatorBase;
+import org.apache.catalina.authenticator.FormAuthenticator;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
-
 import org.apache.catalina.deploy.LoginConfig;
 import org.apache.log4j.Logger;
 import org.jboss.security.negotiation.common.MessageTrace;
 import org.jboss.security.negotiation.common.NegotiationContext;
 import org.jboss.util.Base64;
-
-
 
 /**
  * An authenticator to manage Negotiation based authentication in connection with the
@@ -50,7 +57,7 @@ import org.jboss.util.Base64;
  * @author darran.lofthouse@jboss.com
  * @version $Revision$
  */
-public class NegotiationAuthenticator extends AuthenticatorBase
+public class NegotiationAuthenticator extends FormAuthenticator
 {
 
    private static final Logger log = Logger.getLogger(NegotiationAuthenticator.class);
@@ -58,6 +65,8 @@ public class NegotiationAuthenticator extends AuthenticatorBase
    private static final String NEGOTIATE = "Negotiate";
 
    private static final String NEGOTIATION_CONTEXT = "NEGOTIATION_CONTEXT";
+
+   private static final String FORM_METHOD = "FORM";
 
    protected String getNegotiateScheme()
    {
@@ -80,6 +89,45 @@ public class NegotiationAuthenticator extends AuthenticatorBase
          return true;
       }
 
+      String contextPath = request.getContextPath();
+      String requestURI = request.getDecodedRequestURI();
+      boolean loginAction = requestURI.startsWith(contextPath) && requestURI.endsWith(FORM_ACTION);
+      if (loginAction)
+      {
+         Realm realm = context.getRealm();
+         String username = request.getParameter(FORM_USERNAME);
+         String password = request.getParameter(FORM_PASSWORD);
+         principal = realm.authenticate(username, password);
+         if (principal == null)
+         {
+            RequestDispatcher disp = context.getServletContext().getRequestDispatcher(config.getErrorPage());
+            try
+            {
+               disp.forward(request.getRequest(), response);
+            }
+            catch (ServletException e)
+            {
+               IOException ex = new IOException("Unable to forward to error page.");
+               ex.initCause(e);
+
+               throw ex;
+            }
+            return false;
+         }
+
+         Session session = request.getSessionInternal();
+         requestURI = savedRequestURL(session);
+
+         session.setNote(FORM_PRINCIPAL_NOTE, principal);
+         session.setNote(SESS_USERNAME_NOTE, username);
+         session.setNote(SESS_PASSWORD_NOTE, password);         
+
+         register(request, response, principal, FORM_METHOD, username, password);
+         response.sendRedirect(response.encodeRedirectURL(requestURI));
+         
+         return false;
+      }
+
       String negotiateScheme = getNegotiateScheme();
 
       if (DEBUG)
@@ -88,9 +136,8 @@ public class NegotiationAuthenticator extends AuthenticatorBase
       if (authHeader == null)
       {
 
-         log.debug("No Authorization Header, sending 401");
-         response.setHeader("WWW-Authenticate", negotiateScheme);
-         response.sendError(401);
+         log.debug("No Authorization Header, initiating negotiation");
+         initiateNegotiation(request, response, config);
 
          return false;
       }
@@ -174,5 +221,42 @@ public class NegotiationAuthenticator extends AuthenticatorBase
       }
 
       return (principal != null);
+   }
+
+   private void initiateNegotiation(final Request request, final HttpServletResponse response, final LoginConfig config)
+         throws IOException
+   {
+      String loginPage = config.getLoginPage();
+      if (loginPage != null)
+      {
+         // TODO - Logic to cache and restore request.
+         ServletContext servletContext = context.getServletContext();
+         RequestDispatcher disp = servletContext.getRequestDispatcher(loginPage);
+
+         try
+         {
+            Session session = request.getSessionInternal();
+            saveRequest(request, session);
+
+            disp.include(request.getRequest(), response);
+            response.setHeader("WWW-Authenticate", getNegotiateScheme());
+            response.setStatus(Response.SC_UNAUTHORIZED);
+         }
+         catch (ServletException e)
+         {
+            IOException ex = new IOException("Unable to include loginPage");
+            ex.initCause(e);
+
+            throw ex;
+         }
+
+      }
+      else
+      {
+         response.setHeader("WWW-Authenticate", getNegotiateScheme());
+         response.sendError(Response.SC_UNAUTHORIZED);
+      }
+
+      response.flushBuffer();
    }
 }

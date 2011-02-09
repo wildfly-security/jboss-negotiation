@@ -83,7 +83,10 @@ public class InitSPNEGOContextAction implements PrivilegedAction<Object>
          DataOutputStream outStream = new DataOutputStream(socket.getOutputStream());
 
          Oid oid = SPNEGO;
-         GSSName serverName = manager.createName("jboss/mmoyses", null);
+         String nameStr = SecurityActions.getServerName();
+         if (nameStr == null)
+            throw new IllegalArgumentException("Server name must be set using the org.jboss.security.negotiation.server.principal system property");
+         GSSName serverName = manager.createName(nameStr, null);
          context = manager.createContext(serverName, oid, null, GSSContext.DEFAULT_LIFETIME);
          while (!context.isEstablished())
          {

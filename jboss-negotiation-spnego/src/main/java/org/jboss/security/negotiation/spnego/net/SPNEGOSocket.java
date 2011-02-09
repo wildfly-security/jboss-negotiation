@@ -155,7 +155,8 @@ public class SPNEGOSocket extends Socket
     */
    protected Subject login() throws LoginException
    {
-      lc = new LoginContext("com.sun.security.jgss.krb5.initiate", new SecurityAssociationHandler());
+      String securityDomainName = SecurityActions.getClientSecurityDomain();
+      lc = new LoginContext(securityDomainName, new SecurityAssociationHandler());
       lc.login();
       return lc.getSubject();
    }

@@ -77,4 +77,26 @@ class SecurityActions
       });
    }
    
+   static String getClientSecurityDomain()
+   {
+      return AccessController.doPrivileged(new PrivilegedAction<String>()
+      {
+         public String run()
+         {
+            return (String) System.getProperty("org.jboss.security.negotiation.default.client.security.domain", "com.sun.security.jgss.krb5.initiate");
+         }
+      });
+   }
+   
+   static String getServerName()
+   {
+      return AccessController.doPrivileged(new PrivilegedAction<String>()
+      {
+         public String run()
+         {
+            return (String) System.getProperty("org.jboss.security.negotiation.server.principal");
+         }
+      });
+   }
+   
 }

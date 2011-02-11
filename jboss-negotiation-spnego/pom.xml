@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>org.jboss.security</groupId>
     <artifactId>jboss-negotiation-project</artifactId>
@@ -10,47 +11,69 @@
   <packaging>jar</packaging>
   <name>JBoss Negotiation SPNEGO</name>
   <url>http://www.jboss.org</url>
-  <description>JBoss Negotiation Library</description> 
+  <description>JBoss Negotiation Library</description>
   <build>
     <plugins>
       <plugin>
-         <artifactId>maven-surefire-plugin</artifactId>
-         <configuration>
-           <printSummary>true</printSummary>
-           <disableXmlReport>false</disableXmlReport>
-           <testFailureIgnore>true</testFailureIgnore>
-           <includes>
-             <include>**/**TestCase.java</include>
-           </includes>
-           <forkMode>pertest</forkMode>
-          </configuration>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <printSummary>true</printSummary>
+          <disableXmlReport>false</disableXmlReport>
+          <testFailureIgnore>true</testFailureIgnore>
+          <includes>
+            <include>**/**TestCase.java</include>
+          </includes>
+          <forkMode>pertest</forkMode>
+        </configuration>
       </plugin>
     </plugins>
   </build>
 
   <!-- Do not add version information here, use ../parent/pom.xml instead -->
   <dependencies>
-    <!-- Local Dependencies -->    
+    <!-- Local Dependencies -->
     <dependency>
       <groupId>org.jboss.security</groupId>
       <artifactId>jboss-negotiation-common</artifactId>
     </dependency>
-          
+
     <!-- Global dependencies -->
-    <dependency>
-      <groupId>org.jboss.jbossas</groupId>
-      <artifactId>jboss-as-security</artifactId>
-      <version>5.1.0.GA</version>
-    </dependency>    
-    <dependency>
-      <groupId>org.jboss.security</groupId>
-      <artifactId>jboss-security-spi</artifactId>    
-    </dependency>    
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-    </dependency>    
-
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss</groupId>
+      <artifactId>jboss-common-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.jbossas</groupId>
+      <artifactId>jboss-as-security</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.logging</groupId>
+      <artifactId>jboss-logging</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.mx</groupId>
+      <artifactId>jboss-j2se</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.security</groupId>
+      <artifactId>jboss-security-spi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.security</groupId>
+      <artifactId>jbosssx</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.web</groupId>
+      <artifactId>jbossweb</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

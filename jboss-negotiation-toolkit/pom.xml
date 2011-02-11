@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>org.jboss.security</groupId>
     <artifactId>jboss-negotiation-project</artifactId>
@@ -10,20 +11,20 @@
   <packaging>war</packaging>
   <name>JBoss Negotiation Toolkit</name>
   <url>http://www.jboss.org</url>
-  <description>JBoss Negotiation Toolkit</description> 
+  <description>JBoss Negotiation Toolkit</description>
   <build>
     <plugins>
       <plugin>
-         <artifactId>maven-surefire-plugin</artifactId>
-         <configuration>
-           <printSummary>true</printSummary>
-           <disableXmlReport>false</disableXmlReport>
-           <testFailureIgnore>true</testFailureIgnore>
-           <includes>
-             <include>**/**TestCase.java</include>
-           </includes>
-           <forkMode>pertest</forkMode>
-          </configuration>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <printSummary>true</printSummary>
+          <disableXmlReport>false</disableXmlReport>
+          <testFailureIgnore>true</testFailureIgnore>
+          <includes>
+            <include>**/**TestCase.java</include>
+          </includes>
+          <forkMode>pertest</forkMode>
+        </configuration>
       </plugin>
     </plugins>
   </build>
@@ -35,12 +36,12 @@
       <groupId>org.jboss.security</groupId>
       <artifactId>jboss-negotiation-extras</artifactId>
       <scope>provided</scope>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>org.jboss.security</groupId>
       <artifactId>jboss-negotiation-common</artifactId>
       <scope>provided</scope>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>org.jboss.security</groupId>
       <artifactId>jboss-negotiation-spnego</artifactId>
@@ -50,23 +51,29 @@
       <groupId>org.jboss.security</groupId>
       <artifactId>jboss-negotiation-ntlm</artifactId>
       <scope>provided</scope>
-    </dependency>    
-    
+    </dependency>
+
     <!-- Global dependencies -->
     <dependency>
-      <groupId>apache-log4j</groupId>
+      <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <scope>provided</scope>
-    </dependency>    
+    </dependency>
     <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>jboss-common</artifactId>
+      <groupId>org.jboss</groupId>
+      <artifactId>jboss-common-core</artifactId>
       <scope>provided</scope>
-    </dependency>   
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.security</groupId>
+      <artifactId>jbosssx</artifactId>
+      <scope>provided</scope>
+    </dependency>
     <dependency>
       <groupId>org.jboss.spec.javax.servlet</groupId>
       <artifactId>jboss-servlet-api_3.0_spec</artifactId>
       <scope>provided</scope>
-    </dependency>    
-  </dependencies>    
+    </dependency>
+
+  </dependencies>
 </project>

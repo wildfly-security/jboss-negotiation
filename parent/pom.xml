@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>jboss</groupId>
     <artifactId>jboss-parent</artifactId>
@@ -14,20 +15,22 @@
   <description>
     The JBoss Negotiation Project
   </description>
-   <scm>
-      <connection>scm:svn:http://anonsvn.jboss.org/repos/jbossas/projects/security/security-negotiation/trunk</connection>
-      <developerConnection>scm:svn:https://svn.jboss.org/repos/jbossas/projects/security/security-negotiation/trunk</developerConnection>
-   </scm>
+  <scm>
+    <connection>scm:svn:http://anonsvn.jboss.org/repos/jbossas/projects/security/security-negotiation/trunk</connection>
+    <developerConnection>scm:svn:https://svn.jboss.org/repos/jbossas/projects/security/security-negotiation/trunk</developerConnection>
+  </scm>
   <properties>
-    <version.apache-log4j.log4j>1.2.14</version.apache-log4j.log4j>
-    <version.jboss.jboss-common>4.2.3.GA</version.jboss.jboss-common>
-    <version.jboss.jmx>4.2.3.GA</version.jboss.jmx>
-    <version.jboss.system>4.2.3.GA</version.jboss.system>
-    <version.jboss-web>3.0.0-beta-7</version.jboss-web>
-    <version.junit>3.8.1</version.junit>
-    <version.org.jboss.security.jbosssx-client>2.0.4.SP2</version.org.jboss.security.jbosssx-client>
-    <version.org.jboss.security.spi>2.0.2.SP1</version.org.jboss.security.spi>    
-    <version.servlet.api>1.0.0.Final</version.servlet.api>    
+    <version.commoncore>2.2.17.GA</version.commoncore>
+    <version.jbossas>6.0.0.Final</version.jbossas>
+    <version.jbosslogging>3.0.0.Beta4</version.jbosslogging>
+    <version.jbosssx>2.0.3.SP1</version.jbosssx>
+    <version.jbossweb>3.0.0-CR1</version.jbossweb>
+    <version.junit>4.5</version.junit>
+    <version.log4j>1.2.14</version.log4j>
+    <version.mxj2se>6.0.0.GA</version.mxj2se>
+    <version.securityspi>2.0.2.SP1</version.securityspi>
+    <version.servletapi>1.0.0.Final</version.servletapi>
+
   </properties>
   <build>
     <sourceDirectory>src/main/java</sourceDirectory>
@@ -71,13 +74,13 @@
             </goals>
             <phase>deploy</phase>
           </execution>
-       </executions>
-       <configuration>
-         <groupId>jboss</groupId>
-         <license>lgpl</license>
-         <jbossDeployRoot>${jboss.repository.root}</jbossDeployRoot>
-         <removeArtifactVersion>true</removeArtifactVersion>
-       </configuration>
+        </executions>
+        <configuration>
+          <groupId>jboss</groupId>
+          <license>lgpl</license>
+          <jbossDeployRoot>${jboss.repository.root}</jbossDeployRoot>
+          <removeArtifactVersion>true</removeArtifactVersion>
+        </configuration>
       </plugin>
     </plugins>
   </build>
@@ -95,7 +98,7 @@
 
   <dependencyManagement>
     <!-- The parent pom manages the inter-dependencies of the modules. -->
-    
+
     <dependencies>
       <!-- Local Dependencies -->
       <dependency>
@@ -107,64 +110,97 @@
         <groupId>org.jboss.security</groupId>
         <artifactId>jboss-negotiation-common</artifactId>
         <version>${project.version}</version>
-      </dependency>       
+      </dependency>
       <dependency>
         <groupId>org.jboss.security</groupId>
         <artifactId>jboss-negotiation-ntlm</artifactId>
         <version>${project.version}</version>
-      </dependency>      
-     <dependency>
+      </dependency>
+      <dependency>
         <groupId>org.jboss.security</groupId>
         <artifactId>jboss-negotiation-spnego</artifactId>
         <version>${project.version}</version>
-     </dependency>         
-    
+      </dependency>
+
       <!-- External Dependencies -->
-      <dependency>
-        <groupId>apache-log4j</groupId>
-        <artifactId>log4j</artifactId>
-        <version>${version.apache-log4j.log4j}</version>
-      </dependency>
-      <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jboss-common</artifactId>
-        <version>${version.jboss.jboss-common}</version>
-      </dependency>
-      <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jboss-jmx</artifactId>
-        <version>${version.jboss.jmx}</version>
-      </dependency>      
-      <dependency>
-        <groupId>jboss</groupId>
-        <artifactId>jboss-system</artifactId>
-        <version>${version.jboss.system}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.jboss.security</groupId>
-        <artifactId>jbosssx-client</artifactId>
-        <version>${version.org.jboss.security.jbosssx-client}</version>
-      </dependency>      
-      <dependency>
-        <groupId>org.jboss.security</groupId>
-        <artifactId>jboss-security-spi</artifactId>
-        <version>${version.org.jboss.security.spi}</version>
-      </dependency>      
-      <dependency>
-        <groupId>org.jboss.spec.javax.servlet</groupId>
-        <artifactId>jboss-servlet-api_3.0_spec</artifactId>
-        <version>${version.servlet.api}</version>
-      </dependency>       
-      <dependency>
-        <groupId>org.jboss.web</groupId>
-        <artifactId>jbossweb</artifactId>
-        <version>${version.jboss-web}</version>
-      </dependency>
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>${version.junit}</version>
       </dependency>
+      <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>${version.log4j}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss</groupId>
+        <artifactId>jboss-common-core</artifactId>
+        <version>${version.commoncore}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging-spi</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.jbossas</groupId>
+        <artifactId>jboss-as-security</artifactId>
+        <version>${version.jbossas}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging-spi</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.jboss.security</groupId>
+            <artifactId>jbosssx-client</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.logging</groupId>
+        <artifactId>jboss-logging</artifactId>
+        <version>${version.jbosslogging}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.mx</groupId>
+        <artifactId>jboss-j2se</artifactId>
+        <version>${version.mxj2se}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging-spi</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.security</groupId>
+        <artifactId>jbosssx</artifactId>
+        <version>${version.jbosssx}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.security</groupId>
+        <artifactId>jboss-security-spi</artifactId>
+        <version>${version.securityspi}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.spec.javax.servlet</groupId>
+        <artifactId>jboss-servlet-api_3.0_spec</artifactId>
+        <version>${version.servletapi}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.jboss.web</groupId>
+        <artifactId>jbossweb</artifactId>
+        <version>${version.jbossweb}</version>
+      </dependency>
+
+
     </dependencies>
   </dependencyManagement>
 

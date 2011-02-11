@@ -1,0 +1,8 @@
+.settings
+assembly/target
+jboss-negotiation-common/target
+jboss-negotiation-extras/target
+jboss-negotiation-net/target
+jboss-negotiation-ntlm/target
+jboss-negotiation-spnego/target
+jboss-negotiation-toolkit/target

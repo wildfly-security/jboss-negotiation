@@ -7,11 +7,11 @@
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>jboss-negotiation-spnego</artifactId>
+  <artifactId>jboss-negotiation-net</artifactId>
   <packaging>jar</packaging>
-  <name>JBoss Negotiation SPNEGO</name>
+  <name>JBoss Negotiation Net</name>
   <url>http://www.jboss.org</url>
-  <description>JBoss Negotiation Library</description>
+  <description>JBoss Negotiation Library (Networking Components)</description>
   <build>
     <plugins>
       <plugin>
@@ -36,32 +36,34 @@
       <groupId>org.jboss.security</groupId>
       <artifactId>jboss-negotiation-common</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.jboss.security</groupId>
+      <artifactId>jboss-negotiation-spnego</artifactId>
+    </dependency>
 
     <!-- Global dependencies -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss</groupId>
-      <artifactId>jboss-common-core</artifactId>
+      <groupId>org.jboss.jbossas</groupId>
+      <artifactId>jboss-as-security</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jboss.logging</groupId>
       <artifactId>jboss-logging</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.jboss.mx</groupId>
+      <artifactId>jboss-j2se</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.jboss.security</groupId>
       <artifactId>jbosssx</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.jboss.web</groupId>
-      <artifactId>jbossweb</artifactId>
+      <groupId>org.jboss.security</groupId>
+      <artifactId>jboss-security-spi</artifactId>
     </dependency>
+
+
   </dependencies>
 
 </project>

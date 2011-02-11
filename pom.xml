@@ -17,6 +17,7 @@
      <module>parent</module>
      <module>jboss-negotiation-common</module>
      <module>jboss-negotiation-extras</module>
+     <module>jboss-negotiation-net</module>
      <module>jboss-negotiation-ntlm</module>
      <module>jboss-negotiation-spnego</module>
      <module>jboss-negotiation-toolkit</module>

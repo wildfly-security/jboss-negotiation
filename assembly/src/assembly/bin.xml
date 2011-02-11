@@ -11,7 +11,11 @@
     <fileSet>
       <directory>../jboss-negotiation-extras/target/classes</directory>
       <outputDirectory>/</outputDirectory>
-    </fileSet>    
+    </fileSet>
+    <fileSet>
+      <directory>../jboss-negotiation-net/target/classes</directory>
+      <outputDirectory>/</outputDirectory>
+    </fileSet>
     <fileSet>
       <directory>../jboss-negotiation-ntlm/target/classes</directory>
       <outputDirectory>/</outputDirectory>

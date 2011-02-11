@@ -12,14 +12,18 @@
     <fileSet>
       <directory>../jboss-negotiation-extras/src/main/java</directory>
       <outputDirectory>/</outputDirectory>
-    </fileSet>    
+    </fileSet>
+    <fileSet>
+      <directory>../jboss-negotiation-net/src/main/java</directory>
+      <outputDirectory>/</outputDirectory>
+    </fileSet>
     <fileSet>
       <directory>../jboss-negotiation-ntlm/src/main/java</directory>
       <outputDirectory>/</outputDirectory>
-    </fileSet>    
+    </fileSet>
     <fileSet>
       <directory>../jboss-negotiation-spnego/src/main/java</directory>
       <outputDirectory>/</outputDirectory>
-    </fileSet>    
+    </fileSet>
   </fileSets>
 </assembly>

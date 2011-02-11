@@ -107,7 +107,12 @@ public class NegotiationAuthenticator extends AuthenticatorBase
          }
       }
 
-      String username = session.getId();
+      String username = negotiationContext.getUsername();
+      if (username == null || username.length() == 0)
+      {
+         username = session.getId() + "_" + String.valueOf(System.currentTimeMillis());
+         negotiationContext.setUsername(username);
+      }
       String authenticationMethod = "";
       try
       {

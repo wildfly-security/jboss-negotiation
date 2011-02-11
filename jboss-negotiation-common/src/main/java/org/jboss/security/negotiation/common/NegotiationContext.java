@@ -40,6 +40,8 @@ public class NegotiationContext
 
    private static final ThreadLocal<NegotiationContext> negotiationContext = new ThreadLocal<NegotiationContext>();
 
+   private String username;
+   
    private boolean authenticated = false;
 
    private String authenticationMethod;
@@ -72,6 +74,16 @@ public class NegotiationContext
       requestMessage = null;
       responseMessage = null;
       negotiationContext.remove();
+   }
+
+   public String getUsername()
+   {
+      return username;
+   }
+
+   public void setUsername(String username)
+   {
+      this.username = username;
    }
 
    public boolean isAuthenticated()

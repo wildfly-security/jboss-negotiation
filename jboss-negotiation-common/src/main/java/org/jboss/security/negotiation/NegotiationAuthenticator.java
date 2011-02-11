@@ -156,13 +156,17 @@ public class NegotiationAuthenticator extends FormAuthenticator
       NegotiationContext negotiationContext = (NegotiationContext) session.getNote(NEGOTIATION_CONTEXT);
       if (negotiationContext == null)
       {
-
          log.debug("Creating new NegotiationContext");
          negotiationContext = new NegotiationContext();
          session.setNote(NEGOTIATION_CONTEXT, negotiationContext);
       }
 
-      String username = session.getId();
+      String username = negotiationContext.getUsername();
+      if (username == null || username.length() == 0)
+      {
+         username = session.getId() + "_" + String.valueOf(System.currentTimeMillis());
+         negotiationContext.setUsername(username);
+      }
       String authenticationMethod = "";
       try
       {

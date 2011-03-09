@@ -1,14 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
-    <groupId>jboss</groupId>
+    <groupId>org.jboss</groupId>
     <artifactId>jboss-parent</artifactId>
-    <version>2</version>
+    <version>5</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jboss.security</groupId>
   <artifactId>jboss-negotiation-project</artifactId>
-  <version>2.0.4.SNAPSHOT</version>
+  <version>2.1.1.SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>JBoss Negotiation Parent</name>
   <url>http://www.jboss.com</url>
@@ -61,28 +61,6 @@
         <filtering>true</filtering>
       </testResource>
     </testResources>
-    <plugins>
-      <plugin>
-        <groupId>org.jboss.maven.plugins</groupId>
-        <artifactId>maven-jboss-deploy-plugin</artifactId>
-        <version>1.6</version>
-        <executions>
-          <execution>
-            <id>jboss-deploy</id>
-            <goals>
-              <goal>jboss-deploy</goal>
-            </goals>
-            <phase>deploy</phase>
-          </execution>
-        </executions>
-        <configuration>
-          <groupId>jboss</groupId>
-          <license>lgpl</license>
-          <jbossDeployRoot>${jboss.repository.root}</jbossDeployRoot>
-          <removeArtifactVersion>true</removeArtifactVersion>
-        </configuration>
-      </plugin>
-    </plugins>
   </build>
   <repositories>
     <repository>
@@ -199,8 +177,6 @@
         <artifactId>jbossweb</artifactId>
         <version>${version.jbossweb}</version>
       </dependency>
-
-
     </dependencies>
   </dependencyManagement>
 

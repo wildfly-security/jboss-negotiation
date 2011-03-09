@@ -1,19 +1,49 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.jboss</groupId>
-        <artifactId>documentation</artifactId>
-        <version>1.0</version>
-    </parent>
-    
-    <groupId>org.jboss.documentation</groupId>
-    <artifactId>negotiation-user-guide-${translation}</artifactId>
-    <version>2.0.4.SNAPSHOT</version>
-    <packaging>jdocbook</packaging>
-    <name>Negotiation_User_Guide_(${translation})</name>
+  <parent>
+    <groupId>org.jboss</groupId>
+    <artifactId>documentation</artifactId>
+    <version>1.0</version>
+  </parent>
+  <repositories>
+    <repository>
+      <id>jboss-public-repository-group</id>
+      <name>JBoss Public Repository Group</name>
+      <url>http://repository.jboss.org/nexus/content/groups/public/</url>
+      <layout>default</layout>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </snapshots>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>jboss-public-repository-group</id>
+      <name>JBoss Public Repository Group</name>
+      <url>http://repository.jboss.org/nexus/content/groups/public/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+
+
+
+  <groupId>org.jboss.documentation</groupId>
+  <artifactId>negotiation-user-guide-${translation}</artifactId>
+  <version>2.1.1.SNAPSHOT</version>
+  <packaging>jdocbook</packaging>
+  <name>Negotiation_User_Guide_(${translation})</name>
 
 </project>

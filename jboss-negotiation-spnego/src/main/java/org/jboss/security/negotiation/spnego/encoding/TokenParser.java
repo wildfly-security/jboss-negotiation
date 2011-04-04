@@ -183,13 +183,18 @@ public class TokenParser
 
       is.reset();
       bytes = getValueAt(is, (byte) 2);
-      byte[] cipher = Arrays.copyOfRange(bytes, 3, bytes.length);
+      ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+      bais.read();
+      int cipherLength = NegTokenDecoder.readLength(bais);
+      byte[] cipher = new byte[cipherLength];
+      bais.read(cipher);
+      bais.close();
       
       byte[] ticketBytes = decrypt(key, cipher);
       byte[] temp = reset(ticketBytes);
       
       // at this point we have the decrypted ticket
-      ByteArrayInputStream bais = new ByteArrayInputStream(temp);
+      bais = new ByteArrayInputStream(temp);
       bais.read();
       int length = NegTokenDecoder.readLength(bais);
       temp = new byte[length];

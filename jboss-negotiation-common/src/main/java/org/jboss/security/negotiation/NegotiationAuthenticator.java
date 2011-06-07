@@ -45,7 +45,7 @@ import org.apache.catalina.authenticator.FormAuthenticator;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.deploy.LoginConfig;
-import org.apache.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.jboss.security.negotiation.common.MessageTrace;
 import org.jboss.security.negotiation.common.NegotiationContext;
 import org.jboss.util.Base64;

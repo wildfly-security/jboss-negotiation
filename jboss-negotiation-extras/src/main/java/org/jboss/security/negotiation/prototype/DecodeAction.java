@@ -1,44 +1,47 @@
 /*
- * JBoss, Home of Professional Open Source.
- * Copyright 2006, Red Hat Middleware LLC, and individual contributors
- * as indicated by the @author tags. See the copyright.txt file in the
- * distribution for a full listing of individual contributors.
- *
- * This is free software; you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
- *
- * This software is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with this software; if not, write to the Free
- * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
- * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
- */
+* JBoss, Home of Professional Open Source
+* Copyright 2005, JBoss Inc., and individual contributors as indicated
+* by the @authors tag. See the copyright.txt in the distribution for a
+* full listing of individual contributors.
+*
+* This is free software; you can redistribute it and/or modify it
+* under the terms of the GNU Lesser General Public License as
+* published by the Free Software Foundation; either version 2.1 of
+* the License, or (at your option) any later version.
+*
+* This software is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+* Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public
+* License along with this software; if not, write to the Free
+* Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+* 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+*/
 package org.jboss.security.negotiation.prototype;
 
-import java.security.PrivilegedExceptionAction;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import javax.management.ObjectName;
-import javax.management.MBeanServer;
-import javax.management.MBeanServerInvocationHandler;
+import java.security.PrivilegedExceptionAction;
 
-import org.jboss.security.plugins.JaasSecurityDomainMBean;
-import org.jboss.mx.util.MBeanServerLocator;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+
+import org.jboss.security.util.MBeanServerLocator;
 
 /**
  * PriviledgedActions used by login modules for decoding passwords
  * 
  * @author Scott.Stark@jboss.org
- * @version $Revision$
+ * @version $Revision: 2 $
  */
-public class DecodeAction implements PrivilegedExceptionAction
+public class DecodeAction implements PrivilegedExceptionAction<Object>
 {
+   /** The permission required to access decode, decode64 */
+   private static final RuntimePermission decodePermission =
+      new RuntimePermission("org.jboss.security.auth.spi.DecodeAction.decode"); 
+   
    String password;
    ObjectName serviceName;
 
@@ -54,18 +57,32 @@ public class DecodeAction implements PrivilegedExceptionAction
     * @throws Exception
     */
    public Object run() throws Exception
-   {   
-       MBeanServer server = MBeanServerLocator.locateJBoss();
-       JaasSecurityDomainMBean securityDomain = (JaasSecurityDomainMBean)
-          MBeanServerInvocationHandler.newProxyInstance(server, serviceName,
-             JaasSecurityDomainMBean.class, false);
-
-      // Invoke the jaasSecurityDomain.decodeb64 op
-      byte[] secret = securityDomain.decode64(password);
+   {  
+      // Invoke the decodeb64 op
+      byte[] secret = decode64(password);
       // Convert to UTF-8 base char array
       String secretPassword = new String(secret, "UTF-8");
       return secretPassword.toCharArray();
    }
+   
+   /** Decrypt the secret using the cipherKey.
+   *
+   * @param secret - the encrypted secret to decrypt.
+   * @return the decrypted secret
+   * @throws Exception
+   */
+  private byte[] decode64(String secret)
+     throws Exception
+  {
+     SecurityManager sm = System.getSecurityManager();
+     if( sm != null )
+        sm.checkPermission(decodePermission);
+
+     MBeanServer server = MBeanServerLocator.locateJBoss();
+     return (byte[]) server.invoke(serviceName, "decode64", new Object[] {secret}, 
+           new String[] {String.class.getName()});
+  }
+  
    public static char[] decode(String password, ObjectName serviceName)
       throws Exception
    {

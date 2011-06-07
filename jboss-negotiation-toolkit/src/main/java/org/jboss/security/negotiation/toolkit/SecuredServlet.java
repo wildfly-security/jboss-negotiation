@@ -28,13 +28,21 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jboss.security.SecurityAssociation;
+import org.jboss.security.SecurityContextAssociation;
+import org.jboss.security.SubjectInfo;
+import org.jboss.security.identity.Identity;
+import org.jboss.security.identity.Role;
+import org.jboss.security.identity.RoleGroup;
+
+//import org.jboss.security.SecurityAssociation;
 
 /**
  * A simple servlet to be secured and output information on the
@@ -50,33 +58,42 @@ public class SecuredServlet extends HttpServlet
 
    @Override
    protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-         IOException
-   {
-      PrintWriter writer = resp.getWriter();
+           IOException {
+       PrintWriter writer = resp.getWriter();
 
-      writer.println("<html>");
-      writer.println("  <head>");
-      writer.println("    <title>Negotiation Toolkit</title>");
-      writer.println("  </head>");
-      writer.println("  <body>");
-      writer.println("    <h1>Negotiation Toolkit</h1>");
-      writer.println("    <h2>Secured</h2>");
+       writer.println("<html>");
+       writer.println("  <head>");
+       writer.println("    <title>Negotiation Toolkit</title>");
+       writer.println("  </head>");
+       writer.println("  <body>");
+       writer.println("    <h1>Negotiation Toolkit</h1>");
+       writer.println("    <h2>Secured</h2>");
 
-      writer.println("    <h5>Auth Type</h5>");
-      writeObject(req.getAuthType(), writer);
-      
-      writer.println("    <h5>User Principal</h5>");
-      writeObject(req.getUserPrincipal(), writer);
+       writer.println("    <h5>Auth Type</h5>");
+       writeObject(req.getAuthType(), writer);
 
-      writer.println("    <h5>Caller Principal</h5>");
-      writeObject(SecurityAssociation.getCallerPrincipal(), writer);
+       writer.println("    <h5>User Principal</h5>");
+       writeObject(req.getUserPrincipal(), writer);
 
-      writer.println("    <h5>Subject</h5>");
-      writeObject(SecurityAssociation.getSubject(), writer);
+       SubjectInfo info = SecurityContextAssociation.getSecurityContext().getSubjectInfo();
+       Set<Identity> identities = info.getIdentities();
+       writer.println("    <h5>Identities</h5>");
+       for (Identity current : identities) {
+           writer.println(" " + current.getName() + "<br>");
+       }
 
-      writer.println("  </body>");
-      writer.println("</html>");
-      writer.flush();
+       writer.println("    <h5>Subject</h5>");
+       writeObject(info.getAuthenticatedSubject(), writer);
+
+       List<Role> roles = info.getRoles().getRoles();
+       writer.println("    <h5>Roles</h5>");
+       for (Role current : roles) {
+           writer.println(" " + current.getRoleName() + "<br>");
+       }
+
+       writer.println("  </body>");
+       writer.println("</html>");
+       writer.flush();
    }
 
    private void writeObject(final Object obj, final PrintWriter writer) throws IOException

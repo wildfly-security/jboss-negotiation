@@ -23,7 +23,7 @@
 package org.jboss.security.negotiation.spnego;
 
 import org.apache.catalina.Valve;
-import org.apache.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.jboss.security.negotiation.NegotiationAuthenticator;
 
 /**

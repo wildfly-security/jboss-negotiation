@@ -41,7 +41,7 @@ import javax.security.auth.login.LoginException;
 
 import org.ietf.jgss.GSSContext;
 import org.jboss.logging.Logger;
-import org.jboss.mx.util.MBeanServerLocator;
+//import org.jboss.mx.util.MBeanServerLocator;
 import org.jboss.security.SecurityConstants;
 import org.jboss.security.auth.callback.SecurityAssociationHandler;
 import org.jboss.security.negotiation.MessageFactory;
@@ -52,7 +52,7 @@ import org.jboss.security.negotiation.common.NegotiationContext;
 import org.jboss.security.negotiation.spnego.encoding.NegTokenInit;
 import org.jboss.security.negotiation.spnego.encoding.NegTokenTarg;
 import org.jboss.security.negotiation.spnego.encoding.TokenParser;
-import org.jboss.security.plugins.JaasSecurityManager;
+//import org.jboss.security.plugins.JaasSecurityManager;
 
 /**
  *  An implementation of {@link ServerSocket} that tries to establish a {@link GSSContext}
@@ -242,9 +242,12 @@ public class SPNEGOServerSocket extends ServerSocket
     */
    protected boolean isValid(Principal principal, Object credential, String securityDomain) throws Exception
    {
+      // TODO - Maybe re-implement for AS7 - however Remoting support SASL already.
+      throw new UnsupportedOperationException("Needs Re-Implementing");
+      /*
       InitialContext ctx = new InitialContext();
       JaasSecurityManager jsm = (JaasSecurityManager) ctx.lookup(SecurityConstants.JAAS_CONTEXT_ROOT + "/" + securityDomain);
-      return jsm.isValid(principal, credential);
+      return jsm.isValid(principal, credential);*/
    }
    
    /**
@@ -256,11 +259,13 @@ public class SPNEGOServerSocket extends ServerSocket
     */
    protected void flushPrincipalFromCache(Principal principal, String securityDomain) throws Exception
    {
-      MBeanServer server = MBeanServerLocator.locateJBoss();
+      // TODO - Maybe re-implement for AS7 - however Remoting support SASL already.
+      throw new UnsupportedOperationException("Needs Re-Implementing");
+      /*MBeanServer server = MBeanServerLocator.locateJBoss();
       ObjectName jaasMgr = new ObjectName("jboss.security:service=JaasSecurityManager");
       Object[] params = {securityDomain, principal};
       String[] signature = {String.class.getName(), Principal.class.getName()};
-      server.invoke(jaasMgr, "flushAuthenticationCache", params, signature);
+      server.invoke(jaasMgr, "flushAuthenticationCache", params, signature);*/
    }
    
    /**

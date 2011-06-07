@@ -22,7 +22,7 @@
  */
 package org.jboss.security.negotiation.common;
 
-import org.apache.log4j.Logger;
+import org.jboss.logging.Logger;
 
 /**
  * Handle message tracing hierarchy.

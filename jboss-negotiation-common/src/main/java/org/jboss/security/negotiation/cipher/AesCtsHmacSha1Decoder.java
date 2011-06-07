@@ -21,16 +21,15 @@
  */
 package org.jboss.security.negotiation.cipher;
 
-import java.security.GeneralSecurityException;
-import java.util.Arrays;
-
 import javax.crypto.Cipher;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.security.GeneralSecurityException;
+import java.util.Arrays;
 
-import org.apache.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.jboss.security.negotiation.NegotiationException;
 
 /**

@@ -19,7 +19,7 @@ package org.jboss.security.negotiation.spnego;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.ietf.jgss.GSSException;
 import org.jboss.security.negotiation.MessageFactory;
 import org.jboss.security.negotiation.NegotiationMessage;

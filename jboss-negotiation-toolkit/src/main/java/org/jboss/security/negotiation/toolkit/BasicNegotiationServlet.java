@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.jboss.logging.Logger;
 import org.ietf.jgss.Oid;
 import org.jboss.security.negotiation.MessageFactory;
 import org.jboss.security.negotiation.NegotiationException;

@@ -70,21 +70,30 @@
     </dependency>
 
     <!-- Global dependencies -->
+
+    <!--                                                                                                  -->
+    <!-- Ensure all dependencies have <scope>provided</scope> to ensure they are not packaged in the war. -->
+    <!--                                                                                                  -->
+
     <dependency>
       <groupId>org.jboss</groupId>
       <artifactId>jboss-common-core</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.jboss.spec.javax.servlet</groupId>
       <artifactId>jboss-servlet-api_3.0_spec</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.jboss.logging</groupId>
-        <artifactId>jboss-logging</artifactId>
+      <artifactId>jboss-logging</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
-       <groupId>org.picketbox</groupId>
-       <artifactId>picketbox</artifactId>
+      <groupId>org.picketbox</groupId>
+      <artifactId>picketbox</artifactId>
+       <scope>provided</scope>
     </dependency>
 
   </dependencies>

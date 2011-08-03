@@ -44,10 +44,10 @@
         <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.jboss</groupId>
-      <artifactId>jboss-common-core</artifactId>
+        <groupId>org.picketbox</groupId>
+        <artifactId>picketbox-commons</artifactId>
+        <scope>test</scope>
     </dependency>
-
   </dependencies>
 
 </project>

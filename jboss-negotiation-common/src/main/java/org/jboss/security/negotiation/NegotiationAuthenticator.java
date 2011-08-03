@@ -48,7 +48,8 @@ import org.apache.catalina.deploy.LoginConfig;
 import org.jboss.logging.Logger;
 import org.jboss.security.negotiation.common.MessageTrace;
 import org.jboss.security.negotiation.common.NegotiationContext;
-import org.jboss.util.Base64;
+import org.picketbox.commons.cipher.Base64;
+
 
 /**
  * An authenticator to manage Negotiation based authentication in connection with the

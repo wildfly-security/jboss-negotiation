@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.jboss.security.negotiation.NegotiationMessage;
-import org.jboss.util.NotImplementedException;
 
 /**
  * Representation of an NTLM NEGOTIATIE_MESSAGE
@@ -119,7 +118,7 @@ public class NegotiateMessage extends NegotiationMessage
    @Override
    public void writeTo(OutputStream os) throws IOException
    {
-      throw new NotImplementedException();
+      throw new IllegalAccessError("Not Implemented");
    }
 
    @Override

@@ -39,16 +39,16 @@
 
     <!-- Global dependencies -->
     <dependency>
-      <groupId>org.jboss</groupId>
-      <artifactId>jboss-common-core</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.jboss.logging</groupId>
       <artifactId>jboss-logging</artifactId>
     </dependency>
     <dependency>
        <groupId>org.picketbox</groupId>
        <artifactId>picketbox</artifactId>
+    </dependency>
+    <dependency>
+       <groupId>org.picketbox</groupId>
+       <artifactId>picketbox-commons</artifactId>
     </dependency>
   </dependencies>
 

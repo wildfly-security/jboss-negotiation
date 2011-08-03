@@ -22,7 +22,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.ietf.jgss.Oid;
-import org.jboss.util.NotImplementedException;
 
 /**
  * Representation of NegTokenInit.
@@ -84,7 +83,7 @@ public class NegTokenInit extends SPNEGOMessage
    @Override
    public void writeTo(OutputStream os) throws IOException
    {
-     throw new NotImplementedException();      
+     throw new IllegalAccessError("Not Implemented");
    }
 
    

@@ -76,11 +76,6 @@
     <!--                                                                                                  -->
 
     <dependency>
-      <groupId>org.jboss</groupId>
-      <artifactId>jboss-common-core</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.jboss.spec.javax.servlet</groupId>
       <artifactId>jboss-servlet-api_3.0_spec</artifactId>
       <scope>provided</scope>
@@ -91,8 +86,13 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.picketbox</groupId>
-      <artifactId>picketbox</artifactId>
+       <groupId>org.picketbox</groupId>
+       <artifactId>picketbox</artifactId>
+       <scope>provided</scope>
+    </dependency>
+    <dependency>
+       <groupId>org.picketbox</groupId>
+       <artifactId>picketbox-commons</artifactId>
        <scope>provided</scope>
     </dependency>
 

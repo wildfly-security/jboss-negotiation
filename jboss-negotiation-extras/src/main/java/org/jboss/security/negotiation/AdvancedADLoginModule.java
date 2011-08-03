@@ -34,15 +34,8 @@ import javax.naming.directory.SearchResult;
 import javax.naming.ldap.LdapContext;
 import javax.security.auth.login.LoginException;
 
-import org.jboss.util.Base64;
+import org.picketbox.commons.cipher.Base64;
 
-/**
- * An extension of the AdvancedLdapLoginModule to also query the primary group
- * of the user being authenticated - this is not discoverable using the usual 
- * member and memberOf attributes.
- * 
- * @author darran.lofthouse@jboss.com
- */
 public class AdvancedADLoginModule extends AdvancedLdapLoginModule
 {
 

@@ -24,7 +24,7 @@
               <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
             </manifest>
             <manifestEntries>
-              <Dependencies>org.jboss.security.negotiation,org.jboss.common-core,org.jboss.logmanager</Dependencies>
+              <Dependencies>org.jboss.security.negotiation</Dependencies>
             </manifestEntries>
           </archive>
         </configuration>

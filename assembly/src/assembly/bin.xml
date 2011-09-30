@@ -1,4 +1,5 @@
 <assembly>
+  <id>negotiation</id>
   <formats>
     <format>jar</format>
   </formats>

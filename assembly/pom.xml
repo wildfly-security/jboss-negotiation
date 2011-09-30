@@ -28,7 +28,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.1</version>
+        <version>${version.maven-assembly-plugin}</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -38,6 +38,8 @@
           </execution>
         </executions>
         <configuration>
+          <finalName>jboss</finalName>
+          <appendAssemblyId>true</appendAssemblyId>
           <archive>
             <manifestEntries>
               <Specification-Title>JBoss Security Implementation for the JBAS</Specification-Title>

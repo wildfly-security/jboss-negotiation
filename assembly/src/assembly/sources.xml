@@ -1,5 +1,5 @@
 <assembly>
-  <id>sources</id>
+  <id>negotiation-sources</id>
   <formats>
     <format>jar</format>
   </formats>

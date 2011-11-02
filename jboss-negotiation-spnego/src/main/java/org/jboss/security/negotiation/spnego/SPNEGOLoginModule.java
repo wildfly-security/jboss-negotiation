@@ -22,12 +22,15 @@
  */
 package org.jboss.security.negotiation.spnego;
 
+import static org.jboss.security.negotiation.Constants.KERBEROS_V5;
+
 import java.security.Principal;
 import java.security.PrivilegedAction;
 import java.security.acl.Group;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
@@ -37,12 +40,11 @@ import javax.security.auth.login.LoginException;
 
 import org.ietf.jgss.GSSContext;
 import org.ietf.jgss.GSSCredential;
-import org.ietf.jgss.GSSException;
 import org.ietf.jgss.GSSManager;
 import org.ietf.jgss.Oid;
 import org.jboss.security.SimpleGroup;
-import org.jboss.security.auth.spi.AbstractServerLoginModule;
 import org.jboss.security.negotiation.NegotiationMessage;
+import org.jboss.security.negotiation.common.CommonLoginModule;
 import org.jboss.security.negotiation.common.NegotiationContext;
 import org.jboss.security.negotiation.spnego.encoding.NegTokenInit;
 import org.jboss.security.negotiation.spnego.encoding.NegTokenTarg;
@@ -55,35 +57,46 @@ import org.jboss.security.negotiation.spnego.encoding.SPNEGOMessage;
  * @author darran.lofthouse@jboss.com
  * @version $Revision$
  */
-public class SPNEGOLoginModule extends AbstractServerLoginModule
+public class SPNEGOLoginModule extends CommonLoginModule
 {
+
+   /*
+    * Configuration Option Constants 
+    */
+
+   // If true drop the @REALM from the identity.
+   private static final String REMOVE_REALM_FROM_PRINCIPAL = "removeRealmFromPrincipal";
+
+   // The security domain to authenticate to obtain the servers identity.
+   private static final String SERVER_SECURITY_DOMAIN = "serverSecurityDomain";
+
+   // The security domain to delegate username/password authentication to.
+   private static final String USERNAME_PASSWORD_DOMAIN = "usernamePasswordDomain";
+
+   /*
+    *  General Constants
+    */
 
    private static final String SPNEGO = "SPNEGO";
 
-   private static final String REMOVE_REALM_FROM_PRINCIPAL = "removeRealmFromPrincipal";
+   private static final Oid kerberos = KERBEROS_V5;
 
-   private static final Oid kerberos;
+   /*
+    * Configuration Options
+    */
+
+   private boolean removeRealmFromPrincipal;
 
    // TODO - Pick a name for a default domain?
    private String serverSecurityDomain;
 
-   private boolean removeRealmFromPrincipal;
+   private String usernamePasswordDomain;
+
+   /*
+    * Module State
+    */
 
    private LoginContext serverLoginContext = null;
-
-   private Principal identity = null;
-
-   static
-   {
-      try
-      {
-         kerberos = new Oid("1.2.840.113554.1.2.2");
-      }
-      catch (GSSException e)
-      {
-         throw new RuntimeException("Unable to initialise Oid", e);
-      }
-   }
 
    @Override
    public void initialize(final Subject subject, final CallbackHandler callbackHandler, final Map sharedState,
@@ -92,19 +105,27 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
       super.initialize(subject, callbackHandler, sharedState, options);
       String temp;
       // Which security domain to authenticate the server.
-      serverSecurityDomain = (String) options.get("serverSecurityDomain");
-      log.debug("serverSecurityDomain=" + serverSecurityDomain);
+      serverSecurityDomain = (String) options.get(SERVER_SECURITY_DOMAIN);
+      // Which security domain to delegate username/password authentication to.
+      usernamePasswordDomain = (String) options.get(USERNAME_PASSWORD_DOMAIN);
       temp = (String) options.get(REMOVE_REALM_FROM_PRINCIPAL);
       removeRealmFromPrincipal = Boolean.valueOf(temp);
       if (removeRealmFromPrincipal == false && principalClassName == null)
       {
          principalClassName = KerberosPrincipal.class.getName();
       }
+      if (log.isDebugEnabled())
+      {
+         log.debug("removeRealmFromPrincipal=" + removeRealmFromPrincipal);
+         log.debug("serverSecurityDomain=" + serverSecurityDomain);
+         log.debug("usernamePasswordDomain=" + usernamePasswordDomain);
+      }
    }
 
    @Override
    public boolean login() throws LoginException
    {
+      boolean TRACE = log.isTraceEnabled();
       if (super.login() == true)
       {
          log.debug("super.login()==true");
@@ -113,7 +134,94 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
 
       super.loginOk = false;
 
+      Object result = innerLogin();
+
+      if (TRACE)
+         log.trace("Result - " + result);
+
+      if (result instanceof Boolean)
+      {
+         if (Boolean.TRUE.equals(result))
+         {
+            super.loginOk = true;
+            if (getUseFirstPass() == true)
+            {
+               Principal identity = getIdentity();
+               String userName = identity.getName();
+               if (log.isDebugEnabled())
+                  log.debug("Storing username '" + userName + "' and empty password");
+               // Add the username and a null password to the shared state map
+               sharedState.put("javax.security.auth.login.name", identity);
+               sharedState.put("javax.security.auth.login.password", "");
+            }
+         }
+      }
+      else if (result instanceof Exception)
+      {
+         Exception e = (Exception) result;
+         log.error("Unable to authenticate", e);
+         throw new LoginException("Unable to authenticate - " + e.getMessage());
+      }
+
+      if (TRACE)
+         log.trace("super.loginOk " + super.loginOk);
+      if (super.loginOk == true)
+      {
+         return true;
+      }
+      else
+      {
+         throw new LoginException("Continuation Required.");
+      }
+
+   }
+
+   protected Object innerLogin() throws LoginException
+   {
       NegotiationContext negotiationContext = NegotiationContext.getCurrentNegotiationContext();
+
+      if (negotiationContext == null)
+      {
+         if (usernamePasswordDomain == null)
+         {
+            throw new LoginException("No NegotiationContext and no usernamePasswordDomain defined.");
+         }
+
+         return usernamePasswordLogin();
+      }
+      else
+      {
+         return spnegoLogin(negotiationContext);
+      }
+
+   }
+
+   private Object usernamePasswordLogin() throws LoginException
+   {
+      log.debug("Falling back to username/password authentication");
+
+      LoginContext lc = new LoginContext(usernamePasswordDomain, callbackHandler);
+      lc.login();
+
+      Subject userSubject = lc.getSubject();
+      Set principals = userSubject.getPrincipals();
+      if (principals.isEmpty())
+      {
+         throw new LoginException("No principal returned after login.");
+      }
+      else if (principals.size() > 1)
+      {
+         log.warn("Multiple principals returned, using first principal in set.");
+      }
+
+      Principal identity = (Principal) principals.iterator().next();
+      setIdentity(identity);
+
+      return Boolean.TRUE;
+   }
+
+   private Object spnegoLogin(NegotiationContext negotiationContext) throws LoginException
+   {
       NegotiationMessage requestMessage = negotiationContext.getRequestMessage();
       if (requestMessage instanceof SPNEGOMessage == false)
       {
@@ -128,30 +236,7 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
          AcceptSecContext action = new AcceptSecContext(negotiationContext);
          Object result = Subject.doAs(server, action);
 
-         log.trace("Result - " + result);
-
-         if (result instanceof Boolean)
-         {
-            if (Boolean.TRUE.equals(result))
-            {
-               super.loginOk = true;
-               if (getUseFirstPass() == true)
-               {
-                  String userName = identity.getName();
-                  log.debug("Storing username '" + userName + "' and empty password");
-                  // Add the username and a null password to the shared state map
-                  sharedState.put("javax.security.auth.login.name", identity);
-                  sharedState.put("javax.security.auth.login.password", "");
-               }
-            }
-         }
-         else if (result instanceof Exception)
-         {
-            Exception e = (Exception) result;
-            log.error("Unable to authenticate", e);
-            throw new LoginException("Unable to authenticate - " + e.getMessage());
-         }
-
+         return result;
       }
       finally
       {
@@ -162,23 +247,8 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
          }
       }
 
-      log.trace("super.loginOk " + super.loginOk);
-      if (super.loginOk == true)
-      {
-         return true;
-      }
-      else
-      {
-         throw new LoginException("Continuation Required.");
-      }
-
    }
-
-   @Override
-   protected Principal getIdentity()
-   {
-      return identity;
-   }
+   
 
    @Override
    protected Principal createIdentity(final String username) throws Exception
@@ -304,7 +374,7 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
                log.warn("Authentication was performed despite already being authenticated!");
 
                // TODO - Refactor to only do this once.
-               identity = new KerberosPrincipal(gssContext.getSrcName().toString());
+               setIdentity(new KerberosPrincipal(gssContext.getSrcName().toString()));
 
                log.debug("context.getCredDelegState() = " + gssContext.getCredDelegState());
                log.debug("context.getMutualAuthState() = " + gssContext.getMutualAuthState());
@@ -332,11 +402,11 @@ public class SPNEGOLoginModule extends AbstractServerLoginModule
             }
             else
             {
-               identity = createIdentity(gssContext.getSrcName().toString());
+               setIdentity(createIdentity(gssContext.getSrcName().toString()));
 
                log.debug("context.getCredDelegState() = " + gssContext.getCredDelegState());
                log.debug("context.getMutualAuthState() = " + gssContext.getMutualAuthState());
-               log.debug("context.getSrcName() = " + gssContext.getSrcName().toString());
+               log.debug("context.getSrcName() = " + gssContext.getSrcName().toString());               
 
                // TODO - Get these two in synch - maybe isAuthenticated based on an authentication method been set?
                negotiationContext.setAuthenticationMethod(SPNEGO);

@@ -50,7 +50,7 @@ import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import org.jboss.security.SimpleGroup;
-import org.jboss.security.auth.spi.AbstractServerLoginModule;
+import org.jboss.security.negotiation.common.CommonLoginModule;
 import org.jboss.security.negotiation.prototype.DecodeAction;
 
 /**
@@ -71,7 +71,7 @@ import org.jboss.security.negotiation.prototype.DecodeAction;
  * @author darran.lofthouse@jboss.com
  * @since 3rd July 2008
  */
-public class AdvancedLdapLoginModule extends AbstractServerLoginModule
+public class AdvancedLdapLoginModule extends CommonLoginModule
 {
 
    /*
@@ -176,12 +176,6 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
    /*
     * Module State 
     */
-   /** The login identity */
-   private Principal identity;
-
-   /** The proof of login identity */
-   private char[] credential;
-
    private SimpleGroup userRoles = new SimpleGroup("Roles");
 
    private Set<String> processedRoleDNs = new HashSet<String>();
@@ -293,12 +287,6 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
    }
 
    @Override
-   protected Principal getIdentity()
-   {
-      return identity;
-   }
-
-   @Override
    protected Group[] getRoleSets() throws LoginException
    {
       Group[] roleSets =
@@ -325,7 +313,7 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
             }
             catch (Exception e)
             {
-               LoginException le = new LoginException("Unabe to decode bindCredential");
+               LoginException le = new LoginException("Unable to decode bindCredential");
                le.initCause(e);
                throw le;
             }
@@ -370,57 +358,6 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
       }
 
       return Boolean.valueOf(super.loginOk);
-   }
-
-   /**
-    * Either retrieve existing values based on useFirstPass or use 
-    * CallBackHandler to obtain the values.
-    */
-   protected void processIdentityAndCredential() throws LoginException
-   {
-      if (super.login() == true)
-      {
-         Object username = sharedState.get("javax.security.auth.login.name");
-         if (username instanceof Principal)
-            identity = (Principal) username;
-         else
-         {
-            String name = username.toString();
-            try
-            {
-               identity = createIdentity(name);
-            }
-            catch (Exception e)
-            {
-               log.debug("Failed to create principal", e);
-               throw new LoginException("Failed to create principal: " + e.getMessage());
-            }
-         }
-         // We have no further use for a credential so no need to retrieve it.
-      }
-      else
-      {
-         try
-         {
-            NameCallback nc = new NameCallback("User name: ", "guest");
-            PasswordCallback pc = new PasswordCallback("Password: ", false);
-            Callback[] callbacks =
-            {nc, pc};
-
-            callbackHandler.handle(callbacks);
-            String username = nc.getName();
-            identity = createIdentity(username);
-            credential = pc.getPassword();
-            pc.clearPassword();
-         }
-         catch (Exception e)
-         {
-            LoginException le = new LoginException("Unable to obtain username/credential");
-            le.initCause(e);
-            throw le;
-         }
-
-      }
    }
 
    protected LdapContext constructLdapContext(String dn, Object credential, String authentication)
@@ -540,6 +477,7 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
 
    protected void authenticate(String userDN) throws LoginException
    {
+      char[] credential = getCredential();
       if (credential.length == 0)
       {
          if (allowEmptyPassword == false)

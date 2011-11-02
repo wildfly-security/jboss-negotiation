@@ -1,0 +1,31 @@
+<html>
+  <head>
+    <title>Form Authentication</title>
+  </head>
+  <body>
+    <h1>Form Authentication</h1>
+    
+    <p>If this page is displayed your web broweser is not taking part in the 
+       SPNEGO process, a username and password can be entered instead to fall 
+       back to username/password authentication.</p>
+    <hr>
+    <p>   
+    <form method=post action="j_security_check" >
+      <table>
+        <tr>
+          <td>Username</td><td>-</td>
+          <td><input type="text"  name= "j_username" ></td>
+        </tr>
+        <tr>
+          <td>Password</td><td>-</td>
+          <td><input type="password"  name= "j_password" ></td>
+        </tr>
+        <tr>
+          <td colspan="2"><input type="submit"></td>
+        </tr>              
+      </table>
+    </form>
+    </p> 
+    <hr>
+  </body>
+</html>

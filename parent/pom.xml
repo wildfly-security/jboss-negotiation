@@ -7,7 +7,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jboss.security</groupId>
   <artifactId>jboss-negotiation-project</artifactId>
-  <version>2.0.3.SP</version>
+  <version>2.0.5.GA-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>JBoss Negotiation Parent</name>
   <url>http://www.jboss.com</url>
@@ -56,28 +56,6 @@
         <filtering>true</filtering>
       </testResource>
     </testResources>
-    <plugins>
-      <plugin>
-        <groupId>org.jboss.maven.plugins</groupId>
-        <artifactId>maven-jboss-deploy-plugin</artifactId>
-        <version>1.6</version>
-        <executions>
-          <execution>
-            <id>jboss-deploy</id>
-            <goals>
-              <goal>jboss-deploy</goal>
-            </goals>
-            <phase>deploy</phase>
-          </execution>
-       </executions>
-       <configuration>
-         <groupId>jboss</groupId>
-         <license>lgpl</license>
-         <jbossDeployRoot>${jboss.repository.root}</jbossDeployRoot>
-         <removeArtifactVersion>true</removeArtifactVersion>
-       </configuration>
-      </plugin>
-    </plugins>
   </build>
   <repositories>
     <repository>
@@ -90,6 +68,14 @@
       </snapshots>
     </repository>
   </repositories>
+
+  <distributionManagement>
+    <repository>
+      <id>jboss-releases-repository</id>
+      <name>JBoss Releases Repository</name>
+      <url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
 
   <dependencyManagement>
     <!-- The parent pom manages the inter-dependencies of the modules. -->

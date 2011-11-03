@@ -21,7 +21,7 @@
   <properties>                
     <version.jboss-web>2.1.3.GA</version.jboss-web>            
     <version.log4j.log4j>1.2.14</version.log4j.log4j>
-    <version.jbosssx>2.0.4.GA</version.jbosssx>    
+    <version.jbosssx>2.0.3.SP1</version.jbosssx>    
     <version.org.jboss.jboss-common-core>2.2.14.GA</version.org.jboss.jboss-common-core>
     <version.org.jboss.jbossas.jboss-as-security>5.1.0.GA</version.org.jboss.jbossas.jboss-as-security>        
     <version.junit>3.8.1</version.junit>

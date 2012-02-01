@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jboss.security</groupId>
   <artifactId>jboss-negotiation</artifactId>
-  <packaging>pom</packaging>
+  <packaging>jar</packaging>
   <name>JBoss Negotiation Assembly</name>
   <url>http://labs.jboss.org/portal/jbosssecurity/</url>
   <description>JBoss Security is a cross cutting project that handles security for the JEMS projects</description>

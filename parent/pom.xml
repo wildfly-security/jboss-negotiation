@@ -21,7 +21,6 @@
   </scm>
   <properties>
     <version.junit>4.8.2</version.junit>
-    <version.maven-assembly-plugin>2.2.1</version.maven-assembly-plugin>
     <version.org.jboss.logging.jboss-logging>3.0.0.Beta5</version.org.jboss.logging.jboss-logging>
     <version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.0_spec>1.0.0.Final</version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.0_spec>
     <version.org.jboss.web>7.0.0.CR2</version.org.jboss.web>

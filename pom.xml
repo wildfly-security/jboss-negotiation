@@ -21,7 +21,6 @@
      <module>jboss-negotiation-ntlm</module>
      <module>jboss-negotiation-spnego</module>
      <module>jboss-negotiation-toolkit</module>
-     <module>assembly</module>
   </modules>
    <scm>
     <connection>scm:svn:http://anonsvn.jboss.org/repos/jbossas/projects/security/security-negotiation/trunk</connection>

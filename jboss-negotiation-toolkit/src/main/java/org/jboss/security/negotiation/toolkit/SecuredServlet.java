@@ -34,7 +34,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.ietf.jgss.GSSCredential;
 import org.jboss.security.SecurityAssociation;
+import org.jboss.security.negotiation.DelegationCredentialContext;
 
 /**
  * A simple servlet to be secured and output information on the
@@ -73,6 +75,17 @@ public class SecuredServlet extends HttpServlet
 
       writer.println("    <h5>Subject</h5>");
       writeObject(SecurityAssociation.getSubject(), writer);
+      
+      writer.println("    <h5>Delegation Credential</h5>");
+      GSSCredential credential = DelegationCredentialContext.getDelegCredential();
+      if (credential == null)
+      {
+         writer.println("    <p>None</p>");
+      }
+      else
+      {
+         writeObject(credential, writer);
+      }
 
       writer.println("  </body>");
       writer.println("</html>");

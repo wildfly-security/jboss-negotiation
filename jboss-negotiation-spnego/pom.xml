@@ -39,8 +39,8 @@
 
     <!-- Global dependencies -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
+      <groupId>org.jboss.logging</groupId>
+      <artifactId>jboss-logging-spi</artifactId>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>
@@ -49,18 +49,19 @@
     <dependency>
       <groupId>org.jboss</groupId>
       <artifactId>jboss-common-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.logging</groupId>
-      <artifactId>jboss-logging</artifactId>
-    </dependency>
+    </dependency>            
     <dependency>
       <groupId>org.jboss.security</groupId>
       <artifactId>jbosssx</artifactId>
-    </dependency>
+    </dependency>    
     <dependency>
-      <groupId>org.jboss.web</groupId>
+      <groupId>jboss.web</groupId>
       <artifactId>jbossweb</artifactId>
+    </dependency>    
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

@@ -74,7 +74,7 @@ public class NegotiationAuthenticator extends FormAuthenticator
    }
 
    @Override
-   public boolean authenticate(final Request request, final HttpServletResponse response, final LoginConfig config)
+   public boolean authenticate(final Request request, final Response response, final LoginConfig config)
          throws IOException
    {
 

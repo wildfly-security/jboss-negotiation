@@ -63,17 +63,16 @@
       <groupId>org.jboss</groupId>
       <artifactId>jboss-common-core</artifactId>
       <scope>provided</scope>
-    </dependency>
+    </dependency>    
+    <dependency>
+      <groupId>jboss.web</groupId>
+      <artifactId>servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>    
     <dependency>
       <groupId>org.jboss.security</groupId>
       <artifactId>jbosssx</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.spec.javax.servlet</groupId>
-      <artifactId>jboss-servlet-api_3.0_spec</artifactId>
-      <scope>provided</scope>
-    </dependency>
-
+    </dependency>                
   </dependencies>
 </project>

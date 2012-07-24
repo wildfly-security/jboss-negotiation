@@ -44,20 +44,24 @@
     </dependency>
     <dependency>
       <groupId>org.jboss.jbossas</groupId>
-      <artifactId>jboss-as-security</artifactId>
+      <artifactId>jboss-as-j2se</artifactId>        
+    </dependency>        
+    <dependency>
+      <groupId>org.jboss.jbossas</groupId>
+      <artifactId>jboss-as-security</artifactId>       
     </dependency>
+    <dependency>
+      <groupId>org.jboss.jbossas</groupId>
+      <artifactId>jboss-as-system-jmx</artifactId>       
+    </dependency>    
     <dependency>
       <groupId>org.jboss.logging</groupId>
-      <artifactId>jboss-logging</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jboss.mx</groupId>
-      <artifactId>jboss-j2se</artifactId>
+      <artifactId>jboss-logging-spi</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jboss.security</groupId>
       <artifactId>jbosssx</artifactId>
-    </dependency>
+    </dependency>            
   </dependencies>
 
 </project>

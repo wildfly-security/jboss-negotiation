@@ -39,15 +39,20 @@ public abstract class MessageFactory
    private static final String NTLM_MESSAGE_FACTORY_NAME = "org.jboss.security.negotiation.ntlm.NTLMMessageFactory";
 
    private static final String SPNEGO_MESSAGE_FACTORY_NAME = "org.jboss.security.negotiation.spnego.SPNEGOMessageFactory";
+   
+   private static final String KERBEROS_MESSAGE_FACTORY_NAME = "org.jboss.security.negotiation.spnego.KerberosMessageFactory";
 
    private static final Class<MessageFactory> NTLM_MESSAGE_FACTORY;
 
    private static final Class<MessageFactory> SPNEGO_MESSAGE_FACTORY;
+   
+   private static final Class<MessageFactory> KERBEROS_MESSAGE_FACTORY;
 
    static
    {
       NTLM_MESSAGE_FACTORY = loadClass(NTLM_MESSAGE_FACTORY_NAME);
       SPNEGO_MESSAGE_FACTORY = loadClass(SPNEGO_MESSAGE_FACTORY_NAME);
+      KERBEROS_MESSAGE_FACTORY = loadClass(KERBEROS_MESSAGE_FACTORY_NAME);
    }
 
    /**
@@ -79,22 +84,29 @@ public abstract class MessageFactory
    {
       MessageFactory ntlm = newInstance(NTLM_MESSAGE_FACTORY);
       MessageFactory spnego = newInstance(SPNEGO_MESSAGE_FACTORY);
+      MessageFactory kerberos = newInstance(KERBEROS_MESSAGE_FACTORY);
 
-      if (ntlm != null && spnego != null)
+      List<MessageFactory> delegates = new ArrayList<MessageFactory>(3);
+      if (ntlm != null)
       {
-         List<MessageFactory> delegates = new ArrayList<MessageFactory>(2);
-         delegates.add(spnego);
          delegates.add(ntlm);
+      }
+      if (spnego != null)
+      {
+         delegates.add(spnego);
+      }
+      if (kerberos != null)
+      {
+         delegates.add(kerberos);
+      }
 
+      if (delegates.size() == 1)
+      {
+         return delegates.get(0);
+      }
+      else if (delegates.size() > 1)
+      {
          return new DelegatingMessageFactory(delegates);
-      }
-      else if (ntlm != null)
-      {
-         return ntlm;
-      }
-      else if (spnego != null)
-      {
-         return spnego;
       }
 
       throw new IllegalStateException("No MessageFactories available to instantiate");

@@ -41,15 +41,19 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.Realm;
 import org.apache.catalina.Session;
+import org.apache.catalina.Valve;
 import org.apache.catalina.authenticator.FormAuthenticator;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.deploy.LoginConfig;
+import org.ietf.jgss.GSSContext;
+import org.ietf.jgss.GSSCredential;
+import org.ietf.jgss.GSSException;
 import org.jboss.logging.Logger;
 import org.jboss.security.negotiation.common.MessageTrace;
 import org.jboss.security.negotiation.common.NegotiationContext;
+import org.jboss.servlet.http.HttpEvent;
 import org.picketbox.commons.cipher.Base64;
-
 
 /**
  * An authenticator to manage Negotiation based authentication in connection with the
@@ -66,6 +70,8 @@ public class NegotiationAuthenticator extends FormAuthenticator
    private static final String NEGOTIATE = "Negotiate";
 
    private static final String NEGOTIATION_CONTEXT = "NEGOTIATION_CONTEXT";
+   
+   private static final String DELEGATION_CREDENTIAL = "DELEGATION_CREDENTIAL";
 
    private static final String FORM_METHOD = "FORM";
 
@@ -222,6 +228,24 @@ public class NegotiationAuthenticator extends FormAuthenticator
       }
       else
       {
+         Object schemeContext = negotiationContext.getSchemeContext();
+         if (schemeContext instanceof GSSContext)
+         {
+            GSSContext gssContext = (GSSContext) schemeContext;
+            if (gssContext.getCredDelegState())
+            {
+               try
+               {
+                  GSSCredential delegCredential = gssContext.getDelegCred();
+                  session.setNote(DELEGATION_CREDENTIAL, delegCredential);
+               }
+               catch (GSSException e)
+               {
+                  log.warn("Unable to obtain delegation credential.", e);
+               }
+            }
+         }
+         
          register(request, response, principal, authenticationMethod, username, null);
       }
 
@@ -264,4 +288,69 @@ public class NegotiationAuthenticator extends FormAuthenticator
 
       response.flushBuffer();
    }
+
+   @Override
+   public void setNext(final Valve nextValve)
+   {
+      super.setNext(new Valve()
+      {
+
+         public String getInfo()
+         {
+            return nextValve.getInfo();
+         }
+
+         public Valve getNext()
+         {
+            return nextValve.getNext();
+         }
+
+         public void setNext(Valve valve)
+         {
+            nextValve.setNext(valve);
+
+         }
+
+         public void backgroundProcess()
+         {
+            nextValve.backgroundProcess();
+         }
+
+         public void invoke(Request request, Response response) throws IOException, ServletException
+         {
+            Session session = request.getSessionInternal();
+            GSSCredential credential = (GSSCredential) session.getNote(DELEGATION_CREDENTIAL);
+            try
+            {
+               DelegationCredentialManager.setDelegationCredential(credential);
+               nextValve.invoke(request, response);
+            }
+            finally
+            {
+               DelegationCredentialManager.removeDelegationCredential();
+            }
+         }
+
+         public void event(Request request, Response response, HttpEvent event) throws IOException, ServletException
+         {
+            nextValve.event(request, response, event);
+         }
+      });
+   }
+
+   private static class DelegationCredentialManager extends DelegationCredentialContext
+   {
+
+      private static void setDelegationCredential(final GSSCredential credential)
+      {
+         currentCredential.set(credential);
+      }
+
+      private static void removeDelegationCredential()
+      {
+         currentCredential.remove();
+      }
+
+   }
+
 }

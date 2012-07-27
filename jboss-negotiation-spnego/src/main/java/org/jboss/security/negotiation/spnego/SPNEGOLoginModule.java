@@ -376,7 +376,7 @@ public class SPNEGOLoginModule extends CommonLoginModule
                log.debug("Creating new GSSContext.");
                GSSManager manager = GSSManager.getInstance();
                gssContext = manager.createContext((GSSCredential) null);
-
+               
                negotiationContext.setSchemeContext(gssContext);
             }
 

@@ -36,11 +36,12 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.ietf.jgss.GSSCredential;
 import org.jboss.security.SecurityContextAssociation;
 import org.jboss.security.SubjectInfo;
 import org.jboss.security.identity.Identity;
 import org.jboss.security.identity.Role;
-import org.jboss.security.identity.RoleGroup;
+import org.jboss.security.negotiation.DelegationCredentialContext;
 
 //import org.jboss.security.SecurityAssociation;
 
@@ -81,6 +82,17 @@ public class SecuredServlet extends HttpServlet
        for (Identity current : identities) {
            writer.println(" " + current.getName() + "<br>");
        }
+      
+      writer.println("    <h5>Delegation Credential</h5>");
+      GSSCredential credential = DelegationCredentialContext.getDelegCredential();
+      if (credential == null)
+      {
+         writer.println("    <p>None</p>");
+      }
+      else
+      {
+         writeObject(credential, writer);
+      }
 
        writer.println("    <h5>Subject</h5>");
        writeObject(info.getAuthenticatedSubject(), writer);

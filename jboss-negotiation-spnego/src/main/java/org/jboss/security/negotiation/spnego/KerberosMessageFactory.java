@@ -1,5 +1,5 @@
 /*
- * Copyright © 2008  Red Hat Middleware, LLC. or third-party contributors as indicated 
+ * Copyright © 2012  Red Hat Middleware, LLC. or third-party contributors as indicated 
  * by the @author tags or express copyright attribution statements applied by the 
  * authors. All third-party contributions are distributed under license by Red Hat 
  * Middleware LLC.
@@ -16,7 +16,7 @@
 
 package org.jboss.security.negotiation.spnego;
 
-
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -27,20 +27,22 @@ import org.jboss.security.negotiation.Constants;
 import org.jboss.security.negotiation.MessageFactory;
 import org.jboss.security.negotiation.NegotiationMessage;
 import org.jboss.security.negotiation.spnego.encoding.NegTokenInitDecoder;
-import org.jboss.security.negotiation.spnego.encoding.NegTokenTargDecoder;
 
 /**
- * The message factory for reading SPNEGO messages from InputStreams and
+ * The message factory for reading Kerberos messages from InputStreams and
  * creating the Java representation of the message.
  * 
+ * The created messages are only a simple wrapper around the byte[] representation
+ * to allow the message to be passed for direct use by the login module
+ * 
  * @author darran.lofthouse@jboss.com
- * @since 10th August 2008
+ * @since 24th July 2012
  * @version $Revision$
  */
-public class SPNEGOMessageFactory extends MessageFactory
+public class KerberosMessageFactory extends MessageFactory
 {
 
-   private static final Logger log = Logger.getLogger(SPNEGOMessageFactory.class);
+   private static final Logger log = Logger.getLogger(KerberosMessageFactory.class);
 
    @Override
    public boolean accepts(InputStream in) throws IOException
@@ -59,12 +61,9 @@ public class SPNEGOMessageFactory extends MessageFactory
             int length = NegTokenInitDecoder.readLength(in);
             Oid messageId = new Oid(in);
 
-            return Constants.SPNEGO.equals(messageId);
+            return Constants.KERBEROS_V5.equals(messageId);
          }
-         else if (dataRead == 0xa1)
-         {
-            return true;
-         }
+
          return false;
 
       }
@@ -84,30 +83,19 @@ public class SPNEGOMessageFactory extends MessageFactory
    {
       if (accepts(in) == true)
       {
-         in.mark(1);
-         int dataRead = in.read();
-         in.reset();
-
-         try
+         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+         byte[] temp = new byte[256];
+         int count = -1;
+         while ((count = in.read(temp)) > -1)
          {
-            if (dataRead == 0x60)
-            {
-               return NegTokenInitDecoder.decode(in);
-            }
-            // The accepts method will have confirmed it is either 0x60 or 0xa1
-            return NegTokenTargDecoder.decode(in);
+            baos.write(temp, 0, count);
          }
-         catch (GSSException e)
-         {
-            IOException ioe = new IOException("Unable to createMessage");
-            ioe.initCause(e);
 
-            throw ioe;
-         }
+         return new KerberosMessage(Constants.KERBEROS_V5, baos.toByteArray());
       }
       else
       {
-         throw new IllegalArgumentException("InputStream does not contain SPNEGO message.");
+         throw new IllegalArgumentException("InputStream does not contain Kerberos message.");
       }
    }
 

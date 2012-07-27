@@ -41,6 +41,7 @@ import org.jboss.security.negotiation.NegotiationMessage;
 import org.jboss.security.negotiation.OidNameUtil;
 import org.jboss.security.negotiation.common.DebugHelper;
 import org.jboss.security.negotiation.ntlm.encoding.NegotiateMessage;
+import org.jboss.security.negotiation.spnego.KerberosMessage;
 import org.jboss.security.negotiation.spnego.encoding.NegTokenInit;
 import org.jboss.security.negotiation.spnego.encoding.NegTokenTarg;
 import org.picketbox.commons.cipher.Base64;
@@ -123,7 +124,7 @@ public class BasicNegotiationServlet extends HttpServlet
                return;
             }
 
-            if (message instanceof NegTokenInit)
+            if (message instanceof NegTokenInit || message instanceof KerberosMessage)
             {
                response = message;
             }
@@ -226,7 +227,13 @@ public class BasicNegotiationServlet extends HttpServlet
          }
          writer.println("<br>");
       }
-
+      else if (response instanceof KerberosMessage)
+      {
+         writer.println("<h3>KerberosV5</h3>");
+         writer.print("<b>Message Oid - </b>");
+         writer.print(OidNameUtil.getName(((KerberosMessage) response).getMessageOid()));
+         writer.println("<br>");
+      }
    }
 
 }

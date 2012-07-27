@@ -43,6 +43,7 @@ import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSManager;
 import org.ietf.jgss.Oid;
 import org.jboss.security.SimpleGroup;
+import org.jboss.security.negotiation.Constants;
 import org.jboss.security.negotiation.NegotiationMessage;
 import org.jboss.security.negotiation.common.CommonLoginModule;
 import org.jboss.security.negotiation.common.NegotiationContext;
@@ -223,7 +224,7 @@ public class SPNEGOLoginModule extends CommonLoginModule
    private Object spnegoLogin(NegotiationContext negotiationContext) throws LoginException
    {
       NegotiationMessage requestMessage = negotiationContext.getRequestMessage();
-      if (requestMessage instanceof SPNEGOMessage == false)
+      if (requestMessage instanceof SPNEGOMessage == false && requestMessage instanceof KerberosMessage == false)
       {
          String message = "Unsupported negotiation mechanism '" + requestMessage.getMessageType() + "'.";
          log.warn(message);
@@ -356,6 +357,12 @@ public class SPNEGOLoginModule extends CommonLoginModule
 
                gssToken = negTokenTarg.getResponseToken();
             }
+            else if (requestMessage instanceof KerberosMessage)
+            {
+               KerberosMessage kerberosMessage = (KerberosMessage) requestMessage;
+               
+               gssToken = kerberosMessage.getToken();
+            }
 
             Object schemeContext = negotiationContext.getSchemeContext();
             if (schemeContext != null && schemeContext instanceof GSSContext == false)
@@ -397,10 +404,20 @@ public class SPNEGOLoginModule extends CommonLoginModule
 
             if (respToken != null)
             {
-               NegTokenTarg negTokenTarg = new NegTokenTarg();
-               negTokenTarg.setResponseToken(respToken);
+               NegotiationMessage response;
+               if (requestMessage instanceof KerberosMessage)
+               {
+                  response = new KerberosMessage(Constants.KERBEROS_V5, respToken);
+               }
+               else
+               {
+                  NegTokenTarg negTokenTarg = new NegTokenTarg();
+                  negTokenTarg.setResponseToken(respToken);
 
-               negotiationContext.setResponseMessage(negTokenTarg);
+                  response = negTokenTarg;
+               }
+
+               negotiationContext.setResponseMessage(response);
             }
 
             if (gssContext.isEstablished() == false)

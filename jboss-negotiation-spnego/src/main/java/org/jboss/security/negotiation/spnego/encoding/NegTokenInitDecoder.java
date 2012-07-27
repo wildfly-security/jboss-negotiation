@@ -22,6 +22,7 @@ import java.io.InputStream;
 
 import org.ietf.jgss.GSSException;
 import org.ietf.jgss.Oid;
+import org.jboss.security.negotiation.common.DebugHelper;
 
 /**
  * NegTokenInit Decoder.
@@ -100,7 +101,7 @@ public class NegTokenInitDecoder extends NegTokenDecoder
                decodeMechListMIC(is, negTokenInit);
                break;
             default :
-               throw new IOException("Unexpected message type");
+               throw new IOException("Unexpected message type" + DebugHelper.convertToHex(new byte[] {sequenceType}));
          }
       }
 

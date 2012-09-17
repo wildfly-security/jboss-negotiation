@@ -205,6 +205,23 @@ public class SPNEGOLoginModule extends CommonLoginModule
       lc.login();
 
       Subject userSubject = lc.getSubject();
+
+      Principal identity = getIdentityFromSubject(userSubject);
+      setIdentity(identity);
+
+      return Boolean.TRUE;
+   }
+
+   /**
+    * Obtaining identity from subject. This implementation will always use first principal of given subject
+    * but functionality can be overridden by subclasses.
+    *
+    * @param userSubject subject
+    * @return identity
+    * @throws LoginException
+    */
+   protected Principal getIdentityFromSubject(Subject userSubject) throws LoginException
+   {
       Set principals = userSubject.getPrincipals();
       if (principals.isEmpty())
       {
@@ -216,9 +233,7 @@ public class SPNEGOLoginModule extends CommonLoginModule
       }
 
       Principal identity = (Principal) principals.iterator().next();
-      setIdentity(identity);
-
-      return Boolean.TRUE;
+      return identity;
    }
 
    private Object spnegoLogin(NegotiationContext negotiationContext) throws LoginException

@@ -70,8 +70,17 @@ public abstract class MessageFactory
       }
       catch (Exception e)
       {
-         if (log.isTraceEnabled())
-            log.trace("Unable to load class '" + classname + "'", e);
+         // Fallback to classloader of current class if Thread context classloader failed
+         try
+         {
+            classLoader = MessageFactory.class.getClassLoader();
+            clazz = (Class<MessageFactory>) classLoader.loadClass(classname);
+         }
+         catch (Exception e2)
+         {
+            if (log.isTraceEnabled())
+               log.trace("Unable to load class '" + classname + "'", e2);
+         }
       }
 
       return clazz;

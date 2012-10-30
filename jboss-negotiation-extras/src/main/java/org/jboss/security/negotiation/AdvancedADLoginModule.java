@@ -24,6 +24,7 @@ package org.jboss.security.negotiation;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.naming.NamingEnumeration;
@@ -32,6 +33,8 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchResult;
 import javax.naming.ldap.LdapContext;
+import javax.security.auth.Subject;
+import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginException;
 
 import org.picketbox.commons.cipher.Base64;
@@ -40,14 +43,25 @@ public class AdvancedADLoginModule extends AdvancedLdapLoginModule
 {
 
    private static final String PRIMARY_GROUP_ID = "primaryGroupID";
-
    private static final String OBJECT_SID = "objectSid";
+
+   private static final String[] ALL_VALID_OPTIONS =
+   {
+      PRIMARY_GROUP_ID,OBJECT_SID
+   };
 
    /*
     * The rolesSearch method is called recursively, we need to ensure it is only called once 
     * as we are only looking for the primary group of the user.
     */
    private boolean skipPrimaryGroupSearch = false;
+
+   @Override
+   public void initialize(Subject subject, CallbackHandler callbackHandler, Map sharedState, Map options)
+   {
+      addValidOptions(ALL_VALID_OPTIONS);
+      super.initialize(subject, callbackHandler, sharedState, options);
+   }
 
    @Override
    protected Properties createBaseProperties()

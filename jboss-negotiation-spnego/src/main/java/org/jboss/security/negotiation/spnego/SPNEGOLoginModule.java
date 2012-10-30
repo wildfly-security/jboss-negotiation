@@ -74,6 +74,11 @@ public class SPNEGOLoginModule extends CommonLoginModule
    // The security domain to delegate username/password authentication to.
    private static final String USERNAME_PASSWORD_DOMAIN = "usernamePasswordDomain";
 
+   private static final String[] ALL_VALID_OPTIONS =
+   {
+      REMOVE_REALM_FROM_PRINCIPAL,SERVER_SECURITY_DOMAIN,USERNAME_PASSWORD_DOMAIN
+   };
+
    /*
     *  General Constants
     */
@@ -103,6 +108,7 @@ public class SPNEGOLoginModule extends CommonLoginModule
    public void initialize(final Subject subject, final CallbackHandler callbackHandler, final Map sharedState,
          final Map options)
    {
+      addValidOptions(ALL_VALID_OPTIONS);
       super.initialize(subject, callbackHandler, sharedState, options);
       String temp;
       // Which security domain to authenticate the server.

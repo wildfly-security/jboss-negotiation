@@ -77,33 +77,22 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
 
    // Search Context Settings
    private static final String BIND_AUTHENTICATION = "bindAuthentication";
-
    private static final String BIND_DN = "bindDN";
-
    private static final String BIND_CREDENTIAL = "bindCredential";
-
    private static final String SECURITY_DOMAIN = "jaasSecurityDomain";
 
    // User Search Settings
    private static final String BASE_CTX_DN = "baseCtxDN";
-
    private static final String BASE_FILTER = "baseFilter";
-
    private static final String SEARCH_TIME_LIMIT = "searchTimeLimit";
 
    // Role Search Settings
    private static final String ROLES_CTS_DN = "rolesCtxDN";
-
    private static final String ROLE_FILTER = "roleFilter";
-
    private static final String RECURSE_ROLES = "recurseRoles";
-
    private static final String ROLE_ATTRIBUTE_ID = "roleAttributeID";
-
    private static final String ROLE_ATTRIBUTE_IS_DN = "roleAttributeIsDN";
-
    private static final String ROLE_NAME_ATTRIBUTE_ID = "roleNameAttributeID";
-
    private static final String ROLE_SEARCH_SCOPE = "searchScope";
 
    // Authentication Settings
@@ -112,24 +101,40 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
    /*
     * Other Constants
     */
-
    private static final String AUTH_TYPE_GSSAPI = "GSSAPI";
-
    private static final String AUTH_TYPE_SIMPLE = "simple";
-
    private static final String DEFAULT_LDAP_CTX_FACTORY = "com.sun.jndi.ldap.LdapCtxFactory";
-
    private static final String DEFAULT_URL = "ldap://localhost:389";
-
    private static final String DEFAULT_SSL_URL = "ldap://localhost:686";
-
    private static final String PROTOCOL_SSL = "SSL";
-
    private static final String OBJECT_SCOPE = "OBJECT_SCOPE";
-
    private static final String ONELEVEL_SCOPE = "ONELEVEL_SCOPE";
-
    private static final String SUBTREE_SCOPE = "SUBTREE_SCOPE";
+
+
+   private static final String[] ALL_VALID_OPTIONS =
+   {
+      BIND_AUTHENTICATION,BIND_DN,BIND_CREDENTIAL,SECURITY_DOMAIN,
+      BASE_CTX_DN,BASE_FILTER,SEARCH_TIME_LIMIT,
+      ROLES_CTS_DN,ROLE_FILTER,RECURSE_ROLES,ROLE_ATTRIBUTE_ID,ROLE_ATTRIBUTE_IS_DN,ROLE_NAME_ATTRIBUTE_ID,ROLE_SEARCH_SCOPE,
+      ALLOW_EMPTY_PASSWORD,
+      
+      Context.INITIAL_CONTEXT_FACTORY,
+      Context.OBJECT_FACTORIES,
+      Context.STATE_FACTORIES,
+      Context.URL_PKG_PREFIXES,
+      Context.PROVIDER_URL,
+      Context.DNS_URL,
+      Context.AUTHORITATIVE,
+      Context.BATCHSIZE,
+      Context.REFERRAL,
+      Context.SECURITY_PROTOCOL,
+      Context.SECURITY_AUTHENTICATION,
+      Context.SECURITY_PRINCIPAL,
+      Context.SECURITY_CREDENTIALS,
+      Context.LANGUAGE,
+      Context.APPLET 
+   };
 
    /*
     * Configuration Options
@@ -180,6 +185,7 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
    @Override
    public void initialize(Subject subject, CallbackHandler handler, Map sharedState, Map options)
    {
+      addValidOptions(ALL_VALID_OPTIONS);
       super.initialize(subject, handler, sharedState, options);
 
       // Search Context Settings

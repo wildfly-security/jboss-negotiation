@@ -45,11 +45,6 @@ public class AdvancedADLoginModule extends AdvancedLdapLoginModule
    private static final String PRIMARY_GROUP_ID = "primaryGroupID";
    private static final String OBJECT_SID = "objectSid";
 
-   private static final String[] ALL_VALID_OPTIONS =
-   {
-      PRIMARY_GROUP_ID,OBJECT_SID
-   };
-
    /*
     * The rolesSearch method is called recursively, we need to ensure it is only called once 
     * as we are only looking for the primary group of the user.
@@ -59,7 +54,6 @@ public class AdvancedADLoginModule extends AdvancedLdapLoginModule
    @Override
    public void initialize(Subject subject, CallbackHandler callbackHandler, Map sharedState, Map options)
    {
-      addValidOptions(ALL_VALID_OPTIONS);
       super.initialize(subject, callbackHandler, sharedState, options);
    }
 
@@ -67,7 +61,7 @@ public class AdvancedADLoginModule extends AdvancedLdapLoginModule
    protected Properties createBaseProperties()
    {
       Properties env = super.createBaseProperties();
-      env.put("java.naming.ldap.attributes.binary", "objectSid");
+      env.put("java.naming.ldap.attributes.binary", OBJECT_SID);
       return env;
    }
 

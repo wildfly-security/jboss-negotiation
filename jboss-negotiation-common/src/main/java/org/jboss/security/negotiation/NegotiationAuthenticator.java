@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source.
- * 
+ *
  * Copyright 2007, Red Hat Middleware LLC, and individual contributors
  * as indicated by the @author tags. See the copyright.txt file in the
  * distribution for a full listing of individual contributors.
@@ -58,7 +58,7 @@ import org.picketbox.commons.cipher.Base64;
 /**
  * An authenticator to manage Negotiation based authentication in connection with the
  * Negotiation login module.
- * 
+ *
  * @author darran.lofthouse@jboss.com
  * @version $Revision$
  */
@@ -70,7 +70,7 @@ public class NegotiationAuthenticator extends FormAuthenticator
    private static final String NEGOTIATE = "Negotiate";
 
    private static final String NEGOTIATION_CONTEXT = "NEGOTIATION_CONTEXT";
-   
+
    private static final String DELEGATION_CREDENTIAL = "DELEGATION_CREDENTIAL";
 
    private static final String FORM_METHOD = "FORM";
@@ -127,11 +127,11 @@ public class NegotiationAuthenticator extends FormAuthenticator
 
          session.setNote(FORM_PRINCIPAL_NOTE, principal);
          session.setNote(SESS_USERNAME_NOTE, username);
-         session.setNote(SESS_PASSWORD_NOTE, password);         
+         session.setNote(SESS_PASSWORD_NOTE, password);
 
          register(request, response, principal, FORM_METHOD, username, password);
          response.sendRedirect(response.encodeRedirectURL(requestURI));
-         
+
          return false;
       }
 
@@ -245,7 +245,7 @@ public class NegotiationAuthenticator extends FormAuthenticator
                }
             }
          }
-         
+
          register(request, response, principal, authenticationMethod, username, null);
       }
 
@@ -292,50 +292,60 @@ public class NegotiationAuthenticator extends FormAuthenticator
    @Override
    public void setNext(final Valve nextValve)
    {
-      super.setNext(new Valve()
+      super.setNext(new WrapperValve(nextValve));
+   }
+
+   private static class WrapperValve implements Valve
+   {
+
+      private Valve nextValve;
+
+      private WrapperValve(final Valve nextValve)
       {
+         this.nextValve = nextValve;
+      }
 
-         public String getInfo()
+      public String getInfo()
+      {
+         return nextValve.getInfo();
+      }
+
+      public Valve getNext()
+      {
+         return nextValve;
+      }
+
+      public void setNext(Valve valve)
+      {
+         nextValve = valve;
+
+      }
+
+      public void backgroundProcess()
+      {
+         nextValve.backgroundProcess();
+      }
+
+      public void invoke(Request request, Response response) throws IOException, ServletException
+      {
+         Session session = request.getSessionInternal();
+         GSSCredential credential = (GSSCredential) session.getNote(DELEGATION_CREDENTIAL);
+         try
          {
-            return nextValve.getInfo();
+            DelegationCredentialManager.setDelegationCredential(credential);
+            nextValve.invoke(request, response);
          }
-
-         public Valve getNext()
+         finally
          {
-            return nextValve.getNext();
+            DelegationCredentialManager.removeDelegationCredential();
          }
+      }
 
-         public void setNext(Valve valve)
-         {
-            nextValve.setNext(valve);
+      public void event(Request request, Response response, HttpEvent event) throws IOException, ServletException
+      {
+         nextValve.event(request, response, event);
+      }
 
-         }
-
-         public void backgroundProcess()
-         {
-            nextValve.backgroundProcess();
-         }
-
-         public void invoke(Request request, Response response) throws IOException, ServletException
-         {
-            Session session = request.getSessionInternal();
-            GSSCredential credential = (GSSCredential) session.getNote(DELEGATION_CREDENTIAL);
-            try
-            {
-               DelegationCredentialManager.setDelegationCredential(credential);
-               nextValve.invoke(request, response);
-            }
-            finally
-            {
-               DelegationCredentialManager.removeDelegationCredential();
-            }
-         }
-
-         public void event(Request request, Response response, HttpEvent event) throws IOException, ServletException
-         {
-            nextValve.event(request, response, event);
-         }
-      });
    }
 
    private static class DelegationCredentialManager extends DelegationCredentialContext

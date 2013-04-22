@@ -643,7 +643,7 @@ public class AdvancedLdapLoginModule extends AbstractServerLoginModule
                String roleDN = "\"" + baseRoleDN + "\"";
 
                loadRoleByRoleNameAttributeID(searchContext, roleDN);
-               recurseRolesSearch(searchContext, baseRoleDN);
+               recurseRolesSearch(searchContext, roleDN);
             }
             else
             {

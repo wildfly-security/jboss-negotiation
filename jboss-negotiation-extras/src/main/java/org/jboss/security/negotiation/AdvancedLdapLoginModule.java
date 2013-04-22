@@ -54,7 +54,7 @@ import org.jboss.security.negotiation.prototype.DecodeAction;
  * Another LDAP LoginModule to take into account requirements
  * for different authentication mechanisms and full support
  * for password-stacking set to useFirstPass.
- * 
+ *
  * This is essentially a complete refactoring of the LdapExtLoginModule
  * but with enough restructuring to separate out the three login steps: -
  *  -1 Find the user
@@ -62,9 +62,9 @@ import org.jboss.security.negotiation.prototype.DecodeAction;
  *  -3 Find the users roles
  * Configuration should allow for any of the three actions to be
  * skipped based on the requirements for the environment making
- * use of this login module. 
+ * use of this login module.
  *
- * 
+ *
  * @author darran.lofthouse@jboss.com
  * @since 3rd July 2008
  */
@@ -72,7 +72,7 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
 {
 
    /*
-    * Configuration Option Constants 
+    * Configuration Option Constants
     */
 
    // Search Context Settings
@@ -118,7 +118,7 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
       BASE_CTX_DN,BASE_FILTER,SEARCH_TIME_LIMIT,
       ROLES_CTS_DN,ROLE_FILTER,RECURSE_ROLES,ROLE_ATTRIBUTE_ID,ROLE_ATTRIBUTE_IS_DN,ROLE_NAME_ATTRIBUTE_ID,ROLE_SEARCH_SCOPE,
       ALLOW_EMPTY_PASSWORD,
-      
+
       Context.INITIAL_CONTEXT_FACTORY,
       Context.OBJECT_FACTORIES,
       Context.STATE_FACTORIES,
@@ -133,7 +133,7 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
       Context.SECURITY_PRINCIPAL,
       Context.SECURITY_CREDENTIALS,
       Context.LANGUAGE,
-      Context.APPLET 
+      Context.APPLET
    };
 
    /*
@@ -176,7 +176,7 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
    protected boolean allowEmptyPassword;
 
    /*
-    * Module State 
+    * Module State
     */
    private SimpleGroup userRoles = new SimpleGroup("Roles");
 
@@ -585,11 +585,10 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
             if (roleAttributeIsDN)
             {
                // Query the roleDN location for the value of roleNameAttributeID
-               String baseRoleDN = roleName;
-               String roleDN = "\"" + baseRoleDN + "\"";
+               String roleDN = "\"" + roleName + "\"";
 
                loadRoleByRoleNameAttributeID(searchContext, roleDN);
-               recurseRolesSearch(searchContext, baseRoleDN);
+               recurseRolesSearch(searchContext, roleDN);
             }
             else
             {
@@ -599,7 +598,7 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
          }
       }
    }
-   
+
    protected void loadRoleByRoleNameAttributeID(LdapContext searchContext, String roleDN)
    {
       String[] returnAttribute =
@@ -626,7 +625,7 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
             log.trace("Failed to query roleNameAttrName", e);
       }
    }
-   
+
    protected void recurseRolesSearch(LdapContext searchContext, String roleDN) throws LoginException
    {
       boolean TRACE = log.isTraceEnabled();

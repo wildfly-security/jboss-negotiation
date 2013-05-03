@@ -35,6 +35,7 @@ import javax.management.ObjectName;
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
+import javax.naming.ReferralException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchControls;
@@ -94,7 +95,8 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
    private static final String ROLE_ATTRIBUTE_IS_DN = "roleAttributeIsDN";
    private static final String ROLE_NAME_ATTRIBUTE_ID = "roleNameAttributeID";
    private static final String ROLE_SEARCH_SCOPE = "searchScope";
-
+   private static final String REFERRAL_USER_ATTRIBUTE_ID_TO_CHECK = "referralUserAttributeIDToCheck";
+   
    // Authentication Settings
    private static final String ALLOW_EMPTY_PASSWORD = "allowEmptyPassword";
 
@@ -117,7 +119,7 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
       BIND_AUTHENTICATION,BIND_DN,BIND_CREDENTIAL,SECURITY_DOMAIN,
       BASE_CTX_DN,BASE_FILTER,SEARCH_TIME_LIMIT,
       ROLES_CTS_DN,ROLE_FILTER,RECURSE_ROLES,ROLE_ATTRIBUTE_ID,ROLE_ATTRIBUTE_IS_DN,ROLE_NAME_ATTRIBUTE_ID,ROLE_SEARCH_SCOPE,
-      ALLOW_EMPTY_PASSWORD,
+      ALLOW_EMPTY_PASSWORD,REFERRAL_USER_ATTRIBUTE_ID_TO_CHECK,
 
       Context.INITIAL_CONTEXT_FACTORY,
       Context.OBJECT_FACTORIES,
@@ -172,9 +174,14 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
 
    protected String roleNameAttributeID;
 
+   protected String referralUserAttributeIDToCheck = null;
+   
    // Authentication Settings
    protected boolean allowEmptyPassword;
 
+   // inner state fields
+   private String referralUserDNToCheck;
+  
    /*
     * Module State
     */
@@ -218,6 +225,7 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
 
       rolesCtxDN = (String) options.get(ROLES_CTS_DN);
       roleFilter = (String) options.get(ROLE_FILTER);
+      referralUserAttributeIDToCheck = (String) options.get(REFERRAL_USER_ATTRIBUTE_ID_TO_CHECK);
 
       temp = (String) options.get(RECURSE_ROLES);
       recurseRoles = Boolean.parseBoolean(temp);
@@ -239,7 +247,6 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
 
       roleSearchControls = new SearchControls();
       roleSearchControls.setSearchScope(searchScope);
-      roleSearchControls.setReturningAttributes(new String[0]);
       roleSearchControls.setTimeLimit(searchTimeLimit);
 
       roleAttributeID = (String) options.get(ROLE_ATTRIBUTE_ID);
@@ -333,7 +340,11 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
 
          // Search for user in LDAP
          String userDN = findUserDN(searchContext);
-
+         if (referralUserAttributeIDToCheck != null)
+         {
+            referralUserDNToCheck = userDN;
+         }
+         
          // If authentication required authenticate as user
          if (super.loginOk == false)
          {
@@ -527,22 +538,41 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
             log.trace("rolesCtxDN=" + rolesCtxDN + " roleFilter=" + roleFilter + " filterArgs[0]=" + filterArgs[0]
                + " filterArgs[1]=" + filterArgs[1]);
 
+         
          if (roleFilter != null && roleFilter.length() > 0)
          {
-            results = searchContext.search(rolesCtxDN, roleFilter, filterArgs, roleSearchControls);
-            while (results.hasMore())
-            {
-               SearchResult sr = (SearchResult) results.next();
-               String resultDN = canonicalize(sr.getName());
-
-               obtainRole(searchContext, resultDN);
+            boolean referralsExist = true;
+            while (referralsExist)
+            {   
+               try
+               {   
+                  results = searchContext.search(rolesCtxDN, roleFilter, filterArgs, roleSearchControls);
+                  while (results.hasMore())
+                  {
+                     SearchResult sr = (SearchResult) results.next();
+                     String resultDN = null;
+                     if (sr.isRelative()) 
+                     {
+                        resultDN = canonicalize(sr.getName());
+                     }
+                     else
+                     {
+                        resultDN = sr.getNameInNamespace();
+                     }
+                     obtainRole(searchContext, resultDN, sr);
+                  }
+                  referralsExist = false;
+               }
+               catch (ReferralException e) 
+               {
+                  searchContext = (LdapContext) e.getReferralContext();
+               }
             }
          }
          else
          {
-            obtainRole(searchContext, dn);
+            obtainRole(searchContext, dn, null);
          }
-
       }
       catch (NamingException e)
       {
@@ -567,7 +597,7 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
 
    }
 
-   protected void obtainRole(LdapContext searchContext, String dn) throws NamingException, LoginException
+   protected void obtainRole(LdapContext searchContext, String dn, SearchResult sr) throws NamingException, LoginException
    {
       if (log.isTraceEnabled())
          log.trace("rolesSearch resultDN = " + dn);
@@ -575,7 +605,15 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
       String[] attrNames =
       {roleAttributeID};
 
-      Attributes result = searchContext.getAttributes(dn, attrNames);
+      Attributes result = null;
+      if (sr.isRelative())
+      {
+         result = searchContext.getAttributes(dn, attrNames);
+      }
+      else
+      {
+         result = getAttributesFromReferralEntity(sr);
+      }
       if (result != null && result.size() > 0)
       {
          Attribute roles = result.get(roleAttributeID);
@@ -597,6 +635,26 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
             }
          }
       }
+   }
+   
+   private Attributes getAttributesFromReferralEntity(SearchResult sr) throws NamingException
+   {
+      Attributes result = sr.getAttributes();
+      boolean chkSuccessful = false;
+      if (referralUserAttributeIDToCheck != null)
+      {
+         Attribute usersToCheck = result.get(referralUserAttributeIDToCheck);
+         for (int i = 0; usersToCheck != null && i < usersToCheck.size(); i++)
+         {
+            String userDNToCheck = (String) usersToCheck.get(i);
+            if (userDNToCheck.equals(referralUserDNToCheck))
+            {
+               chkSuccessful = true;
+               break;
+            }
+         }
+      }
+      return (chkSuccessful ? result : null);
    }
 
    protected void loadRoleByRoleNameAttributeID(LdapContext searchContext, String roleDN)

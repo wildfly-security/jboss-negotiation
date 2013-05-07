@@ -606,7 +606,7 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
       {roleAttributeID};
 
       Attributes result = null;
-      if (sr.isRelative())
+      if (sr == null || sr.isRelative())
       {
          result = searchContext.getAttributes(dn, attrNames);
       }

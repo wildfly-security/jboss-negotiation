@@ -96,7 +96,7 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
    private static final String ROLE_NAME_ATTRIBUTE_ID = "roleNameAttributeID";
    private static final String ROLE_SEARCH_SCOPE = "searchScope";
    private static final String REFERRAL_USER_ATTRIBUTE_ID_TO_CHECK = "referralUserAttributeIDToCheck";
-   
+
    // Authentication Settings
    private static final String ALLOW_EMPTY_PASSWORD = "allowEmptyPassword";
 
@@ -175,13 +175,13 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
    protected String roleNameAttributeID;
 
    protected String referralUserAttributeIDToCheck = null;
-   
+
    // Authentication Settings
    protected boolean allowEmptyPassword;
 
    // inner state fields
    private String referralUserDNToCheck;
-  
+
    /*
     * Module State
     */
@@ -189,11 +189,14 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
 
    private Set<String> processedRoleDNs = new HashSet<String>();
 
+   private boolean trace;
+
    @Override
    public void initialize(Subject subject, CallbackHandler handler, Map sharedState, Map options)
    {
       addValidOptions(ALL_VALID_OPTIONS);
       super.initialize(subject, handler, sharedState, options);
+      trace = log.isTraceEnabled();
 
       // Search Context Settings
       bindAuthentication = (String) options.get(BIND_AUTHENTICATION);
@@ -308,8 +311,9 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
    {
       // Obtain the username and password
       processIdentityAndCredential();
-      if (log.isTraceEnabled())
+      if (trace) {
          log.trace("Identity - " + getIdentity().getName());
+      }
       // Initialise search ctx
       String bindCredential = this.bindCredential;
       if (AUTH_TYPE_GSSAPI.equals(bindAuthentication) == false)
@@ -344,7 +348,7 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
          {
             referralUserDNToCheck = userDN;
          }
-         
+
          // If authentication required authenticate as user
          if (super.loginOk == false)
          {
@@ -479,8 +483,9 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
          results.close();
          results = null;
 
-         if (log.isTraceEnabled())
+         if (trace) {
             log.trace("findUserDN - " + userDN);
+         }
          return userDN;
       }
       catch (NamingException e)
@@ -534,24 +539,24 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
       NamingEnumeration results = null;
       try
       {
-         if (log.isTraceEnabled())
+         if (trace) {
             log.trace("rolesCtxDN=" + rolesCtxDN + " roleFilter=" + roleFilter + " filterArgs[0]=" + filterArgs[0]
                + " filterArgs[1]=" + filterArgs[1]);
+         }
 
-         
          if (roleFilter != null && roleFilter.length() > 0)
          {
             boolean referralsExist = true;
             while (referralsExist)
-            {   
+            {
                try
-               {   
+               {
                   results = searchContext.search(rolesCtxDN, roleFilter, filterArgs, roleSearchControls);
                   while (results.hasMore())
                   {
                      SearchResult sr = (SearchResult) results.next();
                      String resultDN = null;
-                     if (sr.isRelative()) 
+                     if (sr.isRelative())
                      {
                         resultDN = canonicalize(sr.getName());
                      }
@@ -563,7 +568,7 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
                   }
                   referralsExist = false;
                }
-               catch (ReferralException e) 
+               catch (ReferralException e)
                {
                   searchContext = (LdapContext) e.getReferralContext();
                }
@@ -599,8 +604,9 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
 
    protected void obtainRole(LdapContext searchContext, String dn, SearchResult sr) throws NamingException, LoginException
    {
-      if (log.isTraceEnabled())
+      if (trace) {
          log.trace("rolesSearch resultDN = " + dn);
+      }
 
       String[] attrNames =
       {roleAttributeID};
@@ -636,7 +642,7 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
          }
       }
    }
-   
+
    private Attributes getAttributesFromReferralEntity(SearchResult sr) throws NamingException
    {
       Attributes result = sr.getAttributes();
@@ -659,11 +665,10 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
 
    protected void loadRoleByRoleNameAttributeID(LdapContext searchContext, String roleDN)
    {
-      String[] returnAttribute =
-      {roleNameAttributeID};
-      boolean TRACE = log.isTraceEnabled();
-      if (TRACE)
+      String[] returnAttribute = {roleNameAttributeID};
+      if (trace) {
          log.trace("Using roleDN: " + roleDN);
+      }
       try
       {
          Attributes result2 = searchContext.getAttributes(roleDN, returnAttribute);
@@ -679,34 +684,36 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
       }
       catch (NamingException e)
       {
-         if (TRACE)
+         if (trace) {
             log.trace("Failed to query roleNameAttrName", e);
+         }
       }
    }
 
    protected void recurseRolesSearch(LdapContext searchContext, String roleDN) throws LoginException
    {
-      boolean TRACE = log.isTraceEnabled();
       if (recurseRoles)
       {
          if (processedRoleDNs.contains(roleDN) == false)
          {
             processedRoleDNs.add(roleDN);
-            if (TRACE)
+            if (trace) {
                log.trace("Recursive search for '" + roleDN + "'");
+            }
             rolesSearch(searchContext, roleDN);
          }
          else
          {
-            if (TRACE)
+            if (trace) {
                log.trace("Already visited role '" + roleDN + "' ending recursion.");
+            }
          }
       }
    }
 
    protected void traceLdapEnv(Properties env)
    {
-      if (log.isTraceEnabled())
+      if (trace)
       {
          Properties tmp = new Properties();
          tmp.putAll(env);
@@ -740,8 +747,9 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
          try
          {
             Principal p = super.createIdentity(roleName);
-            if (log.isTraceEnabled())
+            if (trace) {
                log.trace("Assign user '" + getIdentity().getName() + "' to role " + roleName);
+            }
             userRoles.addMember(p);
          }
          catch (Exception e)

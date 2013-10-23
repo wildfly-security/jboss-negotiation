@@ -533,6 +533,9 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
 
    protected void rolesSearch(LdapContext searchContext, String dn) throws LoginException
    {
+      /*
+       * The distinguished name passed into this method is expected to be unquoted.
+       */
       Object[] filterArgs =
       {getIdentity().getName(), dn};
 
@@ -564,6 +567,10 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
                      {
                         resultDN = sr.getNameInNamespace();
                      }
+                     /*
+                      * By this point if the distinguished name needs to be quoted for attribute
+                      * searches it will have been already.
+                      */
                      obtainRole(searchContext, resultDN, sr);
                   }
                   referralsExist = false;
@@ -576,7 +583,11 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
          }
          else
          {
-            obtainRole(searchContext, dn, null);
+            /*
+             * As there was no search based on the distinguished name it would not have been
+             * auto-quoted - do that here to be safe.
+             */
+            obtainRole(searchContext, quoted(dn), null);
          }
       }
       catch (NamingException e)
@@ -600,6 +611,16 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
          }
       }
 
+   }
+
+   private String quoted(final String dn) {
+       String temp = dn.trim();
+
+       if (temp.startsWith("\"") && temp.endsWith("\"")) {
+           return temp;
+       }
+
+       return "\"" + temp + "\"";
    }
 
    protected void obtainRole(LdapContext searchContext, String dn, SearchResult sr) throws NamingException, LoginException

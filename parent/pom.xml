@@ -116,6 +116,7 @@
         <groupId>org.jboss.web</groupId>
         <artifactId>jbossweb</artifactId>
         <version>${version.org.jboss.web}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
          <groupId>org.picketbox</groupId>

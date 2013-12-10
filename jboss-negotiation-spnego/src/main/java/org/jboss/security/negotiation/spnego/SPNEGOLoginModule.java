@@ -40,6 +40,7 @@ import javax.security.auth.login.LoginException;
 
 import org.ietf.jgss.GSSContext;
 import org.ietf.jgss.GSSCredential;
+import org.ietf.jgss.GSSException;
 import org.ietf.jgss.GSSManager;
 import org.ietf.jgss.Oid;
 import org.jboss.security.SimpleGroup;
@@ -319,6 +320,7 @@ public class SPNEGOLoginModule extends CommonLoginModule
    {
 
       private final NegotiationContext negotiationContext;
+      private boolean DEBUG = log.isDebugEnabled();
 
       public AcceptSecContext(final NegotiationContext negotiationContext)
       {
@@ -327,7 +329,6 @@ public class SPNEGOLoginModule extends CommonLoginModule
 
       public Object run()
       {
-         boolean DEBUG = log.isDebugEnabled();
          try
          {
             // The message type will have already been checked before this point so we know it is
@@ -404,20 +405,7 @@ public class SPNEGOLoginModule extends CommonLoginModule
             if (gssContext.isEstablished())
             {
                log.warn("Authentication was performed despite already being authenticated!");
-
-               // TODO - Refactor to only do this once.
-               setIdentity(new KerberosPrincipal(gssContext.getSrcName().toString()));
-
-               if (DEBUG)
-               {
-                  log.debug("context.getCredDelegState() = " + gssContext.getCredDelegState());
-                  log.debug("context.getMutualAuthState() = " + gssContext.getMutualAuthState());
-                  log.debug("context.getSrcName() = " + gssContext.getSrcName().toString());
-               }
-
-               negotiationContext.setAuthenticationMethod(SPNEGO);
-               negotiationContext.setAuthenticated(true);
-
+               processIdentity(gssContext);
                return Boolean.TRUE;
             }
 
@@ -447,18 +435,7 @@ public class SPNEGOLoginModule extends CommonLoginModule
             }
             else
             {
-               setIdentity(createIdentity(gssContext.getSrcName().toString()));
-
-               if (DEBUG)
-               {
-                  log.debug("context.getCredDelegState() = " + gssContext.getCredDelegState());
-                  log.debug("context.getMutualAuthState() = " + gssContext.getMutualAuthState());
-                  log.debug("context.getSrcName() = " + gssContext.getSrcName().toString());
-               }
-
-               // TODO - Get these two in synch - maybe isAuthenticated based on an authentication method been set?
-               negotiationContext.setAuthenticationMethod(SPNEGO);
-               negotiationContext.setAuthenticated(true);
+               processIdentity(gssContext);
                return Boolean.TRUE;
             }
 
@@ -468,6 +445,21 @@ public class SPNEGOLoginModule extends CommonLoginModule
             return e;
          }
 
+      }
+
+      private void processIdentity(GSSContext gssContext) throws GSSException, Exception
+      {
+         setIdentity(createIdentity(gssContext.getSrcName().toString()));
+
+         if (DEBUG)
+         {
+            log.debug("context.getCredDelegState() = " + gssContext.getCredDelegState());
+            log.debug("context.getMutualAuthState() = " + gssContext.getMutualAuthState());
+            log.debug("context.getSrcName() = " + gssContext.getSrcName().toString());
+         }
+
+         negotiationContext.setAuthenticationMethod(SPNEGO);
+         negotiationContext.setAuthenticated(true);
       }
    }
 }

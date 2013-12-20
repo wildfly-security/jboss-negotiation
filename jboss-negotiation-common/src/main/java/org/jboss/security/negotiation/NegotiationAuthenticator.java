@@ -46,6 +46,9 @@ import org.apache.catalina.authenticator.FormAuthenticator;
 import org.apache.catalina.connector.Request;
 import org.apache.catalina.connector.Response;
 import org.apache.catalina.deploy.LoginConfig;
+import org.apache.tomcat.util.buf.ByteChunk;
+import org.apache.tomcat.util.buf.CharChunk;
+import org.apache.tomcat.util.buf.MessageBytes;
 import org.ietf.jgss.GSSContext;
 import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSException;
@@ -69,6 +72,8 @@ public class NegotiationAuthenticator extends FormAuthenticator
 
    private static final String NEGOTIATE = "Negotiate";
 
+   private static final String BASIC = "Basic";
+
    private static final String NEGOTIATION_CONTEXT = "NEGOTIATION_CONTEXT";
 
    private static final String DELEGATION_CREDENTIAL = "DELEGATION_CREDENTIAL";
@@ -78,6 +83,10 @@ public class NegotiationAuthenticator extends FormAuthenticator
    protected String getNegotiateScheme()
    {
       return NEGOTIATE;
+   }
+
+   protected String getBasicScheme(){
+       return BASIC;
    }
 
    @Override
@@ -140,6 +149,7 @@ public class NegotiationAuthenticator extends FormAuthenticator
       if (DEBUG)
          log.debug("Header - " + request.getHeader("Authorization"));
       String authHeader = request.getHeader("Authorization");
+
       if (authHeader == null)
       {
 
@@ -150,6 +160,27 @@ public class NegotiationAuthenticator extends FormAuthenticator
       }
       else if (authHeader.startsWith(negotiateScheme + " ") == false)
       {
+          final String basicScheme = getBasicScheme();
+          if (authHeader.startsWith(basicScheme + " ")) {
+
+              MessageBytes messagebytes = request.getCoyoteRequest().getMimeHeaders().getValue("Authorization");
+              messagebytes.toBytes();
+              ByteChunk byteChunk = messagebytes.getByteChunk();
+
+              boolean successfulAuthenticated = false;
+              if (byteChunk.startsWithIgnoreCase(basicScheme + " ", 0)) {
+                int offsetLength = basicScheme.length() + 1;
+                byteChunk.setOffset(byteChunk.getOffset() + offsetLength);
+                CharChunk charChunk = messagebytes.getCharChunk();
+                org.apache.catalina.util.Base64.decode(byteChunk, charChunk);
+
+                successfulAuthenticated = this.handleBasic(request, response, charChunk);
+
+                byteChunk.setOffset(byteChunk.getOffset() - offsetLength);
+                return successfulAuthenticated;
+              }
+
+          }
          throw new IOException("Invalid 'Authorization' header.");
       }
 
@@ -183,7 +214,9 @@ public class NegotiationAuthenticator extends FormAuthenticator
          MessageFactory mf = MessageFactory.newInstance();
          if (mf.accepts(authTokenIS) == false)
          {
-            throw new IOException("Unsupported negotiation mechanism.");
+            //throw new IOException("Unsupported negotiation mechanism.");
+             initiateBasic(request,response,config);
+             return false;
          }
 
          NegotiationMessage requestMessage = mf.createMessage(authTokenIS);
@@ -207,6 +240,10 @@ public class NegotiationAuthenticator extends FormAuthenticator
             MessageTrace.logResponseBase64(responseHeader);
 
             response.setHeader("WWW-Authenticate", negotiateScheme + " " + responseHeader);
+         } else {
+             //trigger basic
+             initiateBasic(request,response, config);
+             return false;
          }
 
       }
@@ -252,6 +289,60 @@ public class NegotiationAuthenticator extends FormAuthenticator
       return (principal != null);
    }
 
+    /**
+     * @param config
+     * @param response
+     * @param request
+     * @throws IOException
+     *
+     */
+    private void initiateBasic(Request request, HttpServletResponse response, LoginConfig config) throws IOException {
+        StringBuilder basicHeader = new StringBuilder();
+        basicHeader.append(getBasicScheme());
+        basicHeader.append(" realm=\"");
+        if (config.getRealmName() == null) {
+            basicHeader.append(request.getServerName());
+            basicHeader.append(':');
+            basicHeader.append(Integer.toString(request.getServerPort()));
+        } else {
+            basicHeader.append(config.getRealmName().toUpperCase());
+        }
+        basicHeader.append("\"");
+        response.addHeader("WWW-Authenticate", basicHeader.toString());// L-Bank
+        response.sendError(Response.SC_UNAUTHORIZED);
+        response.flushBuffer();
+    }
+
+    protected boolean handleBasic(Request request, HttpServletResponse response, CharChunk charchunk) {
+          String username;
+          String password;
+          username = null;
+          password = null;
+          int i = charchunk.indexOf(':');
+          if (i < 0) {
+              username = charchunk.toString();
+          } else {
+              char ac[] = charchunk.getBuffer();
+              username = new String(ac, 0, i);
+              password = new String(ac, i + 1, charchunk.getEnd() - i - 1);
+          }
+          try {
+              Realm realm = context.getRealm();
+              Principal principal = realm.authenticate(username, password);
+
+              if (principal == null) {
+                  response.sendError(Response.SC_UNAUTHORIZED);
+                  return false;
+              }
+
+              register(request, response, principal, getBasicScheme(), username, password);
+              return true;
+
+          } catch (Exception e) {
+              log.info("Could not verify password - wrong password given or maybe LoginModule is misconfigured!", e);
+              return false;
+          }
+      }
    private void initiateNegotiation(final Request request, final HttpServletResponse response, final LoginConfig config)
          throws IOException
    {

@@ -24,7 +24,7 @@
      <module>assembly</module>
   </modules>
    <scm>
-    <connection>scm:svn:http://anonsvn.jboss.org/repos/jbossas/projects/security/security-negotiation/trunk</connection>
-    <developerConnection>scm:svn:https://svn.jboss.org/repos/jbossas/projects/security/security-negotiation/trunk</developerConnection>
+    <connection>scm:git:https://github.com/wildfly/jboss-negotiation.git</connection>
+    <developerConnection>scm:git:git@github.com:wildfly/jboss-negotiation.git</developerConnection>
    </scm>
 </project>

@@ -8,3 +8,6 @@ jboss-negotiation-spnego/target
 jboss-negotiation-toolkit/target
 *.iml
 *~
+.project
+.classpath
+

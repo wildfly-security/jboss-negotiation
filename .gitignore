@@ -10,4 +10,5 @@ jboss-negotiation-toolkit/target
 *~
 .project
 .classpath
+bin
 

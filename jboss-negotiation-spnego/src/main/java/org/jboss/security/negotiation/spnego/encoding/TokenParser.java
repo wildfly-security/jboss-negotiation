@@ -175,7 +175,7 @@ public class TokenParser
    {
       is.mark(size);
       byte[] bytes = getValueAt(is, (byte) 0);
-      bytes = Arrays.copyOfRange(bytes, 2, 3);
+      bytes = copyOfRange(bytes, 2, 3);
       BigInteger bi = new BigInteger(bytes);
       int eType = bi.intValue();
 
@@ -206,7 +206,7 @@ public class TokenParser
       bais.close();
       
       // at this point we have a Realm in the byte[]
-      realm = Arrays.copyOfRange(realm, 2, realm.length);
+      realm = copyOfRange(realm, 2, realm.length);
       crealm = new String(realm);
       bais = new ByteArrayInputStream(temp);
       byte[] principalName = getValueAt(bais, (byte) 3);
@@ -216,7 +216,7 @@ public class TokenParser
       bais = new ByteArrayInputStream(principalName);
       byte[] names = getValueAt(bais, (byte) 1);
       bais.close();
-      names = Arrays.copyOfRange(names, 2, names.length);
+      names = copyOfRange(names, 2, names.length);
       
       // at this point we have the sequence of names in the byte[]
       bais = new ByteArrayInputStream(names);
@@ -337,4 +337,13 @@ public class TokenParser
    {
       return cname + "@" + crealm;
    }
+   
+   private static byte[] copyOfRange(byte[] original, int from, int to) {
+	   byte[] response = new byte[to - from + 1];
+	   
+	   System.arraycopy(original, from, response, 0, (to - from) + 1);   
+	   
+	   return response;	   
+   }   
+   
 }

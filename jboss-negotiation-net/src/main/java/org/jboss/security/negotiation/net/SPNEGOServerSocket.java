@@ -134,7 +134,10 @@ public class SPNEGOServerSocket extends ServerSocket
       catch (Exception e)
       {
          // re-throw the Exception as a IOException
-         throw new IOException(e);
+         IOException ioe = new IOException();
+         ioe.initCause(e);
+         
+         throw ioe;
       }
       finally
       {

@@ -68,6 +68,8 @@ import org.picketbox.commons.cipher.Base64;
 public class NegotiationAuthenticator extends FormAuthenticator
 {
 
+   public static final String BASIC_KEY =  NegotiationAuthenticator.class.getName() + ".BasicAuthFallBack";
+
    private static final Logger log = Logger.getLogger(NegotiationAuthenticator.class);
 
    private static final String NEGOTIATE = "Negotiate";
@@ -147,12 +149,13 @@ public class NegotiationAuthenticator extends FormAuthenticator
       String negotiateScheme = getNegotiateScheme();
 
       if (DEBUG)
+      {
          log.debug("Header - " + request.getHeader("Authorization"));
+      }
       String authHeader = request.getHeader("Authorization");
 
       if (authHeader == null)
       {
-
          log.debug("No Authorization Header, initiating negotiation");
          initiateNegotiation(request, response, config);
 
@@ -174,12 +177,11 @@ public class NegotiationAuthenticator extends FormAuthenticator
                 CharChunk charChunk = messagebytes.getCharChunk();
                 org.apache.catalina.util.Base64.decode(byteChunk, charChunk);
 
-                successfulAuthenticated = this.handleBasic(request, response, charChunk);
+                successfulAuthenticated = handleBasic(request, response, charChunk);
 
                 byteChunk.setOffset(byteChunk.getOffset() - offsetLength);
                 return successfulAuthenticated;
               }
-
           }
          throw new IOException("Invalid 'Authorization' header.");
       }
@@ -214,12 +216,28 @@ public class NegotiationAuthenticator extends FormAuthenticator
          MessageFactory mf = MessageFactory.newInstance();
          if (mf.accepts(authTokenIS) == false)
          {
-            //throw new IOException("Unsupported negotiation mechanism.");
-             initiateBasic(request,response,config);
-             return false;
+        	 if (basicSupported())
+        	 {
+        	     initiateBasic(request,response,config);
+                 response.sendError(Response.SC_UNAUTHORIZED);
+                 response.flushBuffer();
+                 return false;
+        	 }
+        	 throw new IOException("Unsupported negotiation mechanism.");
          }
 
          NegotiationMessage requestMessage = mf.createMessage(authTokenIS);
+
+         if ("NTLM".equals(requestMessage.getMessageType())) {
+        	 if (basicSupported())
+        	 {
+        	     initiateBasic(request,response,config);
+                 response.sendError(Response.SC_UNAUTHORIZED);
+                 response.flushBuffer();
+                 return false;
+        	 }
+         }
+
          negotiationContext.setRequestMessage(requestMessage);
 
          Realm realm = context.getRealm();
@@ -240,12 +258,7 @@ public class NegotiationAuthenticator extends FormAuthenticator
             MessageTrace.logResponseBase64(responseHeader);
 
             response.setHeader("WWW-Authenticate", negotiateScheme + " " + responseHeader);
-         } else {
-             //trigger basic
-             initiateBasic(request,response, config);
-             return false;
          }
-
       }
       catch (NegotiationException e)
       {
@@ -289,6 +302,10 @@ public class NegotiationAuthenticator extends FormAuthenticator
       return (principal != null);
    }
 
+   private boolean basicSupported() {
+	   return Boolean.parseBoolean(context.findParameter(BASIC_KEY));
+   }
+
     /**
      * @param config
      * @param response
@@ -309,8 +326,6 @@ public class NegotiationAuthenticator extends FormAuthenticator
         }
         basicHeader.append("\"");
         response.addHeader("WWW-Authenticate", basicHeader.toString());// L-Bank
-        response.sendError(Response.SC_UNAUTHORIZED);
-        response.flushBuffer();
     }
 
     protected boolean handleBasic(Request request, HttpServletResponse response, CharChunk charchunk) {
@@ -343,6 +358,7 @@ public class NegotiationAuthenticator extends FormAuthenticator
               return false;
           }
       }
+
    private void initiateNegotiation(final Request request, final HttpServletResponse response, final LoginConfig config)
          throws IOException
    {
@@ -374,6 +390,10 @@ public class NegotiationAuthenticator extends FormAuthenticator
       else
       {
          response.setHeader("WWW-Authenticate", getNegotiateScheme());
+         if (basicSupported()) {
+        	 initiateBasic(request, response, config);
+         }
+
          response.sendError(Response.SC_UNAUTHORIZED);
       }
 

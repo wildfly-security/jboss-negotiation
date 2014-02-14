@@ -42,6 +42,7 @@ import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
+import javax.naming.CompositeName;
 import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.LoginContext;
@@ -476,7 +477,7 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
          String name = sr.getName();
          String userDN = null;
          if (sr.isRelative() == true)
-            userDN = name + "," + baseCtxDN;
+            userDN = new CompositeName(name).get(0) + "," + baseCtxDN;
          else
             throw new LoginException("Can't follow referal for authentication: " + name);
 

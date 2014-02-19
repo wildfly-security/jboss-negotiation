@@ -339,9 +339,10 @@ public class TokenParser
    }
    
    private static byte[] copyOfRange(byte[] original, int from, int to) {
-	   byte[] response = new byte[to - from + 1];
+	   int length = to - from;
+	   byte[] response = new byte[length];
 	   
-	   System.arraycopy(original, from, response, 0, (to - from) + 1);   
+	   System.arraycopy(original, from, response, 0, Math.min(original.length - from, length));   
 	   
 	   return response;	   
    }   

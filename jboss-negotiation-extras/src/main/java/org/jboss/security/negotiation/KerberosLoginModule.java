@@ -42,12 +42,24 @@ import org.ietf.jgss.GSSName;
 /**
  * A Kerberos {@link LoginModule} that wraps the JDK supplied module and has the additional capability of adding a
  * {@link GSSCredential} to the populated {@link Subject}
- * 
+ *
  * @author <a href="mailto:darran.lofthouse@jboss.com">Darran Lofthouse</a>
  */
 public class KerberosLoginModule implements LoginModule {
 
-    private static final String ADD_GSS_CREDENTIAL = "addGSSCredential";
+    /**
+     * Module option to enable adding a {@link GSSCredential} to the private credentials of the populated {@link Subject}.
+     *
+     * Defaults to false.
+     */
+    public static final String ADD_GSS_CREDENTIAL = "addGSSCredential";
+
+    /**
+     * The lifetime in seconds of the {@link GSSCredential}, a negative value will set this to GSSCredential.INDEFINITE_LIFETIME.
+     *
+     * Defaults to GSSCredential.DEFAULT_LIFETIME
+     */
+    public static final String CREDENTIAL_LIFETIME = "credentialLifetime";
 
     private static final String SUN_MODULE = "com.sun.security.auth.module.Krb5LoginModule";
     private static final String IBM_MODULE = "com.ibm.security.auth.module.Krb5LoginModule";
@@ -67,6 +79,7 @@ public class KerberosLoginModule implements LoginModule {
     }
 
     private boolean addGssCredential;
+    private int credentialLifetime = GSSCredential.DEFAULT_LIFETIME;
     private LoginModule wrapped;
 
     private Subject subject;
@@ -77,16 +90,25 @@ public class KerberosLoginModule implements LoginModule {
         if (wrapped == null) {
             throw new IllegalStateException("Unable to instantiate Krb5LoginModule to wrap!");
         }
-        
-        Map<String, ?> tweakedOptions = options;
-        if (tweakedOptions.containsKey(ADD_GSS_CREDENTIAL)) {
-            tweakedOptions = new HashMap<String, Object>(options);
-            tweakedOptions.remove(ADD_GSS_CREDENTIAL);
-        }
+
+        Map<String, ?> tweakedOptions = new HashMap<String, Object>(options);
+        tweakedOptions.remove(ADD_GSS_CREDENTIAL);
+        tweakedOptions.remove(CREDENTIAL_LIFETIME);
+
         wrapped.initialize(subject, callbackHandler, sharedState, tweakedOptions);
-        
+
         this.subject = subject;
         addGssCredential = Boolean.parseBoolean((String) options.get(ADD_GSS_CREDENTIAL));
+        if (options.containsKey(CREDENTIAL_LIFETIME)) {
+            if (addGssCredential == false) {
+                throw new IllegalStateException(String.format("Option '%s' has been specified within enabling '%s'",
+                        CREDENTIAL_LIFETIME, ADD_GSS_CREDENTIAL));
+            }
+            credentialLifetime = Integer.parseInt((String) options.get(CREDENTIAL_LIFETIME));
+            if (credentialLifetime < 0) {
+                credentialLifetime = GSSCredential.INDEFINITE_LIFETIME;
+            }
+        }
     }
 
     public boolean login() throws LoginException {
@@ -111,7 +133,7 @@ public class KerberosLoginModule implements LoginModule {
                         KerberosPrincipal principal = principals.iterator().next();
                         GSSName name = manager.createName(principal.getName(), GSSName.NT_USER_NAME, Constants.KERBEROS_V5);
 
-                        return manager.createCredential(name, GSSCredential.DEFAULT_LIFETIME, Constants.KERBEROS_V5,
+                        return manager.createCredential(name, credentialLifetime, Constants.KERBEROS_V5,
                                 GSSCredential.INITIATE_ONLY);
                     }
                 });

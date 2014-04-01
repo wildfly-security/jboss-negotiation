@@ -93,6 +93,18 @@ public class NegotiationAuthenticator extends FormAuthenticator
       {
          if (log.isTraceEnabled())
             log.trace("Already authenticated '" + principal.getName() + "'");
+
+         // Is this the re-submit of the original request URI after successful
+         // authentication?  If so, forward the *original* request instead.
+         if( matchRequest(request) )
+         {
+            Session session = request.getSessionInternal(true);
+            log.trace("Restore request from session '"
+                       + session.getIdInternal()
+                       + "'");
+            restoreRequest(request, session);
+         }
+
          return true;
       }
 

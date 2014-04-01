@@ -224,7 +224,9 @@ public class NegotiationAuthenticator extends FormAuthenticator
 
       if (principal == null)
       {
-         response.sendError(Response.SC_UNAUTHORIZED);
+         // Instead of returning a 401 here...attempt to fallback to form, otherwise return a 401
+         log.debug("SPNEGO based authentication failed...initiating negotiation");
+         initiateNegotiation(request, response, config);
       }
       else
       {

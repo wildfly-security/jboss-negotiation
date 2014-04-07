@@ -391,6 +391,7 @@ public class NegotiationAuthenticator extends FormAuthenticator
             disp.include(request.getRequest(), response);
             response.setHeader("WWW-Authenticate", getNegotiateScheme());
             response.setStatus(Response.SC_UNAUTHORIZED);
+            response.setContentType("text/html");
          }
          catch (ServletException e)
          {

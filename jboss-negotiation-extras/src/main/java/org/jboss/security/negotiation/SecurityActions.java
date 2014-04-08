@@ -36,6 +36,7 @@ import javax.security.auth.spi.LoginModule;
 import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSException;
 import org.ietf.jgss.GSSName;
+import org.jboss.logging.Logger;
 
 /**
  * Package level security actions.
@@ -43,6 +44,8 @@ import org.ietf.jgss.GSSName;
  * @author <a href="mailto:darran.lofthouse@jboss.com">Darran Lofthouse</a>
  */
 class SecurityActions {
+
+    private static final Logger log = Logger.getLogger(SecurityActions.class);
 
     private static final String SUN_GSSUTIL = "com.sun.security.jgss.GSSUtil";
     private static final String CREATE_SUBJECT = "createSubject";
@@ -107,8 +110,10 @@ class SecurityActions {
                 try {
                     return (Class<LoginModule>) KerberosLoginModule.class.getClassLoader().loadClass(className);
                 } catch (ClassNotFoundException e) {
+                    log.debug(e);
                     return null;
                 } catch (ClassCastException e) {
+                    log.debug(e);
                     return null;
                 }
             }
@@ -117,8 +122,10 @@ class SecurityActions {
                 try {
                     return moduleClass.newInstance();
                 } catch (InstantiationException e) {
+                    log.debug(e);
                     return null;
                 } catch (IllegalAccessException e) {
+                    log.debug(e);
                     return null;
                 }
             }
@@ -139,10 +146,13 @@ class SecurityActions {
                     Class sunGssUtil = GSSUtil.class.getClassLoader().loadClass(SUN_GSSUTIL);
                     return sunGssUtil.getMethod(CREATE_SUBJECT, GSSName.class, GSSCredential.class);
                 } catch (ClassNotFoundException e) {
+                    log.debug(e);
                     return null;
                 } catch (NoSuchMethodException e) {
+                    log.debug(e);
                     return null;
                 } catch (SecurityException e) {
+                    log.debug(e);
                     return null;
                 }
 
@@ -153,14 +163,17 @@ class SecurityActions {
                 try {
                     return (Subject)createSubjectMethod.invoke(null, gssName, gssCredential);
                 } catch (IllegalAccessException e) {
+                    log.debug(e);
                     return null;
                 } catch (IllegalArgumentException e) {
+                    log.debug(e);
                     return null;
                 } catch (InvocationTargetException e) {
                     Throwable cause = e.getCause();
                     if (cause instanceof GSSException) {
                         throw (GSSException) cause;
                     }
+                    log.debug(e);
                     return null;
                 }
             }

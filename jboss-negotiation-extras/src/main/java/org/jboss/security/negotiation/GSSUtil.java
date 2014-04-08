@@ -30,6 +30,7 @@ import javax.security.auth.login.LoginException;
 import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSException;
 import org.ietf.jgss.GSSName;
+import org.jboss.logging.Logger;
 
 /**
  * Utility class for converting a {@link GSSCredential} to a {@link Subject}
@@ -37,6 +38,8 @@ import org.ietf.jgss.GSSName;
  * @author <a href="mailto:darran.lofthouse@jboss.com">Darran Lofthouse</a>
  */
 class GSSUtil {
+
+    private static final Logger log = Logger.getLogger(GSSUtil.class);
 
     private static final Method CREATE_SUBJECT_METHOD = SecurityActions.getCreateSubjectMethod();
 
@@ -54,8 +57,11 @@ class GSSUtil {
             try {
                 GSSName name = credentials.getName(Constants.KERBEROS_V5);
                 intermediateSubject = SecurityActions.invokeCreateSubject(CREATE_SUBJECT_METHOD, name, credentials);
+                log.trace("Delegated credential converted to Subject.");
                 SecurityActions.copySubjectContents(intermediateSubject, subject);
+                log.trace("Copied conents of temporary Subject to Subject from the LoginContext");
             } catch (GSSException e) {
+                log.debug(e);
                 throw new LoginException("Unable to use supplied GSSCredential to populate Subject.");
             }
         } else if (addGssCredential == false) {
@@ -63,6 +69,7 @@ class GSSUtil {
                     "Utility not available to convert from GSSCredential and adding GSSCredential to Subject disabled - this would just result in an empty Subject!");
         }
         if (addGssCredential) {
+            log.trace("Also add the GSSCredential to the Subject");
             SecurityActions.addPrivateCredential(subject, credentials);
         }
 
@@ -70,7 +77,9 @@ class GSSUtil {
     }
 
     static void clearSubject(final Subject subject, final Subject intermediateSubject, final GSSCredential credentials) {
+        log.trace("Remove the GSSCredential from the Subject");
         SecurityActions.removePrivateCredential(subject, credentials);
+        log.trace("Subtract the remaining principals and credentials we added to the Subject");
         SecurityActions.removeSubjectContents(intermediateSubject, subject);
     }
 

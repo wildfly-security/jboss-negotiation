@@ -124,7 +124,14 @@ public class SPNEGOSocket extends Socket
       }
       catch (LoginException le)
       {
-         log.error("Failed to login: " + le.getMessage(), le);
+          try{
+              close();
+          } catch(Exception e){
+              log.error("Close operation failed", le);
+          }
+          final IOException ioe = new IOException("Failed to login");
+          ioe.initCause(le);
+          throw ioe;
       }
       if (subject != null)
       {
@@ -143,7 +150,14 @@ public class SPNEGOSocket extends Socket
       }
       catch (LoginException le)
       {
-         log.error("Failed to logout: " + le.getMessage(), le);
+          try{
+              close();
+          } catch(Exception e){
+              log.error("Close operation failed", le);
+          }
+          final IOException ioe = new IOException("Failed to logout");
+          ioe.initCause(le);
+          throw ioe;
       }
    }
 

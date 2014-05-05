@@ -198,6 +198,7 @@ public class NegotiationAuthenticator extends FormAuthenticator
          throw new IOException("Invalid 'Authorization' header.");
       }
 
+      boolean isContinuationRequired = false;
       String authTokenBase64 = authHeader.substring(negotiateScheme.length() + 1);
       byte[] authToken = Base64.decode(authTokenBase64);
       ByteArrayInputStream authTokenIS = new ByteArrayInputStream(authToken);
@@ -280,15 +281,24 @@ public class NegotiationAuthenticator extends FormAuthenticator
       }
       finally
       {
+         isContinuationRequired = negotiationContext.isContinuationRequired();
+
          // Clear the headers and remove the ThreadLocal association.
          negotiationContext.clear();
       }
 
       if (principal == null)
       {
-         // Instead of returning a 401 here...attempt to fallback to form, otherwise return a 401
-         log.debug("SPNEGO based authentication failed...initiating negotiation");
-         initiateNegotiation(request, response, config);
+         if( isContinuationRequired ) {
+           log.debug("Continuation required...sendError(SC_UNAUTHORIZED)");
+           response.sendError(Response.SC_UNAUTHORIZED);
+         }
+         else {
+           // Instead of returning a 401 here...attempt to fallback to form, otherwise return a 401
+           log.debug("SPNEGO based authentication failed...initiating negotiation");
+           initiateNegotiation(request, response, config);
+         }
+
       }
       else
       {

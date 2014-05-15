@@ -23,7 +23,7 @@
      <module>assembly</module>
   </modules>
    <scm>
-    <connection>scm:git:https://github.com/wildfly/jboss-negotiation.git</connection>
-    <developerConnection>scm:git:git@github.com:wildfly/jboss-negotiation.git</developerConnection>
+    <connection>scm:git:https://github.com/wildfly-security/jboss-negotiation.git</connection>
+    <developerConnection>scm:git:git@github.com:wildfly-security/jboss-negotiation.git</developerConnection>
    </scm>
 </project>

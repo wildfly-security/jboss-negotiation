@@ -1,10 +1,10 @@
-<!DOCTYPE jboss-web PUBLIC
-  "-//JBoss//DTD Web Application 2.4//EN"
-  "http://www.jboss.org/j2ee/dtd/jboss-web_4_0.dtd">
-
-<jboss-web>
-  <security-domain>java:/jaas/SPNEGO</security-domain>
-    <valve>
-        <class-name>org.jboss.security.negotiation.NegotiationAuthenticator</class-name>
-    </valve>
+<jboss-web xmlns="http://www.jboss.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.jboss.com/xml/ns/javaee http://www.jboss.org/j2ee/schema/jboss-web_7_0.xsd"
+	version="7.0">
+	
+	<security-domain>java:/jaas/SPNEGO</security-domain>
+	<valve>
+		<class-name>org.jboss.security.negotiation.NegotiationAuthenticator</class-name>
+	</valve>
 </jboss-web>

@@ -21,6 +21,8 @@
  */
 package org.jboss.security.negotiation;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.Principal;
 import java.security.PrivilegedAction;
 import java.security.acl.Group;
@@ -340,16 +342,23 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
 
       try
       {
-         searchContext = constructLdapContext(bindDn, bindCredential, bindAuthentication);
+         searchContext = constructLdapContext(null, bindDn, bindCredential, bindAuthentication);
          log.debug("Obtained LdapContext");
 
          // Search for user in LDAP
          String userDN = findUserDN(searchContext);
          if (referralUserAttributeIDToCheck != null)
          {
-            referralUserDNToCheck = userDN;
+            if (isUserDnAbsolute(userDN))
+            {
+                referralUserDNToCheck = localUserDN(userDN);
+            }
+            else 
+            {
+               referralUserDNToCheck = userDN;
+            }
          }
-
+         
          // If authentication required authenticate as user
          if (super.loginOk == false)
          {
@@ -380,56 +389,69 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
       return Boolean.valueOf(super.loginOk);
    }
 
-   protected LdapContext constructLdapContext(String dn, Object credential, String authentication)
+   private Properties constructLdapContextEnvironment(String namingProviderURL, String principalDN, Object credential, String authentication) 
+   {
+       Properties env = createBaseProperties();
+
+       // Set defaults for key values if they are missing
+       String factoryName = env.getProperty(Context.INITIAL_CONTEXT_FACTORY);
+       if (factoryName == null)
+       {
+          factoryName = DEFAULT_LDAP_CTX_FACTORY;
+          env.setProperty(Context.INITIAL_CONTEXT_FACTORY, factoryName);
+       }
+
+       // If this method is called with an authentication type then use that.
+       if (authentication != null && authentication.length() > 0)
+       {
+          env.setProperty(Context.SECURITY_AUTHENTICATION, authentication);
+       }
+       else
+       {
+          String authType = env.getProperty(Context.SECURITY_AUTHENTICATION);
+          if (authType == null)
+             env.setProperty(Context.SECURITY_AUTHENTICATION, AUTH_TYPE_SIMPLE);
+       }
+       String providerURL = null;
+       if (namingProviderURL != null)
+       {
+          providerURL = namingProviderURL;
+       }
+       else
+       {
+          providerURL = (String) options.get(Context.PROVIDER_URL);
+       }
+       String protocol = env.getProperty(Context.SECURITY_PROTOCOL);
+       if (providerURL == null)
+       {
+          if (PROTOCOL_SSL.equals(protocol))
+          {
+             providerURL = DEFAULT_SSL_URL;
+          }
+          else
+          {
+             providerURL = DEFAULT_URL;
+          }
+       }
+       env.setProperty(Context.PROVIDER_URL, providerURL);
+
+       // Assume the caller of this method has checked the requirements for the principal and
+       // credentials.
+       if (principalDN != null)
+          env.setProperty(Context.SECURITY_PRINCIPAL, principalDN);
+       if (credential != null)
+          env.put(Context.SECURITY_CREDENTIALS, credential);
+       traceLdapEnv(env);
+       return env;
+   }
+
+   protected LdapContext constructLdapContext(String namingProviderURL, String dn, Object credential, String authentication)
          throws LoginException
    {
-      Properties env = createBaseProperties();
-
-      // Set defaults for key values if they are missing
-      String factoryName = env.getProperty(Context.INITIAL_CONTEXT_FACTORY);
-      if (factoryName == null)
-      {
-         factoryName = DEFAULT_LDAP_CTX_FACTORY;
-         env.setProperty(Context.INITIAL_CONTEXT_FACTORY, factoryName);
-      }
-
-      // If this method is called with an authentication type then use that.
-      if (authentication != null && authentication.length() > 0)
-      {
-         env.setProperty(Context.SECURITY_AUTHENTICATION, authentication);
-      }
-      else
-      {
-         String authType = env.getProperty(Context.SECURITY_AUTHENTICATION);
-         if (authType == null)
-            env.setProperty(Context.SECURITY_AUTHENTICATION, AUTH_TYPE_SIMPLE);
-      }
-
-      String protocol = env.getProperty(Context.SECURITY_PROTOCOL);
-      String providerURL = (String) options.get(Context.PROVIDER_URL);
-      if (providerURL == null)
-      {
-         if (PROTOCOL_SSL.equals(protocol))
-         {
-            providerURL = DEFAULT_SSL_URL;
-         }
-         else
-         {
-            providerURL = DEFAULT_URL;
-         }
-         env.setProperty(Context.PROVIDER_URL, providerURL);
-      }
-
-      // Assume the caller of this method has checked the requirements for the principal and
-      // credentials.
-      if (dn != null)
-         env.setProperty(Context.SECURITY_PRINCIPAL, dn);
-      if (credential != null)
-         env.put(Context.SECURITY_CREDENTIALS, credential);
-      traceLdapEnv(env);
       try
       {
-         return new InitialLdapContext(env, null);
+          Properties env = constructLdapContextEnvironment(namingProviderURL, dn, credential, authentication);
+          return new InitialLdapContext(env, null);
       }
       catch (NamingException e)
       {
@@ -466,20 +488,49 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
 
          Object[] filterArgs =
          {getIdentity().getName()};
-         results = ctx.search(baseCtxDN, baseFilter, filterArgs, userSearchControls);
-         if (results.hasMore() == false)
+         
+         LdapContext ldapCtx = ctx;
+
+         boolean referralsLeft = true;
+         SearchResult sr = null;
+         while (referralsLeft) 
+         {
+            try 
+            {
+               results = ldapCtx.search(baseCtxDN, baseFilter, filterArgs, userSearchControls);
+               while (results.hasMore()) 
+               {
+                  sr = (SearchResult) results.next();
+                  break;
+               }
+               referralsLeft = false;
+            }
+            catch (ReferralException e) 
+            {
+               ldapCtx = (LdapContext) e.getReferralContext();
+               if (results != null) 
+               {
+                  results.close();
+               }
+            }
+         }
+         
+         if (sr == null)
          {
             results.close();
             throw new LoginException("Search of baseDN(" + baseCtxDN + ") found no matches");
          }
-
-         SearchResult sr = (SearchResult) results.next();
+         
          String name = sr.getName();
          String userDN = null;
-         if (sr.isRelative() == true)
+         if (sr.isRelative() == true) 
+         {
             userDN = new CompositeName(name).get(0) + "," + baseCtxDN;
+         }
          else
-            throw new LoginException("Can't follow referal for authentication: " + name);
+         {
+            userDN = sr.getName();
+         }
 
          results.close();
          results = null;
@@ -496,7 +547,71 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
          throw le;
       }
    }
+   
+   private void referralAuthenticate(String absoluteName, Object credential)
+           throws LoginException
+   {
+       URI uri;
+       try 
+       {
+           uri = new URI(absoluteName);
+       } 
+       catch (URISyntaxException e)  
+       {
+           LoginException le = new LoginException("Unable to find user DN in referral LDAP");
+           le.initCause(e);
+           throw le;
+       }
+       String name = localUserDN(absoluteName);
+       String namingProviderURL = uri.getScheme() + "://" + uri.getAuthority();
+       
+       InitialLdapContext refCtx = null;
+       
+       try 
+       {
+          Properties refEnv = constructLdapContextEnvironment(namingProviderURL, name, credential, null);
+          refCtx = new InitialLdapContext(refEnv, null);
+          refCtx.close();
 
+       }
+       catch (NamingException e)
+       {
+          LoginException le = new LoginException("Unable to create referral LDAP context");
+          le.initCause(e);
+          throw le;   
+       }
+       
+   }
+
+   private String localUserDN(String absoluteDN) {
+      try 
+      {
+         URI userURI = new URI(absoluteDN);
+         return userURI.getPath().substring(1);
+      }
+      catch (URISyntaxException e)
+      {
+         return null;
+      }  
+   }
+   
+   /**
+    * Checks whether userDN is absolute URI, like the one pointing to an LDAP referral.
+    * @param userDN
+    * @return
+    */
+   private Boolean isUserDnAbsolute(String userDN) {
+      try 
+      {
+         URI userURI = new URI(userDN);
+         return userURI.isAbsolute();
+      }
+      catch (URISyntaxException e)
+      {
+         return false;
+      }  
+   }
+   
    protected void authenticate(String userDN) throws LoginException
    {
       char[] credential = getCredential();
@@ -509,20 +624,28 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
          }
       }
 
-      try
+      if (isUserDnAbsolute(userDN))
       {
-         LdapContext authContext = constructLdapContext(userDN, credential, null);
-         authContext.close();
+         // user object resides in referral 
+         referralAuthenticate(userDN, credential);
       }
-      catch (NamingException ne)
+      else 
       {
-         if (log.isDebugEnabled())
-            log.debug("Authentication failed - " + ne.getMessage());
-         LoginException le = new LoginException("Authentication failed");
-         le.initCause(ne);
-         throw le;
+         // non referral user authentication 
+         try
+         {
+            LdapContext authContext = constructLdapContext(null, userDN, credential, null);
+            authContext.close();
+         }
+         catch (NamingException ne)
+         {
+            if (log.isDebugEnabled())
+               log.debug("Authentication failed - " + ne.getMessage());
+            LoginException le = new LoginException("Authentication failed");
+            le.initCause(ne);
+            throw le;
+         }
       }
-
       super.loginOk = true;
       if (getUseFirstPass() == true)
       { // Add the username and password to the shared state map
@@ -537,8 +660,15 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
       /*
        * The distinguished name passed into this method is expected to be unquoted.
        */
-      Object[] filterArgs =
-      {getIdentity().getName(), dn};
+      Object[] filterArgs = null;
+      if (isUserDnAbsolute(dn))
+      {
+         filterArgs = new Object[] {getIdentity().getName(), localUserDN(dn)};
+      }
+      else
+      {
+         filterArgs = new Object[] {getIdentity().getName(), dn};
+      }
 
       NamingEnumeration results = null;
       try
@@ -676,6 +806,11 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
          {
             String userDNToCheck = (String) usersToCheck.get(i);
             if (userDNToCheck.equals(referralUserDNToCheck))
+            {
+               chkSuccessful = true;
+               break;
+            }
+            if (userDNToCheck.equals(getIdentity().getName()))
             {
                chkSuccessful = true;
                break;

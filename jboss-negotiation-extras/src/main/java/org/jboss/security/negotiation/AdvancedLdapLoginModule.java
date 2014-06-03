@@ -26,6 +26,7 @@ import java.net.URISyntaxException;
 import java.security.Principal;
 import java.security.PrivilegedAction;
 import java.security.acl.Group;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -261,7 +262,22 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
       roleAttributeIsDN = Boolean.parseBoolean(temp);
 
       roleNameAttributeID = (String) options.get(ROLE_NAME_ATTRIBUTE_ID);
-
+      
+      ArrayList<String> roleSearchAttributeList = new ArrayList<String>(3); 
+      if (roleAttributeID != null) 
+      {
+          roleSearchAttributeList.add(roleAttributeID);
+      }
+      if (roleNameAttributeID != null)
+      {
+          roleSearchAttributeList.add(roleNameAttributeID);
+      } 
+      if (referralUserAttributeIDToCheck != null)
+      {
+          roleSearchAttributeList.add(referralUserAttributeIDToCheck);
+      } 
+      roleSearchControls.setReturningAttributes(roleSearchAttributeList.toArray(new String[0]));
+      
       temp = (String) options.get(ALLOW_EMPTY_PASSWORD);
       allowEmptyPassword = Boolean.parseBoolean(temp);
 

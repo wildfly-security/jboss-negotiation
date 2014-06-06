@@ -179,6 +179,12 @@ public class SPNEGOLoginModule extends CommonLoginModule
       }
       else
       {
+         NegotiationContext negotiationContext = NegotiationContext.getCurrentNegotiationContext();
+         if (negotiationContext != null) {
+           log.debug("NegotiationContext.setContinuationRequired(true)");
+           negotiationContext.setContinuationRequired(true);
+         }
+
          throw new LoginException("Continuation Required.");
       }
 

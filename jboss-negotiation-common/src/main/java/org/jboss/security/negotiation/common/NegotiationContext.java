@@ -52,6 +52,8 @@ public class NegotiationContext
 
    private Object schemeContext = null;
 
+   private boolean continuationRequired = false;
+
    public static NegotiationContext getCurrentNegotiationContext()
    {
       return negotiationContext.get();
@@ -73,6 +75,7 @@ public class NegotiationContext
          log.trace("clear " + this.hashCode());
       requestMessage = null;
       responseMessage = null;
+      continuationRequired = false;
       negotiationContext.remove();
    }
 
@@ -136,4 +139,13 @@ public class NegotiationContext
       this.schemeContext = schemeContext;
    }
 
+   public boolean isContinuationRequired()
+   {
+      return continuationRequired;
+   }
+
+   public void setContinuationRequired(boolean continuationRequired)
+   {
+      this.continuationRequired = continuationRequired;
+   }
 }

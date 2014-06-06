@@ -28,6 +28,7 @@ import static org.apache.catalina.authenticator.Constants.FORM_PRINCIPAL_NOTE;
 import static org.apache.catalina.authenticator.Constants.FORM_USERNAME;
 import static org.apache.catalina.authenticator.Constants.SESS_PASSWORD_NOTE;
 import static org.apache.catalina.authenticator.Constants.SESS_USERNAME_NOTE;
+import static org.apache.catalina.authenticator.Constants.REQ_SSOID_NOTE;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -100,10 +101,15 @@ public class NegotiationAuthenticator extends FormAuthenticator
       log.trace("Authenticating user");
 
       Principal principal = request.getUserPrincipal();
+      String ssoId = (String) request.getNote(REQ_SSOID_NOTE);
       if (principal != null)
       {
          if (log.isTraceEnabled())
             log.trace("Already authenticated '" + principal.getName() + "'");
+
+         // Associate the session with any existing SSO session
+         if (ssoId != null)
+            associate(ssoId, request.getSessionInternal(true));
 
          // Is this the re-submit of the original request URI after successful
          // authentication?  If so, forward the *original* request instead.
@@ -117,6 +123,19 @@ public class NegotiationAuthenticator extends FormAuthenticator
          }
 
          return true;
+      }
+
+      // Is there an SSO session against which we can try to reauthenticate?
+      if (ssoId != null) {
+          log.trace("SSO Id " + ssoId + " set; attempting " + "reauthentication");
+          // Try to reauthenticate using data cached by SSO.  If this fails,
+          // either the original SSO logon was of DIGEST or SSL (which
+          // we can't reauthenticate ourselves because there is no
+          // cached username and password), or the realm denied
+          // the user's reauthentication for some reason.
+          // In either case we have to prompt the user for a logon */
+          if (reauthenticateFromSSO(ssoId, request))
+              return true;
       }
 
       String contextPath = request.getContextPath();

@@ -181,8 +181,10 @@ public class SPNEGOLoginModule extends CommonLoginModule
       {
          NegotiationContext negotiationContext = NegotiationContext.getCurrentNegotiationContext();
          if (negotiationContext != null) {
-           log.debug("NegotiationContext.setContinuationRequired(true)");
-           negotiationContext.setContinuationRequired(true);
+           if( ((NegTokenTarg)negotiationContext.getResponseMessage()).getNegResult() != NegTokenTarg.REJECTED ) {
+             log.debug("NegotiationContext.setContinuationRequired(true)");
+             negotiationContext.setContinuationRequired(true);
+           }
          }
 
          throw new LoginException("Continuation Required.");

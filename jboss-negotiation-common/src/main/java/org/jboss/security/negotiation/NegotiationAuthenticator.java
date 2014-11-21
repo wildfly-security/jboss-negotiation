@@ -330,7 +330,7 @@ public class NegotiationAuthenticator extends FormAuthenticator
                try
                {
                   GSSCredential delegCredential = gssContext.getDelegCred();
-                  session.setNote(DELEGATION_CREDENTIAL, delegCredential);
+                  request.setNote(DELEGATION_CREDENTIAL, delegCredential);
                }
                catch (GSSException e)
                {
@@ -483,8 +483,7 @@ public class NegotiationAuthenticator extends FormAuthenticator
 
       public void invoke(Request request, Response response) throws IOException, ServletException
       {
-         Session session = request.getSessionInternal();
-         GSSCredential credential = (GSSCredential) session.getNote(DELEGATION_CREDENTIAL);
+         GSSCredential credential = (GSSCredential) request.getNote(DELEGATION_CREDENTIAL);
          try
          {
             DelegationCredentialManager.setDelegationCredential(credential);

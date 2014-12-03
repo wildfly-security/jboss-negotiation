@@ -54,6 +54,8 @@ import javax.security.auth.login.LoginException;
 import org.jboss.security.SimpleGroup;
 import org.jboss.security.negotiation.common.CommonLoginModule;
 import org.jboss.security.negotiation.prototype.DecodeAction;
+import org.jboss.security.vault.SecurityVaultUtil;
+import org.jboss.security.vault.SecurityVaultException;
 
 /**
  * Another LDAP LoginModule to take into account requirements
@@ -206,6 +208,20 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
       bindAuthentication = (String) options.get(BIND_AUTHENTICATION);
       bindDn = (String) options.get(BIND_DN);
       bindCredential = (String) options.get(BIND_CREDENTIAL);
+
+      try
+      {
+        //Check if the credential is vaultified
+        if(bindCredential != null && SecurityVaultUtil.isVaultFormat(bindCredential))
+        {
+          bindCredential = SecurityVaultUtil.getValueAsString(bindCredential);
+        }
+      }
+      catch (SecurityVaultException e)
+      {
+        log.warn("Unable to obtain bindCredentials from Vault: ", e);
+      }
+
       jaasSecurityDomain = (String) options.get(SECURITY_DOMAIN);
 
       // User Search Settings

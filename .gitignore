@@ -6,5 +6,7 @@ jboss-negotiation-net/target
 jboss-negotiation-ntlm/target
 jboss-negotiation-spnego/target
 jboss-negotiation-toolkit/target
+jboss-negotiation-toolkit/.project
+jboss-negotiation-toolkit/.classpath
 *.iml
 *~

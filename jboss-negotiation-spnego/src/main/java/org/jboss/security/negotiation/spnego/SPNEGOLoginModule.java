@@ -417,24 +417,26 @@ public class SPNEGOLoginModule extends CommonLoginModule
                return Boolean.TRUE;
             }
 
-            byte[] respToken = gssContext.acceptSecContext(gssToken, 0, gssToken.length);
+            if(gssToken != null){
+               byte[] respToken = gssContext.acceptSecContext(gssToken, 0, gssToken.length);
 
-            if (respToken != null)
-            {
-               NegotiationMessage response;
-               if (requestMessage instanceof KerberosMessage)
+               if (respToken != null)
                {
-                  response = new KerberosMessage(Constants.KERBEROS_V5, respToken);
-               }
-               else
-               {
-                  NegTokenTarg negTokenTarg = new NegTokenTarg();
-                  negTokenTarg.setResponseToken(respToken);
+                  NegotiationMessage response;
+                  if (requestMessage instanceof KerberosMessage)
+                  {
+                     response = new KerberosMessage(Constants.KERBEROS_V5, respToken);
+                  }
+                  else
+                  {
+                     NegTokenTarg negTokenTarg = new NegTokenTarg();
+                     negTokenTarg.setResponseToken(respToken);
 
-                  response = negTokenTarg;
-               }
+                     response = negTokenTarg;
+                  }
 
-               negotiationContext.setResponseMessage(response);
+                  negotiationContext.setResponseMessage(response);
+               }
             }
 
             if (gssContext.isEstablished() == false)

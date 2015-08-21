@@ -40,6 +40,7 @@ import org.ietf.jgss.GSSCredential;
 import org.ietf.jgss.GSSException;
 import org.ietf.jgss.GSSManager;
 import org.ietf.jgss.GSSName;
+import org.ietf.jgss.Oid;
 
 /**
  * A Kerberos {@link LoginModule} that wraps the JDK supplied module and has the additional capability of adding a
@@ -187,7 +188,7 @@ public class KerberosLoginModule implements LoginModule {
                 log.trace("Adding GSSCredential to populated Subject");
                 final GSSManager manager = GSSManager.getInstance();
                 try {
-                    GSSCredential credential = Subject.doAs(subject, new PrivilegedExceptionAction<GSSCredential>() {
+                    final GSSCredential credential = Subject.doAs(subject, new PrivilegedExceptionAction<GSSCredential>() {
 
                         public GSSCredential run() throws Exception {
                             Set<KerberosPrincipal> principals = subject.getPrincipals(KerberosPrincipal.class);
@@ -205,7 +206,61 @@ public class KerberosLoginModule implements LoginModule {
                         }
                     });
 
-                    SecurityActions.addPrivateCredential(subject, credential);
+                    GSSCredential wrapped = new GSSCredential() {
+
+                        public int getUsage(Oid mech) throws GSSException {
+                            return credential.getUsage(mech);
+                        }
+
+                        public int getUsage() throws GSSException {
+                            return credential.getUsage();
+                        }
+
+                        public int getRemainingLifetime() throws GSSException {
+                            return credential.getRemainingLifetime();
+                        }
+
+                        public int getRemainingInitLifetime(Oid mech) throws GSSException {
+                            return credential.getRemainingInitLifetime(mech);
+                        }
+
+                        public int getRemainingAcceptLifetime(Oid mech) throws GSSException {
+                            return credential.getRemainingAcceptLifetime(mech);
+                        }
+
+                        public GSSName getName(Oid mech) throws GSSException {
+                            return credential.getName(mech);
+                        }
+
+                        public GSSName getName() throws GSSException {
+                            return credential.getName();
+                        }
+
+                        public Oid[] getMechs() throws GSSException {
+                            return credential.getMechs();
+                        }
+
+                        public void dispose() throws GSSException {
+                            // Prevent disposal of our credential.
+                        }
+
+                        public void add(GSSName name, int initLifetime, int acceptLifetime, Oid mech, int usage) throws GSSException {
+                            credential.add(name, initLifetime, acceptLifetime, mech, usage);
+                        }
+
+                        @Override
+                        public int hashCode() {
+                            return credential.hashCode();
+                        }
+
+                        @Override
+                        public boolean equals(Object obj) {
+                            return credential.equals(obj);
+                        }
+
+                    };
+
+                    SecurityActions.addPrivateCredential(subject, wrapped);
                     log.trace("Added private credential.");
                     this.credential = credential;
                 } catch (PrivilegedActionException e) {

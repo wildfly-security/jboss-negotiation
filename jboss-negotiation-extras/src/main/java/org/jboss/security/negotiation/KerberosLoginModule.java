@@ -22,8 +22,6 @@
 
 package org.jboss.security.negotiation;
 
-import org.jboss.logging.Logger;
-
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.HashMap;
@@ -41,6 +39,7 @@ import org.ietf.jgss.GSSException;
 import org.ietf.jgss.GSSManager;
 import org.ietf.jgss.GSSName;
 import org.ietf.jgss.Oid;
+import org.jboss.logging.Logger;
 
 /**
  * A Kerberos {@link LoginModule} that wraps the JDK supplied module and has the additional capability of adding a
@@ -69,6 +68,15 @@ public class KerberosLoginModule implements LoginModule {
      * Defaults to false.
      */
     public static final String ADD_GSS_CREDENTIAL = "addGSSCredential";
+
+    /**
+     * Module option to specify if any {@link GSSCredential} being added to the {@link Subject} should be wrapped to prevent disposal.
+     *
+     * Has no effect if a {@link GSSCredential} is not being added to the {@link Subject}.
+     *
+     * Defaults to false.
+     */
+    public static final String WRAP_GSS_CREDENTIAL = "wrapGSSCredential";
 
     /**
      * The lifetime in seconds of the {@link GSSCredential}, a negative value will set this to GSSCredential.INDEFINITE_LIFETIME.
@@ -100,11 +108,13 @@ public class KerberosLoginModule implements LoginModule {
 
     private DelegationCredential delegationCredential = DelegationCredential.IGNORE;
     private boolean addGssCredential;
+    private boolean wrapGssCredential;
     private int credentialLifetime = GSSCredential.DEFAULT_LIFETIME;
     private LoginModule wrapped;
 
     private Subject subject;
-    private GSSCredential credential;
+    private GSSCredential rawCredential;
+    private GSSCredential storedCredential;
     private boolean usingWrappedLoginModule;
     private Subject intermediateSubject;
 
@@ -125,6 +135,7 @@ public class KerberosLoginModule implements LoginModule {
 
             Map<String, ?> tweakedOptions = new HashMap<String, Object>(options);
             tweakedOptions.remove(ADD_GSS_CREDENTIAL);
+            tweakedOptions.remove(WRAP_GSS_CREDENTIAL);
             tweakedOptions.remove(CREDENTIAL_LIFETIME);
             tweakedOptions.remove(DELEGATION_CREDENTIAL);
 
@@ -137,6 +148,8 @@ public class KerberosLoginModule implements LoginModule {
         this.subject = subject;
         addGssCredential = Boolean.parseBoolean((String) options.get(ADD_GSS_CREDENTIAL));
         log.tracef("addGssCredential=%b", addGssCredential);
+        wrapGssCredential = Boolean.parseBoolean((String) options.get(WRAP_GSS_CREDENTIAL));
+        log.tracef("wrapGssCredential=%b", wrapGssCredential);
         if (options.containsKey(CREDENTIAL_LIFETIME)) {
             if (addGssCredential == false) {
                 throw new IllegalStateException(String.format("Option '%s' has been specified within enabling '%s'",
@@ -153,8 +166,8 @@ public class KerberosLoginModule implements LoginModule {
     public boolean login() throws LoginException {
         switch (delegationCredential) {
             case REQUIRE:
-                credential = DelegationCredentialContext.getDelegCredential();
-                if (credential == null) {
+                rawCredential = DelegationCredentialContext.getDelegCredential();
+                if (rawCredential == null) {
                     throw new LoginException("Module configured to use delegated credential but no delegated credential available.");
                 }
                 log.trace("We have a delegation credential, login() is a success.");
@@ -162,8 +175,8 @@ public class KerberosLoginModule implements LoginModule {
                 usingWrappedLoginModule = false;
                 return true;
             case USE:
-                credential = DelegationCredentialContext.getDelegCredential();
-                if (credential != null) {
+                rawCredential = DelegationCredentialContext.getDelegCredential();
+                if (rawCredential != null) {
                     log.trace("We have a delegation credential, login() is a success.");
                     usingWrappedLoginModule = false;
                     return true;
@@ -173,7 +186,6 @@ public class KerberosLoginModule implements LoginModule {
             default:
                 usingWrappedLoginModule = true;
                 return wrapped.login();
-
         }
     }
 
@@ -206,63 +218,10 @@ public class KerberosLoginModule implements LoginModule {
                         }
                     });
 
-                    GSSCredential wrapped = new GSSCredential() {
-
-                        public int getUsage(Oid mech) throws GSSException {
-                            return credential.getUsage(mech);
-                        }
-
-                        public int getUsage() throws GSSException {
-                            return credential.getUsage();
-                        }
-
-                        public int getRemainingLifetime() throws GSSException {
-                            return credential.getRemainingLifetime();
-                        }
-
-                        public int getRemainingInitLifetime(Oid mech) throws GSSException {
-                            return credential.getRemainingInitLifetime(mech);
-                        }
-
-                        public int getRemainingAcceptLifetime(Oid mech) throws GSSException {
-                            return credential.getRemainingAcceptLifetime(mech);
-                        }
-
-                        public GSSName getName(Oid mech) throws GSSException {
-                            return credential.getName(mech);
-                        }
-
-                        public GSSName getName() throws GSSException {
-                            return credential.getName();
-                        }
-
-                        public Oid[] getMechs() throws GSSException {
-                            return credential.getMechs();
-                        }
-
-                        public void dispose() throws GSSException {
-                            // Prevent disposal of our credential.
-                        }
-
-                        public void add(GSSName name, int initLifetime, int acceptLifetime, Oid mech, int usage) throws GSSException {
-                            credential.add(name, initLifetime, acceptLifetime, mech, usage);
-                        }
-
-                        @Override
-                        public int hashCode() {
-                            return credential.hashCode();
-                        }
-
-                        @Override
-                        public boolean equals(Object obj) {
-                            return credential.equals(obj);
-                        }
-
-                    };
-
-                    SecurityActions.addPrivateCredential(subject, wrapped);
+                    storedCredential = wrapGssCredential ? wrapCredential(credential) : credential;
+                    SecurityActions.addPrivateCredential(subject, storedCredential);
                     log.trace("Added private credential.");
-                    this.credential = credential;
+                    this.rawCredential = credential;
                 } catch (PrivilegedActionException e) {
                     Exception cause = e.getException();
                     if (cause instanceof LoginException) {
@@ -275,7 +234,10 @@ public class KerberosLoginModule implements LoginModule {
             }
         } else {
             log.trace("Jumping straight to mapping of delegation credential.");
-            intermediateSubject = GSSUtil.populateSubject(subject, addGssCredential, credential);
+            if (addGssCredential) {
+                storedCredential = wrapGssCredential ? wrapCredential(rawCredential) : rawCredential;
+            }
+            intermediateSubject = GSSUtil.populateSubject(subject, rawCredential, storedCredential);
 
             response = true;
         }
@@ -299,16 +261,16 @@ public class KerberosLoginModule implements LoginModule {
     public boolean logout() throws LoginException {
         try {
             if (usingWrappedLoginModule) {
-                if (credential != null) {
-                    log.trace("Remocing GSSCredential added to subject during authentication.");
-                    SecurityActions.removePrivateCredential(subject, credential);
+                if (rawCredential != null) {
+                    log.trace("Removing GSSCredential added to subject during authentication.");
+                    SecurityActions.removePrivateCredential(subject, storedCredential);
                 }
 
                 log.trace("Passing to wrapped login module to logout.");
                 return wrapped.logout();
             } else {
                 log.trace("Removing credentials from Subject poplulated from delegation credential.");
-                GSSUtil.clearSubject(subject, intermediateSubject, credential);
+                GSSUtil.clearSubject(subject, intermediateSubject, storedCredential);
 
                 return true;
             }
@@ -320,19 +282,65 @@ public class KerberosLoginModule implements LoginModule {
     private void cleanUp() {
         wrapped = null;
         subject = null;
-        if (credential != null && usingWrappedLoginModule) {
+        if (rawCredential != null && usingWrappedLoginModule) {
             // Don't want to dispose of it if it was delegated to us as there could be subsequent use for it.
             try {
                 log.trace("Disposing of GSSCredential");
-                credential.dispose();
+                rawCredential.dispose();
             } catch (GSSException ignored) {
             }
         }
-        credential = null;
+        rawCredential = null;
     }
 
     private enum DelegationCredential {
         IGNORE, REQUIRE, USE;
+    }
+
+    private static GSSCredential wrapCredential(final GSSCredential credential) {
+        return new GSSCredential() {
+
+            public int getUsage(Oid mech) throws GSSException {
+                return credential.getUsage(mech);
+            }
+
+            public int getUsage() throws GSSException {
+                return credential.getUsage();
+            }
+
+            public int getRemainingLifetime() throws GSSException {
+                return credential.getRemainingLifetime();
+            }
+
+            public int getRemainingInitLifetime(Oid mech) throws GSSException {
+                return credential.getRemainingInitLifetime(mech);
+            }
+
+            public int getRemainingAcceptLifetime(Oid mech) throws GSSException {
+                return credential.getRemainingAcceptLifetime(mech);
+            }
+
+            public GSSName getName(Oid mech) throws GSSException {
+                return credential.getName(mech);
+            }
+
+            public GSSName getName() throws GSSException {
+                return credential.getName();
+            }
+
+            public Oid[] getMechs() throws GSSException {
+                return credential.getMechs();
+            }
+
+            public void dispose() throws GSSException {
+                // Prevent disposal of our credential.
+            }
+
+            public void add(GSSName name, int initLifetime, int acceptLifetime, Oid mech, int usage) throws GSSException {
+                credential.add(name, initLifetime, acceptLifetime, mech, usage);
+            }
+
+        };
     }
 
 }

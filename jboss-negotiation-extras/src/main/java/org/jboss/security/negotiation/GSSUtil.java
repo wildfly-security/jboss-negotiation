@@ -47,16 +47,16 @@ class GSSUtil {
      * Populate the supplied {@link Subject} based on the supplied {@link GSSCredential}
      *
      * @param subject - The Subject to populate.
-     * @param addGssCredential - Should the GSSCredential also be added?
-     * @param credentials - The GSSCredential to use for population.
+     * @param delegatedCredential - The GSSCredential to use for population.
+     * @param privateCredential The optional {@link GSSCredential} to add to the private credentials of the {@link Subject}.
      * @return A {@link Subject} that was created from the GSSCredential so that we can identify the content to remove later.
      */
-    static Subject populateSubject(Subject subject, boolean addGssCredential, GSSCredential credentials) throws LoginException {
+    static Subject populateSubject(Subject subject, GSSCredential delegatedCredential, GSSCredential privateCredential) throws LoginException {
         Subject intermediateSubject = null;
         if (CREATE_SUBJECT_METHOD != null) {
             try {
-                GSSName name = credentials.getName(Constants.KERBEROS_V5);
-                intermediateSubject = SecurityActions.invokeCreateSubject(CREATE_SUBJECT_METHOD, name, credentials);
+                GSSName name = delegatedCredential.getName(Constants.KERBEROS_V5);
+                intermediateSubject = SecurityActions.invokeCreateSubject(CREATE_SUBJECT_METHOD, name, delegatedCredential);
                 log.trace("Delegated credential converted to Subject.");
                 SecurityActions.copySubjectContents(intermediateSubject, subject);
                 log.trace("Copied conents of temporary Subject to Subject from the LoginContext");
@@ -64,21 +64,21 @@ class GSSUtil {
                 log.debug(e);
                 throw new LoginException("Unable to use supplied GSSCredential to populate Subject.");
             }
-        } else if (addGssCredential == false) {
+        } else if (privateCredential == null) {
             throw new LoginException(
                     "Utility not available to convert from GSSCredential and adding GSSCredential to Subject disabled - this would just result in an empty Subject!");
         }
-        if (addGssCredential) {
+        if (privateCredential != null) {
             log.trace("Also add the GSSCredential to the Subject");
-            SecurityActions.addPrivateCredential(subject, credentials);
+            SecurityActions.addPrivateCredential(subject, privateCredential);
         }
 
         return intermediateSubject;
     }
 
-    static void clearSubject(final Subject subject, final Subject intermediateSubject, final GSSCredential credentials) {
+    static void clearSubject(final Subject subject, final Subject intermediateSubject, final GSSCredential credential) {
         log.trace("Remove the GSSCredential from the Subject");
-        SecurityActions.removePrivateCredential(subject, credentials);
+        SecurityActions.removePrivateCredential(subject, credential);
         log.trace("Subtract the remaining principals and credentials we added to the Subject");
         SecurityActions.removeSubjectContents(intermediateSubject, subject);
     }

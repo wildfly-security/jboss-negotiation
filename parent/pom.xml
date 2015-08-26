@@ -9,7 +9,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jboss.security</groupId>
   <artifactId>jboss-negotiation-project</artifactId>
-  <version>2.3.8.Final</version>
+  <version>2.3.9.CR1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>JBoss Negotiation Parent</name>
   <url>http://www.jboss.com</url>

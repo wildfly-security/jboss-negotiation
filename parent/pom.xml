@@ -22,10 +22,10 @@
   </scm>
   <properties>
     <version.junit>4.11</version.junit>
-    <version.org.jboss.logging.jboss-logging>3.1.4.GA</version.org.jboss.logging.jboss-logging>
-    <version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.0_spec>1.0.2.Final</version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.0_spec>
+    <version.org.jboss.logging.jboss-logging>3.2.1.Final</version.org.jboss.logging.jboss-logging>
+    <version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec>1.0.0.Final</version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec>
     <version.org.jboss.web>7.5.7.Final</version.org.jboss.web>
-    <version.org.picketbox>4.1.1.Final</version.org.picketbox>
+    <version.org.picketbox>4.9.3.Final</version.org.picketbox>
     <version.org.picketbox.picketbox-commons>1.0.0.final</version.org.picketbox.picketbox-commons>
 
     <maven.compiler.source>1.8</maven.compiler.source>
@@ -113,8 +113,8 @@
       </dependency>
       <dependency>
         <groupId>org.jboss.spec.javax.servlet</groupId>
-        <artifactId>jboss-servlet-api_3.0_spec</artifactId>
-        <version>${version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.0_spec}</version>
+        <artifactId>jboss-servlet-api_3.1_spec</artifactId>
+        <version>${version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.web</groupId>

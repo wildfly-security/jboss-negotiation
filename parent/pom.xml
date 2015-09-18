@@ -21,6 +21,7 @@
     <developerConnection>scm:svn:https://svn.jboss.org/repos/jbossas/projects/security/security-negotiation/trunk</developerConnection>
   </scm>
   <properties>
+    <version.io.undertow>1.3.0.CR1</version.io.undertow>
     <version.junit>4.11</version.junit>
     <version.org.jboss.logging.jboss-logging>3.2.1.Final</version.org.jboss.logging.jboss-logging>
     <version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec>1.0.0.Final</version.org.jboss.spec.javax.servlet.jboss-servlet-api_3.1_spec>
@@ -100,6 +101,11 @@
       </dependency>
 
       <!-- External Dependencies -->
+      <dependency>
+          <groupId>io.undertow</groupId>
+          <artifactId>undertow-core</artifactId>
+          <version>${version.io.undertow}</version>
+      </dependency>
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>

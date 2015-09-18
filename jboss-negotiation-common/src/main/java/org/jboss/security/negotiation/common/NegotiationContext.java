@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source.
- * 
+ *
  * Copyright 2007, Red Hat Middleware LLC, and individual contributors
  * as indicated by the @author tags. See the copyright.txt file in the
  * distribution for a full listing of individual contributors.
@@ -22,26 +22,30 @@
  */
 package org.jboss.security.negotiation.common;
 
+import io.undertow.util.AttachmentKey;
+
 import org.jboss.logging.Logger;
 import org.jboss.security.negotiation.NegotiationMessage;
 
 /**
- * The NegotiationContext is the holder to contain the state of the current authentication 
- * process and is used to transfer data between the authenticator valve and the login 
+ * The NegotiationContext is the holder to contain the state of the current authentication
+ * process and is used to transfer data between the authenticator valve and the login
  * module.
- * 
+ *
  * @author darran.lofthouse@jboss.com
  * @version $Revision$
  */
 public class NegotiationContext
 {
 
+   public static final AttachmentKey<NegotiationContext> ATTACHMENT_KEY = AttachmentKey.create(NegotiationContext.class);
+
    private static final Logger log = Logger.getLogger(NegotiationContext.class);
 
    private static final ThreadLocal<NegotiationContext> negotiationContext = new ThreadLocal<NegotiationContext>();
 
    private String username;
-   
+
    private boolean authenticated = false;
 
    private String authenticationMethod;
@@ -61,8 +65,7 @@ public class NegotiationContext
 
    public void associate()
    {
-      if (log.isTraceEnabled())
-         log.trace("associate " + this.hashCode());
+      log.tracef("associate %h", this);
       negotiationContext.set(this);
    }
 
@@ -71,8 +74,7 @@ public class NegotiationContext
     */
    public void clear()
    {
-      if (log.isTraceEnabled())
-         log.trace("clear " + this.hashCode());
+      log.tracef("clear %h", this);
       requestMessage = null;
       responseMessage = null;
       continuationRequired = false;

@@ -45,7 +45,7 @@ import org.jboss.logging.Logger;
  */
 class SecurityActions {
 
-    private static final Logger log = Logger.getLogger(SecurityActions.class);
+    private static final Logger log = Logger.getLogger(DelegationSecurityActions.class);
 
     private static final String SUN_GSSUTIL = "com.sun.security.jgss.GSSUtil";
     private static final String CREATE_SUBJECT = "createSubject";
@@ -104,8 +104,11 @@ class SecurityActions {
 
         void removeSubjectContents(final Subject toSubtract, final Subject from);
 
+        GSSCredential getDelegationCredential();
+
         static final LoginModuleActions NON_PRIVILEGED = new LoginModuleActions() {
 
+            @Override
             public Class<LoginModule> loadLoginModuleClass(String className) {
                 try {
                     return (Class<LoginModule>) KerberosLoginModule.class.getClassLoader().loadClass(className);
@@ -118,6 +121,7 @@ class SecurityActions {
                 }
             }
 
+            @Override
             public LoginModule newInstance(Class<LoginModule> moduleClass) {
                 try {
                     return moduleClass.newInstance();
@@ -130,16 +134,19 @@ class SecurityActions {
                 }
             }
 
+            @Override
             public void addPrivateCredential(Subject subject, Object credential) {
                 Set<Object> privateCredentials = subject.getPrivateCredentials();
                 privateCredentials.add(credential);
             }
 
+            @Override
             public void removePrivateCredential(Subject subject, Object credential) {
                 Set<Object> privateCredentials = subject.getPrivateCredentials();
                 privateCredentials.remove(credential);
             }
 
+            @Override
             @SuppressWarnings({ "rawtypes", "unchecked" })
             public Method getCreateSubjectMethod() {
                 try {
@@ -158,6 +165,7 @@ class SecurityActions {
 
             }
 
+            @Override
             public Subject invokeCreateSubject(Method createSubjectMethod, GSSName gssName, GSSCredential gssCredential) throws GSSException {
 
                 try {
@@ -178,49 +186,64 @@ class SecurityActions {
                 }
             }
 
+            @Override
             public void copySubjectContents(Subject from, Subject to) {
                 to.getPrincipals().addAll(from.getPrincipals());
                 to.getPublicCredentials().addAll(from.getPublicCredentials());
                 to.getPrivateCredentials().addAll(from.getPrivateCredentials());
             }
 
+            @Override
             public void removeSubjectContents(Subject toSubtract, Subject from) {
                 from.getPrincipals().removeAll(toSubtract.getPrincipals());
                 from.getPublicCredentials().removeAll(toSubtract.getPublicCredentials());
                 from.getPrivateCredentials().removeAll(toSubtract.getPrivateCredentials());
             }
+
+            @Override
+            public GSSCredential getDelegationCredential() {
+                return DelegationCredentialContext.getDelegCredential();
+            }
+
         };
 
         static final LoginModuleActions PRIVILEGED = new LoginModuleActions() {
 
             private PrivilegedAction<Method> GET_CREATE_SUBJECT_METHOD_ACTION = new PrivilegedAction<Method>() {
 
+                @Override
                 public Method run() {
                     return NON_PRIVILEGED.getCreateSubjectMethod();
                 }
             };
 
+            @Override
             public Class<LoginModule> loadLoginModuleClass(final String className) {
                 return AccessController.doPrivileged(new PrivilegedAction<Class<LoginModule>>() {
 
+                    @Override
                     public Class<LoginModule> run() {
                         return NON_PRIVILEGED.loadLoginModuleClass(className);
                     }
                 });
             }
 
+            @Override
             public LoginModule newInstance(final Class<LoginModule> moduleClass) {
                 return AccessController.doPrivileged(new PrivilegedAction<LoginModule>() {
 
+                    @Override
                     public LoginModule run() {
                         return NON_PRIVILEGED.newInstance(moduleClass);
                     }
                 });
             }
 
+            @Override
             public void addPrivateCredential(final Subject subject, final Object credential) {
                 AccessController.doPrivileged(new PrivilegedAction<Void>() {
 
+                    @Override
                     public Void run() {
                         NON_PRIVILEGED.addPrivateCredential(subject, credential);
                         return null;
@@ -228,9 +251,11 @@ class SecurityActions {
                 });
             }
 
+            @Override
             public void removePrivateCredential(final Subject subject, final Object credential) {
                 AccessController.doPrivileged(new PrivilegedAction<Void>() {
 
+                    @Override
                     public Void run() {
                         NON_PRIVILEGED.removePrivateCredential(subject, credential);
                         return null;
@@ -238,15 +263,18 @@ class SecurityActions {
                 });
             }
 
+            @Override
             public Method getCreateSubjectMethod() {
                 return AccessController.doPrivileged(GET_CREATE_SUBJECT_METHOD_ACTION);
             }
 
+            @Override
             public Subject invokeCreateSubject(final Method createSubjectMethod, final GSSName gssName,
                     final GSSCredential gssCredential) throws GSSException {
                 try {
                     return AccessController.doPrivileged(new PrivilegedExceptionAction<Subject>() {
 
+                        @Override
                         public Subject run() throws Exception {
                             return NON_PRIVILEGED.invokeCreateSubject(createSubjectMethod, gssName, gssCredential);
                         }
@@ -256,9 +284,11 @@ class SecurityActions {
                 }
             }
 
+            @Override
             public void copySubjectContents(final Subject from, final Subject to) {
                 AccessController.doPrivileged(new PrivilegedAction<Void>() {
 
+                    @Override
                     public Void run() {
                         NON_PRIVILEGED.copySubjectContents(from, to);
                         return null;
@@ -267,9 +297,11 @@ class SecurityActions {
 
             }
 
+            @Override
             public void removeSubjectContents(final Subject toSubtract, final Subject from) {
                 AccessController.doPrivileged(new PrivilegedAction<Void>() {
 
+                    @Override
                     public Void run() {
                         NON_PRIVILEGED.removeSubjectContents(toSubtract, from);
                         return null;
@@ -277,6 +309,14 @@ class SecurityActions {
                 });
 
             }
+
+            @Override
+            public GSSCredential getDelegationCredential() {
+                PrivilegedAction<GSSCredential> ACTION = NON_PRIVILEGED::getDelegationCredential;
+                return AccessController.doPrivileged(ACTION);
+            }
+
+
         };
     }
 

@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source.
- * 
+ *
  * Copyright 2007, Red Hat Middleware LLC, and individual contributors
  * as indicated by the @author tags. See the copyright.txt file in the
  * distribution for a full listing of individual contributors.
@@ -53,9 +53,9 @@ import org.jboss.security.negotiation.spnego.encoding.NegTokenTarg;
 import org.jboss.security.negotiation.spnego.encoding.SPNEGOMessage;
 
 /**
- * Login module to work in conjunction with SPNEGOAuthenticator to handle the 
- * authentication requirements. 
- * 
+ * Login module to work in conjunction with SPNEGOAuthenticator to handle the
+ * authentication requirements.
+ *
  * @author darran.lofthouse@jboss.com
  * @version $Revision$
  */
@@ -63,7 +63,7 @@ public class SPNEGOLoginModule extends CommonLoginModule
 {
 
    /*
-    * Configuration Option Constants 
+    * Configuration Option Constants
     */
 
    // If true drop the @REALM from the identity.
@@ -104,6 +104,8 @@ public class SPNEGOLoginModule extends CommonLoginModule
     */
 
    private LoginContext serverLoginContext = null;
+
+   private GSSCredential delegatedCredential = null;
 
    @Override
    public void initialize(final Subject subject, final CallbackHandler callbackHandler, final Map sharedState,
@@ -192,8 +194,25 @@ public class SPNEGOLoginModule extends CommonLoginModule
 
    }
 
-   protected Object innerLogin() throws LoginException
-   {
+    @Override
+    public boolean commit() throws LoginException {
+        boolean success = super.commit();
+        if (success && delegatedCredential != null) {
+            SecurityActions.addPrivateCredential(subject, delegatedCredential);
+        }
+        return success;
+    }
+
+    @Override
+    public boolean logout() throws LoginException {
+        if (delegatedCredential != null) {
+            SecurityActions.removePrivateCredential(subject, delegatedCredential);
+        }
+        return super.logout();
+    }
+
+    protected Object innerLogin() throws LoginException
+    {
       NegotiationContext negotiationContext = NegotiationContext.getCurrentNegotiationContext();
 
       if (negotiationContext == null)
@@ -279,7 +298,7 @@ public class SPNEGOLoginModule extends CommonLoginModule
       }
 
    }
-   
+
 
    @Override
    protected Principal createIdentity(final String username) throws Exception
@@ -336,7 +355,7 @@ public class SPNEGOLoginModule extends CommonLoginModule
       }
 
       public Object run()
-      {        
+      {
          try
          {
             // The message type will have already been checked before this point so we know it is
@@ -390,7 +409,7 @@ public class SPNEGOLoginModule extends CommonLoginModule
             else if (requestMessage instanceof KerberosMessage)
             {
                KerberosMessage kerberosMessage = (KerberosMessage) requestMessage;
-               
+
                gssToken = kerberosMessage.getToken();
             }
 
@@ -406,7 +425,7 @@ public class SPNEGOLoginModule extends CommonLoginModule
                log.debug("Creating new GSSContext.");
                GSSManager manager = GSSManager.getInstance();
                gssContext = manager.createContext((GSSCredential) null);
-               
+
                negotiationContext.setSchemeContext(gssContext);
             }
 
@@ -464,6 +483,10 @@ public class SPNEGOLoginModule extends CommonLoginModule
             log.debug("context.getCredDelegState() = " + gssContext.getCredDelegState());
             log.debug("context.getMutualAuthState() = " + gssContext.getMutualAuthState());
             log.debug("context.getSrcName() = " + gssContext.getSrcName().toString());
+         }
+
+         if (gssContext.getCredDelegState()) {
+             delegatedCredential = gssContext.getDelegCred();
          }
 
          negotiationContext.setAuthenticationMethod(SPNEGO);

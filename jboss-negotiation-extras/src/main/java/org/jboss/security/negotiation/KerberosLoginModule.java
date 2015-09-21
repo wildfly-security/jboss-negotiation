@@ -118,6 +118,7 @@ public class KerberosLoginModule implements LoginModule {
     private boolean usingWrappedLoginModule;
     private Subject intermediateSubject;
 
+    @Override
     public void initialize(Subject subject, CallbackHandler callbackHandler, Map<String, ?> sharedState, Map<String, ?> options) {
         if (options.containsKey(DELEGATION_CREDENTIAL)) {
             delegationCredential = DelegationCredential.valueOf((String)options.get(DELEGATION_CREDENTIAL));
@@ -163,6 +164,7 @@ public class KerberosLoginModule implements LoginModule {
         }
     }
 
+    @Override
     public boolean login() throws LoginException {
         switch (delegationCredential) {
             case REQUIRE:
@@ -189,6 +191,7 @@ public class KerberosLoginModule implements LoginModule {
         }
     }
 
+    @Override
     public boolean commit() throws LoginException {
         final boolean response;
 
@@ -202,6 +205,7 @@ public class KerberosLoginModule implements LoginModule {
                 try {
                     final GSSCredential credential = Subject.doAs(subject, new PrivilegedExceptionAction<GSSCredential>() {
 
+                        @Override
                         public GSSCredential run() throws Exception {
                             Set<KerberosPrincipal> principals = subject.getPrincipals(KerberosPrincipal.class);
                             if (principals.size() < 1) {
@@ -245,6 +249,7 @@ public class KerberosLoginModule implements LoginModule {
         return response;
     }
 
+    @Override
     public boolean abort() throws LoginException {
         try {
             if (usingWrappedLoginModule) {
@@ -258,6 +263,7 @@ public class KerberosLoginModule implements LoginModule {
         }
     }
 
+    @Override
     public boolean logout() throws LoginException {
         try {
             if (usingWrappedLoginModule) {
@@ -300,42 +306,52 @@ public class KerberosLoginModule implements LoginModule {
     private static GSSCredential wrapCredential(final GSSCredential credential) {
         return new GSSCredential() {
 
+            @Override
             public int getUsage(Oid mech) throws GSSException {
                 return credential.getUsage(mech);
             }
 
+            @Override
             public int getUsage() throws GSSException {
                 return credential.getUsage();
             }
 
+            @Override
             public int getRemainingLifetime() throws GSSException {
                 return credential.getRemainingLifetime();
             }
 
+            @Override
             public int getRemainingInitLifetime(Oid mech) throws GSSException {
                 return credential.getRemainingInitLifetime(mech);
             }
 
+            @Override
             public int getRemainingAcceptLifetime(Oid mech) throws GSSException {
                 return credential.getRemainingAcceptLifetime(mech);
             }
 
+            @Override
             public GSSName getName(Oid mech) throws GSSException {
                 return credential.getName(mech);
             }
 
+            @Override
             public GSSName getName() throws GSSException {
                 return credential.getName();
             }
 
+            @Override
             public Oid[] getMechs() throws GSSException {
                 return credential.getMechs();
             }
 
+            @Override
             public void dispose() throws GSSException {
                 // Prevent disposal of our credential.
             }
 
+            @Override
             public void add(GSSName name, int initLifetime, int acceptLifetime, Oid mech, int usage) throws GSSException {
                 credential.add(name, initLifetime, acceptLifetime, mech, usage);
             }

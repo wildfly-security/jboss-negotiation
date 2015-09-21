@@ -99,6 +99,7 @@ public class NegotiationMechanism implements AuthenticationMechanism {
                         final Account account = identityManager.verify(username, null);
                         if (account != null) {
                             securityContext.authenticationComplete(account, "SPNEGO", true);
+                            connection.removeAttachment(NegotiationContext.ATTACHMENT_KEY);
                             return AuthenticationMechanismOutcome.AUTHENTICATED;
                         }
                     } finally {

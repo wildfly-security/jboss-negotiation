@@ -31,7 +31,9 @@ import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Set;
 
+import javax.servlet.AsyncContext;
 import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -57,9 +59,28 @@ public class SecuredServlet extends HttpServlet
 
    private static final long serialVersionUID = 4708999345009728352L;
 
-   @Override
-   protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-           IOException {
+    @Override
+    protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
+
+        boolean goAsyc = Boolean.parseBoolean(req.getParameter("async"));
+
+        if (goAsyc) {
+            final AsyncContext asyncContext = req.startAsync();
+            asyncContext.start(() -> {
+                try {
+                    writeResponse(req, resp, true);
+                    asyncContext.complete();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+        } else {
+            writeResponse(req, resp, false);
+        }
+    }
+
+   private void writeResponse(final HttpServletRequest req, final HttpServletResponse resp, final boolean async) throws IOException {
        PrintWriter writer = resp.getWriter();
 
        writer.println("<html>");
@@ -68,8 +89,11 @@ public class SecuredServlet extends HttpServlet
        writer.println("  </head>");
        writer.println("  <body>");
        writer.println("    <h1>Negotiation Toolkit</h1>");
-       writer.println("    <h2>Secured</h2>");
-
+       writer.println("    <h2>Secured");
+       if (async) {
+           writer.println(" (Asynchronous)");
+       }
+       writer.println("</h2>");
        writer.println("    <h5>Auth Type</h5>");
        writeObject(req.getAuthType(), writer);
 

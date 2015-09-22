@@ -99,6 +99,23 @@ public class NegotiationMechanism implements AuthenticationMechanism {
                         final Account account = identityManager.verify(username, null);
                         if (account != null) {
                             securityContext.authenticationComplete(account, "SPNEGO", true);
+
+                            NegotiationMessage responseMessage = negContext.getResponseMessage();
+                            if (responseMessage != null) {
+                                ByteArrayOutputStream responseMessageOS = new ByteArrayOutputStream();
+                                try {
+                                    responseMessage.writeTo(responseMessageOS, true);
+                                } catch (IOException e) {
+                                    // Only using ByteArrayOutputStreams, should not actually hit this.
+                                    throw new IllegalStateException(e);
+                                }
+                                String responseHeader = responseMessageOS.toString();
+
+                                MessageTrace.logResponseBase64(responseHeader);
+
+                                exchange.getResponseHeaders().put(WWW_AUTHENTICATE, NEGOTIATE_PREFIX + responseHeader);
+                            }
+
                             connection.removeAttachment(NegotiationContext.ATTACHMENT_KEY);
                             return AuthenticationMechanismOutcome.AUTHENTICATED;
                         }
@@ -146,8 +163,10 @@ public class NegotiationMechanism implements AuthenticationMechanism {
             }
         }
 
-        exchange.getResponseHeaders().add(WWW_AUTHENTICATE, header);
-
+        exchange.getResponseHeaders().put(WWW_AUTHENTICATE, header);
+        // Mechanisms must not set their own status code, however due to UNDERTOW-548 we need to as when paired with
+        // FORM auth the ServletFormAuthenticationMechanism gets in there early and sets it to 200.
+        exchange.setStatusCode(UNAUTHORIZED);
         return new ChallengeResult(true, UNAUTHORIZED);
     }
 

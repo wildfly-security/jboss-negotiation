@@ -31,9 +31,6 @@ public class DelegationCredentialContext {
     private static final RuntimePermission GET_DELEGATION_CREDENTIAL = new RuntimePermission(
             "org.jboss.security.negotiation.getDelegCredential");
 
-    @Deprecated
-    protected static ThreadLocal<GSSCredential> currentCredential = new ThreadLocal<GSSCredential>();
-
     public static GSSCredential getDelegCredential() {
         SecurityManager sm = System.getSecurityManager();
         if (sm != null) {

@@ -71,7 +71,7 @@
     </security-constraint>
     
    <login-config>   
-    <auth-method>SPNEGO</auth-method>
+    <auth-method>SPNEGO,Form</auth-method>
     <realm-name>SPNEGO</realm-name>
     <form-login-config>
       <form-login-page>/login.html</form-login-page>

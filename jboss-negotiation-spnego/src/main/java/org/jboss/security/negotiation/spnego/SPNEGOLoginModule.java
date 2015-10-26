@@ -362,7 +362,6 @@ public class SPNEGOLoginModule extends CommonLoginModule
             // a SPNEGO message.
             NegotiationMessage requestMessage = negotiationContext.getRequestMessage();
 
-            // TODO - Ensure no way to fall through with gssToken still null.
             byte[] gssToken = null;
             if (requestMessage instanceof NegTokenInit)
             {

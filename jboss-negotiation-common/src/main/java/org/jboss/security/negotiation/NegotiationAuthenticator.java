@@ -483,7 +483,9 @@ public class NegotiationAuthenticator extends FormAuthenticator
 
       public void invoke(Request request, Response response) throws IOException, ServletException
       {
-         GSSCredential credential = (GSSCredential) request.getSessionInternal(false).getNote(DELEGATION_CREDENTIAL);
+         Session session = request.getSessionInternal(false);
+         final GSSCredential credential = session != null ? (GSSCredential) session.getNote(DELEGATION_CREDENTIAL) : null;
+
          try
          {
             DelegationCredentialManager.setDelegationCredential(credential);

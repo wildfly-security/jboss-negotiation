@@ -328,6 +328,10 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
 
       if (result instanceof LoginException)
       {
+         if (log.isDebugEnabled())
+         {
+            log.debug("Login failed", (LoginException) result);
+         }
          throw (LoginException) result;
       }
 

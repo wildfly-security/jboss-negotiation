@@ -27,6 +27,7 @@ import io.undertow.security.idm.Account;
 import io.undertow.security.idm.IdentityManager;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.server.ServerConnection;
+import io.undertow.util.AttachmentKey;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -48,6 +49,8 @@ import org.picketbox.commons.cipher.Base64;
  * @author <a href="mailto:darran.lofthouse@jboss.com">Darran Lofthouse</a>
  */
 public class NegotiationMechanism implements AuthenticationMechanism {
+
+    private static final AttachmentKey<NegotiationMessage> MESSAGE_KEY = AttachmentKey.create(NegotiationMessage.class);
 
     private static final Logger log = Logger.getLogger(NegotiationMechanism.class);
 
@@ -74,7 +77,6 @@ public class NegotiationMechanism implements AuthenticationMechanism {
                         negContext = new NegotiationContext();
                         connection.putAttachment(NegotiationContext.ATTACHMENT_KEY, negContext);
                     }
-                    exchange.putAttachment(NegotiationContext.ATTACHMENT_KEY, negContext);
 
                     try {
                         MessageFactory mf = MessageFactory.newInstance();
@@ -119,6 +121,7 @@ public class NegotiationMechanism implements AuthenticationMechanism {
                             connection.removeAttachment(NegotiationContext.ATTACHMENT_KEY);
                             return AuthenticationMechanismOutcome.AUTHENTICATED;
                         }
+                        exchange.putAttachment(MESSAGE_KEY, negContext.getResponseMessage());
                     } finally {
                         negContext.clear();
                     }
@@ -141,26 +144,24 @@ public class NegotiationMechanism implements AuthenticationMechanism {
 
     @Override
     public ChallengeResult sendChallenge(HttpServerExchange exchange, SecurityContext securityContext) {
-        NegotiationContext negContext = exchange.getAttachment(NegotiationContext.ATTACHMENT_KEY);
+        final String header;
 
-        String header = NEGOTIATION_PLAIN;
-
-        if (negContext != null) {
-            NegotiationMessage responseMessage = negContext.getResponseMessage();
-            if (responseMessage != null) {
-                ByteArrayOutputStream responseMessageOS = new ByteArrayOutputStream();
-                try {
-                    responseMessage.writeTo(responseMessageOS, true);
-                } catch (IOException e) {
-                    // Only using ByteArrayOutputStreams, should not actually hit this.
-                    throw new IllegalStateException(e);
-                }
-                String responseHeader = responseMessageOS.toString();
-
-                MessageTrace.logResponseBase64(responseHeader);
-
-                header = NEGOTIATE_PREFIX + responseHeader;
+        NegotiationMessage responseMessage = exchange.getAttachment(MESSAGE_KEY);
+        if (responseMessage != null) {
+            ByteArrayOutputStream responseMessageOS = new ByteArrayOutputStream();
+            try {
+                responseMessage.writeTo(responseMessageOS, true);
+            } catch (IOException e) {
+                // Only using ByteArrayOutputStreams, should not actually hit this.
+                throw new IllegalStateException(e);
             }
+            String responseHeader = responseMessageOS.toString();
+
+            MessageTrace.logResponseBase64(responseHeader);
+
+            header = NEGOTIATE_PREFIX + responseHeader;
+        } else {
+            header = NEGOTIATION_PLAIN;
         }
 
         exchange.getResponseHeaders().put(WWW_AUTHENTICATE, header);

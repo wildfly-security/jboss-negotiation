@@ -800,9 +800,11 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
       {roleAttributeID};
 
       Attributes result = null;
-      if (sr == null || sr.isRelative())
-      {
-         result = searchContext.getAttributes(dn, attrNames);
+      if (sr == null || ( sr.isRelative() && sr.getAttributes().size() == 0 ) ) {
+          result = searchContext.getAttributes(dn, attrNames);
+      }
+      else if (sr != null && sr.isRelative() && sr.getAttributes().size() != 0 ) {
+          result = sr.getAttributes();
       }
       else
       {

@@ -56,6 +56,7 @@ import org.jboss.security.negotiation.common.CommonLoginModule;
 import org.jboss.security.negotiation.prototype.DecodeAction;
 import org.jboss.security.vault.SecurityVaultUtil;
 import org.jboss.security.vault.SecurityVaultException;
+import org.picketbox.util.StringUtil;
 
 /**
  * Another LDAP LoginModule to take into account requirements
@@ -930,13 +931,16 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
       String result = searchResult;
       int len = searchResult.length();
 
-      if (searchResult.endsWith("\""))
+      if (!StringUtil.isNullOrEmpty(rolesCtxDN))
       {
-         result = searchResult.substring(0, len - 1) + "," + rolesCtxDN + "\"";
-      }
-      else
-      {
-         result = searchResult + "," + rolesCtxDN;
+         if (searchResult.endsWith("\""))
+         {
+            result = searchResult.substring(0, len - 1) + "," + rolesCtxDN + "\"";
+         }
+         else
+         {
+            result = searchResult + "," + rolesCtxDN;
+         }
       }
       return result;
    }

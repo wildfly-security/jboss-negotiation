@@ -42,7 +42,7 @@
 
   <groupId>org.jboss.documentation</groupId>
   <artifactId>negotiation-user-guide-${translation}</artifactId>
-  <version>3.0.3.Final</version>
+  <version>3.0.4.CR1-SNAPSHOT</version>
   <packaging>jdocbook</packaging>
   <name>Negotiation_User_Guide_(${translation})</name>
 

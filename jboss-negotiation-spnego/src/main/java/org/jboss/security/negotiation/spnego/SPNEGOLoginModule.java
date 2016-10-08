@@ -368,11 +368,15 @@ public class SPNEGOLoginModule extends CommonLoginModule
                NegTokenInit negTokenInit = (NegTokenInit) requestMessage;
                List<Oid> mechList = negTokenInit.getMechTypes();
 
-               if (mechList.get(0).equals(kerberos))
+               for (Oid oid : mechList)
                {
-                  gssToken = negTokenInit.getMechToken();
+                  if (oid.equals(kerberos))
+                  {
+                     gssToken = negTokenInit.getMechToken();
+                     break;
+                  }
                }
-               else
+               if (gssToken == null)
                {
                   boolean kerberosSupported = false;
 

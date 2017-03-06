@@ -23,6 +23,7 @@
 package org.jboss.security.negotiation.spnego;
 
 import static org.jboss.security.negotiation.Constants.KERBEROS_V5;
+import static org.jboss.security.negotiation.Constants.KERBEROS_V5_LEGACY;
 
 import java.security.Principal;
 import java.security.PrivilegedAction;
@@ -87,6 +88,8 @@ public class SPNEGOLoginModule extends CommonLoginModule
    private static final String SPNEGO = "SPNEGO";
 
    private static final Oid kerberos = KERBEROS_V5;
+
+   private static final Oid legacyKerberos = KERBEROS_V5_LEGACY;
 
    /*
     * Configuration Options
@@ -368,7 +371,7 @@ public class SPNEGOLoginModule extends CommonLoginModule
                NegTokenInit negTokenInit = (NegTokenInit) requestMessage;
                List<Oid> mechList = negTokenInit.getMechTypes();
 
-               if (mechList.get(0).equals(kerberos))
+               if (mechList.get(0).equals(kerberos) || mechList.get(0).equals(legacyKerberos))
                {
                   gssToken = negTokenInit.getMechToken();
                }

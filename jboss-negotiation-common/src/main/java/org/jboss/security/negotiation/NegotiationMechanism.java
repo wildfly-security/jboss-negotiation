@@ -96,7 +96,7 @@ public class NegotiationMechanism implements AuthenticationMechanism {
                         AuthenticatedSessionManager.AuthenticatedSession authSession = sessionManager.lookupSession(exchange);
                         if (authSession != null) {
                             account = authSession.getAccount();
-                            if (account != null || account.getPrincipal() != null) {
+                            if (account != null && account.getPrincipal() != null) {
                                 negContext.setUsername(account.getPrincipal().getName());
                             }
                         }

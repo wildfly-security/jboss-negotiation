@@ -21,6 +21,7 @@ import static io.undertow.util.Headers.AUTHORIZATION;
 import static io.undertow.util.Headers.NEGOTIATE;
 import static io.undertow.util.Headers.WWW_AUTHENTICATE;
 import static io.undertow.util.StatusCodes.UNAUTHORIZED;
+import io.undertow.security.api.AuthenticatedSessionManager;
 import io.undertow.security.api.AuthenticationMechanism;
 import io.undertow.security.api.SecurityContext;
 import io.undertow.security.idm.Account;
@@ -89,6 +90,18 @@ public class NegotiationMechanism implements AuthenticationMechanism {
                         return AuthenticationMechanismOutcome.NOT_AUTHENTICATED;
                     }
 
+                    Account account = null;
+                    AuthenticatedSessionManager sessionManager = (AuthenticatedSessionManager)exchange.getAttachment(AuthenticatedSessionManager.ATTACHMENT_KEY);
+                    if (sessionManager != null) {
+                        AuthenticatedSessionManager.AuthenticatedSession authSession = sessionManager.lookupSession(exchange);
+                        if (authSession != null) {
+                            account = authSession.getAccount();
+                            if (account != null && account.getPrincipal() != null) {
+                                negContext.setUsername(account.getPrincipal().getName());
+                            }
+                        }
+                    }
+
                     String username = negContext.getUsername();
                     if (username == null || username.length() == 0) {
                         username = UUID.randomUUID().toString();
@@ -98,7 +111,11 @@ public class NegotiationMechanism implements AuthenticationMechanism {
                     IdentityManager identityManager = getIdentityManager(securityContext);
                     try {
                         negContext.associate();
-                        final Account account = identityManager.verify(username, null);
+                        if (account != null) {
+                            account = identityManager.verify(account);
+                        } else {
+                            account = identityManager.verify(username, null);
+                        }
                         if (account != null) {
                             securityContext.authenticationComplete(account, "SPNEGO", true);
 

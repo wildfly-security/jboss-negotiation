@@ -13,6 +13,15 @@
    <name>JBoss Negotiation Aggregator</name>
    <url>http://labs.jboss.org/portal/jbosssecurity/</url>
    <description>JBoss Security is a cross cutting project that handles security for the JEMS projects</description>
+
+  <licenses>
+    <license>
+      <name>GNU Lesser General Public License v2.1 or later</name>
+      <url>http://www.gnu.org/licenses/lgpl-2.1.html</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
    <modules>
      <module>parent</module>
      <module>jboss-negotiation-common</module>

@@ -813,7 +813,7 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
       }
       else
       {
-         result = getAttributesFromReferralEntity(sr);
+         result = sr.getAttributes();
       }
       if (result != null && result.size() > 0)
       {
@@ -848,12 +848,12 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
          for (int i = 0; usersToCheck != null && i < usersToCheck.size(); i++)
          {
             String userDNToCheck = (String) usersToCheck.get(i);
-            if (userDNToCheck.equals(referralUserDNToCheck))
+            if (userDNToCheck.equalsIgnoreCase(referralUserDNToCheck))
             {
                chkSuccessful = true;
                break;
             }
-            if (userDNToCheck.equals(getIdentity().getName()))
+            if (userDNToCheck.equalsIgnoreCase(getIdentity().getName()))
             {
                chkSuccessful = true;
                break;

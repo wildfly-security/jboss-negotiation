@@ -51,7 +51,7 @@
 
   <groupId>org.jboss.documentation</groupId>
   <artifactId>negotiation-user-guide-${translation}</artifactId>
-  <version>3.0.5.CR1-SNAPSHOT</version>
+  <version>3.0.5.Final</version>
   <packaging>jdocbook</packaging>
   <name>Negotiation_User_Guide_(${translation})</name>
 

@@ -248,10 +248,6 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
       userSearchControls.setTimeLimit(searchTimeLimit);
 
       rolesCtxDN = (String) options.get(ROLES_CTS_DN);
-      if (rolesCtxDN == null) {
-         rolesCtxDN = "";
-      }
-
       roleFilter = (String) options.get(ROLE_FILTER);
       referralUserAttributeIDToCheck = (String) options.get(REFERRAL_USER_ATTRIBUTE_ID_TO_CHECK);
 
@@ -719,7 +715,7 @@ public class AdvancedLdapLoginModule extends CommonLoginModule
                + " filterArgs[1]=" + filterArgs[1]);
          }
 
-         if (roleFilter != null && roleFilter.length() > 0)
+         if (roleFilter != null && roleFilter.length() > 0 && rolesCtxDN != null)
          {
             boolean referralsExist = true;
             while (referralsExist)

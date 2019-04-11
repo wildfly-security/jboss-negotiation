@@ -76,7 +76,7 @@
       <id>jboss</id>
       <name>JBoss Repository</name>
       <layout>default</layout>
-      <url>http://anonsvn.jboss.org/repos/repository.jboss.org/maven2</url>
+      <url>https://repository.jboss.org/nexus/content/groups/public</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>

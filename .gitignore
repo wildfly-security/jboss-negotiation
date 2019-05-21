@@ -1,3 +1,4 @@
+.classpath
 .settings
 assembly/target
 jboss-negotiation-common/target
